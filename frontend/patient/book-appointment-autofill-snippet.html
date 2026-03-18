@@ -1,0 +1,81 @@
+<!--
+  ════════════════════════════════════════════════════════════════════
+  book-appointment.html  —  Auto-Fill Integration Snippet
+  ════════════════════════════════════════════════════════════════════
+  Add the <script> block below to your existing book-appointment.html
+  file, just before the closing </body> tag (or merge with your
+  existing window.onload / DOMContentLoaded handler).
+
+  The department dropdown must have  id="department"  and contain
+  <option> values that exactly match the strings passed by the
+  symptom checker:
+
+      Cardiology | Pulmonology | Neurology | ENT | Dermatology
+      Orthopedics | Gastroenterology | Urology | Ophthalmology
+      General Medicine
+
+  Example dropdown markup:
+  ════════════════════════════════════════════════════════════════════
+-->
+
+<!-- ── Dropdown markup to add / update in your form ── -->
+<select id="department" name="department" class="form-control" required>
+  <option value="">-- Select Department --</option>
+  <option value="Cardiology">Cardiology</option>
+  <option value="Pulmonology">Pulmonology</option>
+  <option value="Neurology">Neurology</option>
+  <option value="ENT">ENT</option>
+  <option value="Dermatology">Dermatology</option>
+  <option value="Orthopedics">Orthopedics</option>
+  <option value="Gastroenterology">Gastroenterology</option>
+  <option value="Urology">Urology</option>
+  <option value="Ophthalmology">Ophthalmology</option>
+  <option value="General Medicine">General Medicine</option>
+</select>
+
+<!-- ════════════════════════════════════════════════════════════════
+  Auto-fill script — place before </body> in book-appointment.html
+════════════════════════════════════════════════════════════════════ -->
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+
+  // Read ?department=... from the URL
+  const params     = new URLSearchParams(window.location.search);
+  const department = params.get('department');
+
+  if (department) {
+    const dropdown = document.getElementById('department');
+
+    if (dropdown) {
+      dropdown.value = department;
+
+      // Visual feedback: briefly highlight the pre-filled field
+      dropdown.style.transition   = 'box-shadow .3s ease, border-color .3s ease';
+      dropdown.style.borderColor  = '#2563eb';
+      dropdown.style.boxShadow    = '0 0 0 3px rgba(37,99,235,.2)';
+
+      setTimeout(() => {
+        dropdown.style.borderColor = '';
+        dropdown.style.boxShadow   = '';
+      }, 2000);
+
+      // Optional: show a small banner so patients know it was pre-filled
+      const banner       = document.createElement('div');
+      banner.innerHTML   = `
+        <i class="fas fa-magic" style="margin-right:6px"></i>
+        Department auto-selected based on your symptom check:
+        <strong>${department}</strong>`;
+      banner.style.cssText = `
+        display:flex; align-items:center; gap:6px;
+        background:#eff6ff; border:1px solid #bfdbfe;
+        color:#1d4ed8; border-radius:8px;
+        padding:10px 14px; font-size:.8rem; font-weight:600;
+        margin-bottom:14px; animation: fadeIn .4s ease;`;
+
+      // Insert banner above the department field
+      dropdown.parentElement.insertBefore(banner, dropdown);
+    }
+  }
+
+});
+</script>
