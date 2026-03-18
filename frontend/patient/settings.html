@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings — MediVita Admin</title>
+<link rel="stylesheet" href="/medivita/assets/css/medivita.css">
+<style>
+.settings-layout { display: grid; grid-template-columns: 240px 1fr; gap: 24px; }
+.settings-nav {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  height: fit-content;
+  position: sticky;
+  top: 90px;
+  box-shadow: var(--shadow-sm);
+}
+.settings-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  margin-bottom: 2px;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font);
+}
+.settings-nav-item:hover { background: var(--bg); color: var(--text-primary); }
+.settings-nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+.settings-nav-item .s-icon { font-size: 17px; width: 22px; text-align: center; }
+
+.settings-section { display: none; }
+.settings-section.active { display: block; }
+
+.section-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 24px 0;
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.save-bar {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  border-top: 1px solid var(--border);
+  padding: 16px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24px;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+}
+.save-bar-text { font-size: 14px; color: var(--text-muted); }
+.save-bar-text strong { color: var(--warning); }
+
+
+
+.toast {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-lg);
+  font-size: 15px;
+  font-weight: 600;
+  z-index: 9999;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast-icon { font-size: 20px; }
+</style>
+<script>
+// Prevent flash of unauthenticated content
+(async function() {
+  const res = await fetch('/medivita/backend/patient/get_user.php');
+  const data = await res.json();
+  if (!data.success || data.user.role !== 'admin') {
+    window.location.href = '/medivita/frontend/auth/login.html';
+  }
+})();
+</script>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <a href="/medivita/frontend/admin/admin-dashboard.html" class="brand-logo">
+      <div class="brand-icon"><i class="fas fa-heartbeat"></i></div>
+      <div class="brand-text">
+        <div class="brand-name">MediVita</div>
+        <div class="brand-sub">Admin Panel</div>
+      </div>
+    </a>
+  </div>
+  <div class="sidebar-section-label">Main Menu</div>
+  <nav class="sidebar-nav">
+    <a href="/medivita/frontend/admin/admin-dashboard.html" class="nav-item">
+      <span class="nav-icon">📊</span> Dashboard
+    </a>
+    <a href="/medivita/frontend/admin/manage-doctors.html" class="nav-item">
+      <span class="nav-icon">👨‍⚕️</span> Manage Doctors
+    </a>
+    <a href="/medivita/frontend/admin/manage-patients.html" class="nav-item">
+      <span class="nav-icon">🧑‍🤝‍🧑</span> Manage Patients
+    </a>
+    <a href="/medivita/frontend/admin/appointment-analytics.html" class="nav-item">
+      <span class="nav-icon">📈</span> Appointment Analytics
+    </a>
+    <div class="sidebar-section-label" style="padding-top:12px;">System</div>
+    <a href="/medivita/frontend/patient/settings.html" class="nav-item active">
+      <span class="nav-icon">⚙️</span> Settings
+    </a>
+    <a href="/medivita/backend/auth/logout.php" class="nav-item">
+      <span class="nav-icon">🚪</span> Logout
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="admin-profile">
+      <div class="admin-avatar">SA</div>
+      <div>
+        <div class="admin-name">Super Admin</div>
+        <div class="admin-role">Hospital Director</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="page-title">Settings</div>
+      <div class="page-breadcrumb">Home / System Settings</div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-date">📅 Saturday, March 14, 2026</div>
+      <button class="topbar-btn">🔔 <span class="notif-dot"></span></button>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="settings-layout">
+
+      <!-- SETTINGS NAV -->
+      <div class="settings-nav animate-in">
+        <button class="settings-nav-item active" onclick="showSection('profile')">
+          <span class="s-icon">👨‍💼</span> Admin Profile
+        </button>
+      </div>
+
+      <!-- SETTINGS CONTENT -->
+      <div class="animate-in delay-1">
+
+        <!-- ADMIN PROFILE -->
+        <div class="card settings-section active" id="section-profile">
+          <div class="card-header">
+            <div>
+              <div class="card-title">👨‍💼 Profile Settings</div>
+              <div class="card-subtitle">Manage your personal admin account details</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Admin Name</label>
+              <input class="form-input" id="adminName" value="Super Admin">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Admin Email</label>
+                <input class="form-input" type="email" id="adminEmail" value="admin@medivita.com">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Contact Number</label>
+                <input class="form-input" id="adminContact" value="+1 (555) 123-4567">
+              </div>
+            </div>
+          </div>
+          <div class="save-bar">
+            <span class="save-bar-text"><strong>⚠ Unsaved changes</strong> — Click update to apply</span>
+            <div style="display:flex;gap:10px;">
+              <button class="btn btn-ghost">Discard</button>
+              <button class="btn btn-primary btn-lg" onclick="saveSettings()">💾 Update Profile</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-icon">✅</div>
+  <div>Settings saved successfully!</div>
+</div>
+
+<script>
+function showSection(id) {
+  document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.settings-nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+function saveSettings() {
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
