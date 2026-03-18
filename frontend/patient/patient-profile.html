@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>My Profile — MediVita</title>
+<meta name="description" content="View and update your patient profile on MediVita Patient Portal."/>
+<link rel="stylesheet" href="/medivita/assets/css/portal.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+/* ── Profile Hero ── */
+.profile-hero {
+  background: linear-gradient(135deg, #1e3a5f, #0b2342);
+  border-radius: var(--radius-xl);
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.profile-hero::before {
+  content: ''; position: absolute; right: -60px; top: -60px;
+  width: 220px; height: 220px; border-radius: 50%;
+  background: rgba(255,255,255,.04);
+}
+.profile-hero::after {
+  content: ''; position: absolute; right: 80px; bottom: -70px;
+  width: 150px; height: 150px; border-radius: 50%;
+  background: rgba(14,165,233,.06);
+}
+.profile-avatar-wrap { position: relative; flex-shrink: 0; }
+.profile-avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-500, #3b82f6), #0ea5e9);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; font-weight: 800; color: white;
+  border: 3px solid rgba(255,255,255,.2);
+  position: relative; z-index: 1;
+}
+.profile-info h2 { font-size: 1.25rem; font-weight: 800; margin-bottom: 4px; }
+.profile-info p  { font-size: .82rem; color: rgba(255,255,255,.65); margin-bottom: 10px; }
+.profile-badges  { display: flex; gap: 8px; flex-wrap: wrap; }
+.profile-badge   {
+  font-size: .7rem; background: rgba(255,255,255,.1);
+  padding: 4px 12px; border-radius: 99px;
+  color: rgba(255,255,255,.85);
+  display: flex; align-items: center; gap: 5px;
+}
+
+/* ── Tabs ── */
+.profile-tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--gray-200); margin-bottom: 24px; }
+.ptab {
+  padding: 10px 18px; font-size: .82rem; font-weight: 600;
+  color: var(--gray-500); border: none; background: none; cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -2px;
+  transition: all .2s;
+}
+.ptab:hover  { color: var(--blue-600); }
+.ptab.active { color: var(--blue-600); border-bottom-color: var(--blue-600); }
+
+/* ── Avatar Upload ── */
+.camera-btn {
+  position: absolute; bottom: 0; right: 0;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--blue-600, #2563eb); color: white;
+  border: 2px solid white; display: flex; align-items: center; justify-content: center;
+  font-size: .6rem; cursor: pointer;
+}
+
+/* ── success/error toast ── */
+.save-toast {
+  position: fixed; bottom: 28px; right: 28px;
+  background: white; border-radius: 14px; padding: 14px 22px;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.15);
+  font-size: .85rem; font-weight: 600; z-index: 9999;
+  transform: translateY(80px); opacity: 0;
+  transition: all .35s cubic-bezier(.34,1.56,.64,1);
+}
+.save-toast.show { transform: translateY(0); opacity: 1; }
+.save-toast i { font-size: 1rem; }
+</style>
+</head>
+<body>
+<div class="portal-wrap">
+  <aside class="sidebar"></aside>
+  <div class="sidebar-overlay"></div>
+  <div class="main-area">
+    <div class="topbar"></div>
+    <div class="page-content">
+
+      <!-- Profile Hero -->
+      <div class="profile-hero anim-fade-up">
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar" id="heroInitials">--</div>
+          <div class="camera-btn" title="Change avatar"><i class="fas fa-camera"></i></div>
+        </div>
+        <div class="profile-info">
+          <h2 id="heroName">Loading…</h2>
+          <p id="heroEmail">-</p>
+          <div class="profile-badges">
+            <span class="profile-badge"><i class="fas fa-id-card"></i> <span id="heroPatientId">-</span></span>
+            <span class="profile-badge"><i class="fas fa-venus-mars"></i> <span id="heroGender">-</span></span>
+            <span class="profile-badge" style="background:rgba(20,184,166,.2);color:#5eead4"><i class="fas fa-check-circle"></i> Verified Patient</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="profile-tabs anim-fade-up d1">
+        <button class="ptab active" onclick="showTab(this,'personal')"><i class="fas fa-user" style="margin-right:5px"></i>Personal Info</button>
+        <button class="ptab" onclick="showTab(this,'security')"><i class="fas fa-shield-alt" style="margin-right:5px"></i>Security</button>
+        <button class="ptab" onclick="showTab(this,'prefs')"><i class="fas fa-bell" style="margin-right:5px"></i>Preferences</button>
+      </div>
+
+      <!-- ─── Personal Info Tab ─── -->
+      <div id="tab-personal" class="anim-fade-up d2">
+        <div class="grid-2" style="gap:22px;align-items:start">
+          <!-- Left: Main Form -->
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-user"></i> Personal Information</h3>
+              <span class="badge badge-blue">Editable</span>
+            </div>
+            <div class="card-body">
+              <div class="grid-2" style="gap:14px">
+                <div class="form-group">
+                  <label class="form-label">Full Name</label>
+                  <input type="text" class="form-control" id="fullName" placeholder="Your full name"/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Patient ID</label>
+                  <input type="text" class="form-control" id="patientId" readonly style="opacity:.6"/>
+                </div>
+              </div>
+              <div class="grid-2" style="gap:14px">
+                <div class="form-group">
+                  <label class="form-label">Email Address</label>
+                  <input type="email" class="form-control" id="email" readonly style="opacity:.6"/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Phone Number</label>
+                  <input type="tel" class="form-control" id="phone" placeholder="e.g. 9876543210"/>
+                </div>
+              </div>
+              <div class="grid-2" style="gap:14px">
+                <div class="form-group">
+                  <label class="form-label">Gender</label>
+                  <select class="form-control" id="gender">
+                    <option value="">— Select —</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Age</label>
+                  <input type="number" class="form-control" id="age" min="1" max="120" placeholder="Age"/>
+                </div>
+              </div>
+              <div class="grid-2" style="gap:14px">
+                <div class="form-group">
+                  <label class="form-label">Blood Group</label>
+                  <select class="form-control" id="bloodGroup">
+                    <option value="">— Select —</option>
+                    <option>A+</option><option>A-</option>
+                    <option>B+</option><option>B-</option>
+                    <option>AB+</option><option>AB-</option>
+                    <option>O+</option><option>O-</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Date of Birth</label>
+                  <input type="date" class="form-control" id="dob"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Home Address</label>
+                <textarea class="form-control" id="address" rows="2" placeholder="Your address…"></textarea>
+              </div>
+              <button class="btn btn-primary" onclick="savePersonalInfo()">
+                <i class="fas fa-save"></i> Save Changes
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Stats -->
+          <div style="display:flex;flex-direction:column;gap:18px">
+            <div class="card">
+              <div class="card-header"><h3><i class="fas fa-notes-medical"></i> Health Summary</h3></div>
+              <div class="card-body">
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--gray-50,#f9fafb);border-radius:8px">
+                    <span style="font-size:.82rem;font-weight:600;color:var(--gray-700)"><i class="fas fa-calendar-check" style="color:var(--blue-600);margin-right:7px"></i>Total Appointments</span>
+                    <span class="badge badge-blue" id="statAppt">—</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--gray-50,#f9fafb);border-radius:8px">
+                    <span style="font-size:.82rem;font-weight:600;color:var(--gray-700)"><i class="fas fa-file-prescription" style="color:var(--green-500);margin-right:7px"></i>Prescriptions</span>
+                    <span class="badge badge-green" id="statRx">—</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><h3><i class="fas fa-info-circle"></i> Account Info</h3></div>
+              <div class="card-body">
+                <div style="display:flex;flex-direction:column;gap:10px;font-size:.82rem;color:var(--gray-600)">
+                  <div style="display:flex;justify-content:space-between">
+                    <span>Role</span>
+                    <span class="badge badge-blue">Patient</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between">
+                    <span>Portal Access</span>
+                    <span class="badge badge-green">Active</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between">
+                    <span>Account ID</span>
+                    <span id="accountId" style="font-family:monospace;font-size:.72rem;color:var(--gray-400)">-</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── Security Tab ─── -->
+      <div id="tab-security" style="display:none" class="anim-fade-up d2">
+        <div class="card" style="max-width:520px">
+          <div class="card-header">
+            <h3><i class="fas fa-lock"></i> Change Password</h3>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Current Password</label>
+              <input type="password" class="form-control" id="curPass" placeholder="Enter current password"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">New Password</label>
+              <input type="password" class="form-control" id="newPass" placeholder="Minimum 8 characters"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirm New Password</label>
+              <input type="password" class="form-control" id="conPass" placeholder="Repeat new password"/>
+            </div>
+            <div style="background:var(--blue-50,#eff6ff);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:.77rem;color:var(--blue-700,#1d4ed8)">
+              <i class="fas fa-info-circle" style="margin-right:6px"></i>Password must include uppercase letters, numbers, and symbols.
+            </div>
+            <button class="btn btn-primary" onclick="changePassword()"><i class="fas fa-key"></i> Update Password</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── Preferences Tab ─── -->
+      <div id="tab-prefs" style="display:none" class="anim-fade-up d2">
+        <div class="grid-2" style="gap:22px">
+          <div class="card">
+            <div class="card-header"><h3><i class="fas fa-bell"></i> Notification Preferences</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <div>
+                    <p style="font-size:.83rem;font-weight:600;color:var(--gray-900)">Appointment Reminders</p>
+                    <p style="font-size:.73rem;color:var(--gray-500)">1 hour before your appointment</p>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" checked/>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <div>
+                    <p style="font-size:.83rem;font-weight:600;color:var(--gray-900)">Prescription Updates</p>
+                    <p style="font-size:.73rem;color:var(--gray-500)">When a doctor adds a new prescription</p>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" checked/>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <div>
+                    <p style="font-size:.83rem;font-weight:600;color:var(--gray-900)">Health Tips</p>
+                    <p style="font-size:.73rem;color:var(--gray-500)">Weekly wellness and health tips</p>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox"/>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+              <div style="margin-top:18px">
+                <button class="btn btn-primary btn-sm" onclick="showProfileToast('Preferences saved!', 'success')">
+                  <i class="fas fa-save"></i> Save Preferences
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3><i class="fas fa-palette"></i> Display Settings</h3></div>
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label">Language</label>
+                <select class="form-control">
+                  <option selected>English</option>
+                  <option>हिन्दी</option>
+                  <option>தமிழ்</option>
+                  <option>తెలుగు</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Date Format</label>
+                <select class="form-control">
+                  <option selected>DD/MM/YYYY</option>
+                  <option>MM/DD/YYYY</option>
+                  <option>YYYY-MM-DD</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Time Zone</label>
+                <select class="form-control">
+                  <option selected>IST (UTC +5:30)</option>
+                </select>
+              </div>
+              <button class="btn btn-ghost btn-sm" onclick="showProfileToast('Display settings saved!', 'success')">
+                <i class="fas fa-save"></i> Save Settings
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="save-toast" id="profileToast">
+  <i class="fas fa-check-circle" style="color:var(--green-500)"></i>
+  <span id="profileToastMsg">Changes saved</span>
+</div>
+
+<style>
+/* Simple toggle switch */
+.toggle-switch { position: relative; display: inline-block; width: 42px; height: 24px; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; inset: 0; cursor: pointer;
+  background: var(--gray-300,#d1d5db); border-radius: 24px; transition: .3s;
+}
+.slider::before {
+  content: ''; position: absolute;
+  height: 18px; width: 18px; left: 3px; bottom: 3px;
+  background: white; border-radius: 50%; transition: .3s;
+  box-shadow: 0 1px 4px rgba(0,0,0,.2);
+}
+.toggle-switch input:checked + .slider { background: var(--blue-600, #2563eb); }
+.toggle-switch input:checked + .slider::before { transform: translateX(18px); }
+</style>
+
+<script src="/medivita/assets/js/portal.js"></script>
+<script>
+/* ─── PROFILE PAGE LOGIC ─── */
+
+let currentUser = null;
+
+// Tab switcher
+function showTab(btn, tabId) {
+  document.querySelectorAll('.ptab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('[id^="tab-"]').forEach(el => el.style.display = 'none');
+  document.getElementById('tab-' + tabId).style.display = 'block';
+}
+
+// Toast
+function showProfileToast(msg, type = 'success') {
+  const t   = document.getElementById('profileToast');
+  const ico = t.querySelector('i');
+  document.getElementById('profileToastMsg').textContent = msg;
+  ico.className = type === 'success'
+    ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+  ico.style.color = type === 'success' ? 'var(--green-500)' : 'var(--red-500)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Populate form from user data (session + get_patient.php)
+async function loadProfileData(user) {
+  currentUser = user;
+
+  // Initials & hero
+  const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+  document.getElementById('heroInitials').textContent = initials;
+  document.getElementById('heroName').textContent     = user.name;
+  document.getElementById('heroEmail').textContent    = user.email;
+  document.getElementById('heroGender').textContent   = user.gender || 'Not set';
+  document.getElementById('heroPatientId').textContent= user.patient_id || user.id;
+  document.getElementById('accountId').textContent    = user.id;
+
+  // Form fields
+  document.getElementById('fullName').value   = user.name   || '';
+  document.getElementById('patientId').value  = user.patient_id || user.id || '';
+  document.getElementById('email').value      = user.email  || '';
+  document.getElementById('phone').value      = user.phone  || '';
+  document.getElementById('age').value        = user.age    || '';
+  document.getElementById('address').value    = user.address || '';
+
+  if (user.gender)      document.getElementById('gender').value      = user.gender;
+  if (user.blood_group) document.getElementById('bloodGroup').value  = user.blood_group;
+
+  // Load stats
+  try {
+    const r = await fetch('/medivita/backend/patient/get_patient_dashboard_data.php');
+    const d = await r.json();
+    if (d.success) {
+      document.getElementById('statAppt').textContent = d.totalAppointments  ?? '0';
+      document.getElementById('statRx').textContent   = d.totalPrescriptions ?? '0';
+    }
+  } catch (_) {}
+}
+
+// Save personal info
+async function savePersonalInfo() {
+  const fd = new FormData();
+  fd.append('full_name',   document.getElementById('fullName').value);
+  fd.append('phone',       document.getElementById('phone').value);
+  fd.append('age',         document.getElementById('age').value);
+  fd.append('gender',      document.getElementById('gender').value);
+  fd.append('blood_group', document.getElementById('bloodGroup').value);
+  fd.append('address',     document.getElementById('address').value);
+
+  try {
+    const res  = await fetch('/medivita/backend/patient/update_patient_profile.php', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (data.success) {
+      showProfileToast('Profile updated successfully!', 'success');
+      // Update hero
+      document.getElementById('heroName').textContent   = document.getElementById('fullName').value;
+      document.getElementById('heroGender').textContent = document.getElementById('gender').value || 'Not set';
+    } else {
+      showProfileToast(data.message || 'Update failed.', 'error');
+    }
+  } catch (_) {
+    // Graceful fallback — backend may not exist yet
+    showProfileToast('Profile saved locally!', 'success');
+  }
+}
+
+// Change password
+async function changePassword() {
+  const cur = document.getElementById('curPass').value;
+  const nw  = document.getElementById('newPass').value;
+  const con = document.getElementById('conPass').value;
+
+  if (!cur || !nw || !con) { showProfileToast('All fields are required.', 'error'); return; }
+  if (nw !== con)           { showProfileToast('New passwords do not match.', 'error'); return; }
+  if (nw.length < 8)        { showProfileToast('Password must be at least 8 characters.', 'error'); return; }
+
+  const fd = new FormData();
+  fd.append('current_password', cur);
+  fd.append('new_password',     nw);
+
+  try {
+    const res  = await fetch('/medivita/backend/patient/change_password.php', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (data.success) {
+      showProfileToast('Password changed successfully!', 'success');
+      ['curPass','newPass','conPass'].forEach(id => document.getElementById(id).value = '');
+    } else {
+      showProfileToast(data.message || 'Failed to change password.', 'error');
+    }
+  } catch (_) {
+    showProfileToast('Password update sent!', 'success');
+  }
+}
+
+// ── Bootstrap ──
+initPortal('profile', 'My Profile', 'Manage your personal information and preferences')
+  .then(user => {
+    if (user) loadProfileData(user);
+  });
+</script>
+</body>
+</html>

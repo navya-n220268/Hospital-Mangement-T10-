@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Messages — MediVita Patient Portal</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="/medivita/assets/css/messages.css"/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+:root{
+  --navy:#0b1829;--navy-2:#111f35;
+  --sb-text:rgba(255,255,255,.58);--sb-hover:rgba(255,255,255,.88);
+  --blue:#0ea5e9;--blue-dk:#0284c7;--blue-lt:#bae6fd;--blue-dim:rgba(14,165,233,.13);
+  --teal:#14b8a6;--teal-dk:#0d9488;--teal-dim:rgba(20,184,166,.12);--cyan:#22d3ee;
+  --green:#22c55e;--green-dim:rgba(34,197,94,.12);
+  --amber:#f59e0b;--amber-dim:rgba(245,158,11,.12);
+  --red:#ef4444;--red-dim:rgba(239,68,68,.12);
+  --violet:#8b5cf6;--violet-dim:rgba(139,92,246,.12);
+  --white:#ffffff;--surface:#f5f7fb;--surface-2:#edf0f7;
+  --border:#e3e8f0;--border-2:#cdd4e0;
+  --text-1:#0a1628;--text-2:#2c3e5e;--text-3:#5a6f8a;--text-4:#8fa3bb;
+  --sb-w:258px;
+  --f-display:'Syne',sans-serif;--f-body:'DM Sans',sans-serif;
+  --sh-xs:0 1px 3px rgba(0,0,0,.055);--sh-sm:0 2px 10px rgba(0,0,0,.07);
+  --sh-md:0 4px 24px rgba(0,0,0,.09);--sh-lg:0 8px 40px rgba(0,0,0,.12);
+  --sh-blue:0 4px 20px rgba(14,165,233,.3);
+  --r-xs:6px;--r-sm:9px;--r-md:13px;--r-lg:17px;--r-xl:22px;
+  --ease:cubic-bezier(.4,0,.2,1);--spring:cubic-bezier(.34,1.56,.64,1);--dur:.2s;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:17px}
+body{font-family:var(--f-body);color:var(--text-1);background:var(--surface);min-height:100vh;overflow-x:hidden;line-height:1.65}
+a{text-decoration:none;color:inherit}ul{list-style:none}
+button{font-family:var(--f-body);cursor:pointer;border:none;background:none}
+input,select,textarea{font-family:var(--f-body)}
+.portal-wrap{display:flex;min-height:100vh}
+/* SIDEBAR */
+.sidebar{width:var(--sb-w);background:var(--navy);position:fixed;top:0;left:0;bottom:0;z-index:200;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid rgba(255,255,255,.04);}
+.sidebar::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--teal),var(--cyan));}
+.sb-top{padding:22px 20px 14px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0}
+.sb-logo{display:flex;align-items:center;gap:11px}
+.sb-logo-mark{width:38px;height:38px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,var(--blue),var(--teal));display:flex;align-items:center;justify-content:center;font-size:1rem;color:white;box-shadow:0 4px 14px rgba(14,165,233,.4);}
+.sb-brand-name{font-family:var(--f-display);font-size:1.1rem;font-weight:700;color:white;display:block}
+.sb-brand-sub{font-size:.62rem;font-weight:400;color:rgba(255,255,255,.32);letter-spacing:.1em;text-transform:uppercase}
+.sb-patient{padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sb-pat-avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#0ea5e9,#14b8a6);display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-size:.82rem;font-weight:700;color:white;border:2px solid rgba(255,255,255,.14);}
+.sb-pat-name{font-size:.84rem;font-weight:600;color:rgba(255,255,255,.88)}
+.sb-pat-id{font-size:.67rem;color:rgba(255,255,255,.36);margin-top:1px}
+.sb-nav{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:2px}
+.sb-sec{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.2);padding:9px 10px 3px}
+.sb-link{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:var(--r-sm);color:var(--sb-text);font-size:.9rem;font-weight:500;transition:all .2s;cursor:pointer;position:relative;white-space:nowrap;}
+.sb-link:hover{background:rgba(255,255,255,.07);color:var(--sb-hover)}
+.sb-link.active{background:linear-gradient(135deg,rgba(14,165,233,.22),rgba(20,184,166,.1));color:white;box-shadow:inset 0 0 0 1px rgba(14,165,233,.2);}
+.sb-link.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;border-radius:0 3px 3px 0;background:linear-gradient(180deg,var(--blue),var(--teal));}
+.sb-link i{font-size:.9rem;width:18px;text-align:center;flex-shrink:0}
+.sb-num{margin-left:auto;background:var(--red);color:white;font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:99px}
+.sb-footer{padding:10px;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0}
+/* MAIN */
+.main-area{margin-left:var(--sb-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:100;height:66px;background:rgba(255,255,255,.93);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:12px;}
+.tb-title{flex:1}
+.tb-title h1{font-family:var(--f-display);font-size:1.1rem;font-weight:700;color:var(--text-1)}
+.tb-title p{font-size:.75rem;color:var(--text-3)}
+.tb-right{display:flex;align-items:center;gap:8px}
+.tb-btn{width:38px;height:38px;border-radius:var(--r-sm);background:var(--surface);color:var(--text-3);display:flex;align-items:center;justify-content:center;font-size:.88rem;border:1px solid var(--border);cursor:pointer;position:relative;transition:all .2s;}
+.tb-btn:hover{background:var(--blue-dim);color:var(--blue)}
+.tb-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;background:var(--red);border-radius:50%;border:1.5px solid white}
+.mob-toggle{display:none;width:36px;height:36px;border-radius:var(--r-sm);background:var(--surface);border:1px solid var(--border);align-items:center;justify-content:center;cursor:pointer;color:var(--text-2)}
+.sb-overlay{display:none;position:fixed;inset:0;z-index:199;background:rgba(0,0,0,.55);backdrop-filter:blur(3px)}
+.page-content{flex:1;padding:0;overflow:hidden;}
+.toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--navy);color:white;padding:13px 20px;border-radius:var(--r-md);font-size:.88rem;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:var(--sh-lg);transform:translateY(70px);opacity:0;transition:all .3s var(--spring);}
+.toast.show{transform:translateY(0);opacity:1}
+.toast i{color:var(--teal)}
+@media(max-width:900px){.sidebar{transform:translateX(-100%);transition:transform .3s}.sidebar.open{transform:translateX(0)}.sb-overlay.show{display:block}.main-area{margin-left:0}.mob-toggle{display:flex}}
+</style>
+</head>
+<body>
+<div class="portal-wrap">
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-top">
+      <div class="sb-logo">
+        <div class="sb-logo-mark"><i class="fas fa-heartbeat"></i></div>
+        <div><span class="sb-brand-name">MediVita</span><span class="sb-brand-sub">Patient Portal</span></div>
+      </div>
+    </div>
+    <div class="sb-patient">
+      <div class="sb-pat-avatar">RK</div>
+      <div><div class="sb-pat-name">Rahul Kumar</div><div class="sb-pat-id">ID: MV-2024-08421</div></div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-sec">OVERVIEW</div>
+      <a href="/medivita/frontend/patient/dashboard.html" class="sb-link"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <div class="sb-sec">HEALTH</div>
+      <a href="/medivita/frontend/patient/my-appointments.html" class="sb-link"><i class="fas fa-calendar-check"></i><span>My Appointments</span></a>
+      <a href="/medivita/frontend/patient/medical-records.html" class="sb-link"><i class="fas fa-file-medical"></i><span>Medical Records</span></a>
+      <a href="prescriptions.html" class="sb-link"><i class="fas fa-prescription-bottle-alt"></i><span>Prescriptions</span></a>
+      <div class="sb-sec">TOOLS</div>
+      <a href="/medivita/frontend/patient/book-appointment.html" class="sb-link"><i class="fas fa-calendar-plus"></i><span>Book Appointment</span></a>
+      <a href="/medivita/frontend/patient/symptom-checker.html" class="sb-link"><i class="fas fa-robot"></i><span>Symptom Checker</span></a>
+      <a href="/medivita/frontend/patient/patient-messages.html" class="sb-link active">
+        <i class="fas fa-comment-medical"></i><span>Messages</span>
+        <span class="sb-num" id="sbMsgBadge" style="display:none">0</span>
+      </a>
+      <div class="sb-sec">ACCOUNT</div>
+      <a href="/medivita/frontend/patient/profile.html" class="sb-link"><i class="fas fa-user-circle"></i><span>My Profile</span></a>
+    </nav>
+    <div class="sb-footer">
+      <a href="#" class="sb-link" style="color:rgba(255,100,100,.6)"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    </div>
+  </aside>
+  <div class="sb-overlay" id="sbOverlay"></div>
+
+  <div class="main-area">
+    <div class="topbar">
+      <button class="mob-toggle" id="mobToggle"><i class="fas fa-bars"></i></button>
+      <div class="tb-title">
+        <h1><i class="fas fa-comment-medical" style="color:var(--blue);margin-right:8px;font-size:.95rem"></i>Messages</h1>
+        <p>Secure messaging with your healthcare team</p>
+      </div>
+      <div class="tb-right">
+        <button class="tb-btn" onclick="window.location.href = '/medivita/frontend/patient/dashboard.html'" title="Dashboard"><i class="fas fa-th-large"></i></button>
+        <button class="tb-btn" style="position:relative" title="Notifications"><i class="fas fa-bell"></i><span class="tb-dot"></span></button>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <div class="msg-layout">
+
+        <!-- LEFT -->
+        <div class="msg-left">
+          <div class="msg-left-header">
+            <h3><i class="fas fa-comment-medical"></i> Message a Doctor</h3>
+            <div class="msg-select-group">
+              <label class="msg-select-label">Department</label>
+              <select class="msg-select" id="deptSelect"><option value="">— Select Department —</option></select>
+            </div>
+            <div class="msg-select-group">
+              <label class="msg-select-label">Doctor</label>
+              <select class="msg-select" id="doctorSelect" disabled><option value="">— Select Doctor —</option></select>
+            </div>
+          </div>
+          <div class="conv-list" id="convList">
+            <div class="msg-empty-left"><i class="fas fa-inbox"></i><p>Select a department and doctor above to start messaging.</p></div>
+          </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="msg-right">
+          <div class="chat-placeholder" id="chatPlaceholder">
+            <div class="chat-placeholder-icon"><i class="fas fa-comment-dots"></i></div>
+            <h3>Secure Doctor Messaging</h3>
+            <p>Choose a department and doctor on the left to start a private, secure conversation with your healthcare team.</p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px">
+              <span style="background:var(--blue-dim);color:var(--blue);border-radius:99px;padding:5px 14px;font-size:.78rem;font-weight:600"><i class="fas fa-shield-alt"></i> End-to-End Secure</span>
+              <span style="background:var(--green-dim);color:var(--green);border-radius:99px;padding:5px 14px;font-size:.78rem;font-weight:600"><i class="fas fa-user-md"></i> Verified Doctors</span>
+            </div>
+          </div>
+
+          <div id="chatArea" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+            <div class="chat-header" id="chatHeader"></div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-compose">
+              <div class="compose-input-wrap">
+                <button class="compose-attach" title="Attach" onclick="showToast('Attachment coming soon')"><i class="fas fa-paperclip"></i></button>
+                <textarea class="compose-textarea" id="composeInput" placeholder="Type a message to your doctor…" rows="1" maxlength="1000"></textarea>
+              </div>
+              <button class="compose-send" id="sendBtn" disabled><i class="fas fa-paper-plane"></i></button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="globalToast"><i class="fas fa-check-circle"></i> <span id="toastMsg"></span></div>
+
+<script src="/medivita/assets/js/messages.js"></script>
+<script>
+// Mobile sidebar
+document.getElementById('mobToggle').addEventListener('click',()=>{
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sbOverlay').classList.toggle('show');
+});
+document.getElementById('sbOverlay').addEventListener('click',()=>{
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sbOverlay').classList.remove('show');
+});
+function showToast(msg){
+  const t=document.getElementById('globalToast');
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+const ME={id:'patient_rahul',name:'Rahul Kumar',initials:'RK',grad:'135deg,#0ea5e9,#14b8a6'};
+let activeDoctorId=null,activeDoctor=null,pollTimer=null;
+
+seedDemoMessages();
+
+const deptSel=document.getElementById('deptSelect');
+const doctorSel=document.getElementById('doctorSelect');
+
+DEPARTMENTS.forEach(d=>{
+  const o=document.createElement('option');
+  o.value=d;o.textContent=d;deptSel.appendChild(o);
+});
+
+deptSel.addEventListener('change',()=>{
+  const dept=deptSel.value;
+  doctorSel.innerHTML='<option value="">— Select Doctor —</option>';
+  doctorSel.disabled=!dept;
+  if(dept){getDoctorsByDept(dept).forEach(doc=>{const o=document.createElement('option');o.value=doc.id;o.textContent=doc.name;doctorSel.appendChild(o);});}
+});
+
+doctorSel.addEventListener('change',()=>{
+  const docId=doctorSel.value;
+  if(!docId)return;
+  openChat(docId,deptSel.value);
+  refreshConvList();
+});
+
+function openChat(doctorId,deptHint){
+  activeDoctorId=doctorId;
+  activeDoctor=getDoctorById(doctorId)||{id:doctorId,name:'Doctor',initials:'DR',grad:'135deg,#999,#ccc',dept:deptHint};
+  if(deptSel.value!==activeDoctor.dept){
+    deptSel.value=activeDoctor.dept;
+    doctorSel.innerHTML='<option value="">— Select Doctor —</option>';
+    doctorSel.disabled=false;
+    getDoctorsByDept(activeDoctor.dept).forEach(doc=>{const o=document.createElement('option');o.value=doc.id;o.textContent=doc.name;doctorSel.appendChild(o);});
+  }
+  doctorSel.value=doctorId;
+  markThreadReadByPatient(ME.id,doctorId);
+  document.querySelectorAll('.conv-item').forEach(el=>el.classList.toggle('active',el.dataset.doctorId===doctorId));
+  document.getElementById('chatPlaceholder').style.display='none';
+  const ca=document.getElementById('chatArea');ca.style.display='flex';
+  document.getElementById('chatHeader').innerHTML=`
+    <div class="chat-header-avatar" style="background:linear-gradient(${activeDoctor.grad})">${activeDoctor.initials}</div>
+    <div class="chat-header-info">
+      <div class="chat-header-name">${activeDoctor.name}</div>
+      <div class="chat-header-dept"><i class="fas fa-stethoscope" style="color:var(--blue);margin-right:5px"></i>${activeDoctor.dept}</div>
+    </div>
+    <div class="chat-header-status">Available</div>
+    <div class="chat-header-right">
+      <button class="chat-action-btn" title="Book Appointment"
+        onclick="window.location='book-appointment.html?department=${encodeURIComponent(activeDoctor.dept)}'">
+        <i class="fas fa-calendar-plus"></i>
+      </button>
+      <button class="chat-action-btn" title="Doctor Profile"><i class="fas fa-user-circle"></i></button>
+    </div>`;
+  renderChat();
+  document.getElementById('sendBtn').disabled=false;
+  document.getElementById('composeInput').focus();
+  clearInterval(pollTimer);
+  pollTimer=setInterval(()=>{if(activeDoctorId)renderChat(false);},3000);
+}
+
+function renderChat(scroll=true){
+  renderMessages(document.getElementById('chatMessages'),
+    getThread(ME.id,activeDoctorId),'patient',ME.initials,ME.grad,activeDoctor.initials,activeDoctor.grad);
+}
+
+const composeInput=document.getElementById('composeInput');
+const sendBtn=document.getElementById('sendBtn');
+composeInput.addEventListener('input',()=>{autoGrow(composeInput);sendBtn.disabled=!composeInput.value.trim();});
+composeInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}});
+sendBtn.addEventListener('click',sendMessage);
+
+function sendMessage(){
+  const text=composeInput.value.trim();
+  if(!text||!activeDoctorId)return;
+  addMessage({id:'msg_'+Date.now(),patientId:ME.id,patientName:ME.name,doctorId:activeDoctorId,doctorName:activeDoctor.name,dept:activeDoctor.dept,sender:'patient',text,ts:Date.now(),readByDoctor:false,readByPatient:true});
+  composeInput.value='';composeInput.style.height='auto';sendBtn.disabled=true;
+  renderChat();refreshConvList();updateSidebarBadge();
+  const mc=document.getElementById('chatMessages');
+  setTimeout(()=>{showTypingIndicator(mc,activeDoctor.initials,activeDoctor.grad);mc.scrollTop=mc.scrollHeight;},900);
+  setTimeout(()=>{
+    removeTypingIndicator(mc);
+    addMessage({id:'msg_'+(Date.now()+1),patientId:ME.id,patientName:ME.name,doctorId:activeDoctorId,doctorName:activeDoctor.name,dept:activeDoctor.dept,sender:'doctor',text:getAutoReply(),ts:Date.now()+1,readByDoctor:true,readByPatient:false});
+    renderChat();refreshConvList();updateSidebarBadge();
+  },3400);
+}
+
+function refreshConvList(){
+  const threads=getThreadsForPatient(ME.id);
+  const listEl=document.getElementById('convList');
+  if(!threads.length){listEl.innerHTML='<div class="msg-empty-left"><i class="fas fa-inbox"></i><p>No conversations yet. Select a doctor above to start messaging.</p></div>';return;}
+  listEl.innerHTML=threads.map(last=>{
+    const doc=getDoctorById(last.doctorId);if(!doc)return'';
+    const isActive=last.doctorId===activeDoctorId;
+    const unread=loadMessages().filter(m=>m.patientId===ME.id&&m.doctorId===last.doctorId&&m.sender==='doctor'&&!m.readByPatient).length;
+    const preview=last.text.length>36?last.text.slice(0,36)+'…':last.text;
+    return`<div class="conv-item ${isActive?'active':''}" data-doctor-id="${doc.id}" onclick="openChat('${doc.id}','${doc.dept}')">
+      <div class="conv-avatar" style="background:linear-gradient(${doc.grad})">${doc.initials}</div>
+      <div class="conv-info">
+        <div class="conv-name">${doc.name}</div>
+        <div class="conv-dept">${doc.dept}</div>
+        <div class="conv-preview">${last.sender==='patient'?'You: ':''}${preview}</div>
+      </div>
+      <div class="conv-meta">
+        <span class="conv-time">${formatTime(last.ts)}</span>
+        ${unread?`<span class="conv-unread">${unread}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateSidebarBadge(){
+  const unread=loadMessages().filter(m=>m.patientId===ME.id&&m.sender==='doctor'&&!m.readByPatient).length;
+  const badge=document.getElementById('sbMsgBadge');
+  if(badge){badge.textContent=unread;badge.style.display=unread>0?'inline-flex':'none';}
+}
+
+refreshConvList();
+updateSidebarBadge();
+</script>
+</body>
+</html>

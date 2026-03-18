@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notifications — MediVita Admin</title>
+<link rel="stylesheet" href="/medivita/assets/css/shared2.css">
+<style>
+  .notif-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .notif-filter-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--neutral-100);
+    border-radius: var(--radius-md);
+    padding: 4px;
+  }
+  .notif-tab {
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--neutral-500);
+    transition: var(--transition);
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .notif-tab.active { background: white; color: var(--primary); box-shadow: var(--shadow-xs); }
+  .notif-tab .count {
+    background: var(--danger);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 10px;
+  }
+  .notif-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--neutral-400);
+    padding: 10px 20px 4px;
+    background: var(--neutral-50);
+    border-bottom: 1px solid var(--neutral-100);
+    border-top: 1px solid var(--neutral-100);
+  }
+  .notif-item-wrapper { position: relative; }
+  .notif-unread-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+  }
+  .notif-item {
+    padding: 14px 20px 14px 28px;
+  }
+  .notif-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .emergency-notif {
+    border: 1.5px solid #FFCDD2;
+    border-left: 4px solid var(--danger);
+    background: linear-gradient(135deg, #FFF5F5, #FFEBEE);
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    margin-bottom: 4px;
+    animation: pulse-bg 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse-bg { 0%,100%{background:linear-gradient(135deg,#FFF5F5,#FFEBEE)} 50%{background:linear-gradient(135deg,#FFEBEE,#FFCDD2)} }
+  .summary-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .summary-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1.5px solid;
+  }
+</style>
+</head>
+<body>
+<script src="/medivita/assets/js/shared2.js"></script>
+<script>
+const notifications = [
+  {id:1,type:'emergency',icon:'🚨',title:'Emergency Request — ICU-2',desc:'Patient Rajesh Mehta in ICU-2 requires immediate cardiac intervention. Assigned to Dr. Arjun Nair.',time:'2 min ago',category:'emergency',unread:true,color:'red'},
+  {id:2,type:'emergency',icon:'⚠️',title:'Emergency Alert — Room 14',desc:'Trauma case admitted. Dr. Suresh Kumar notified. Patient status: Critical.',time:'15 min ago',category:'emergency',unread:true,color:'red'},
+  {id:3,type:'doctor',icon:'👨‍⚕️',title:'New Doctor Registration',desc:'Dr. Preethi Iyer (Dermatologist) has submitted registration. Awaiting admin approval.',time:'32 min ago',category:'doctor',unread:true,color:'blue'},
+  {id:4,type:'appointment',icon:'❌',title:'Appointment Cancellation',desc:'Patient Anita Verma cancelled appointment with Dr. Meera Joshi scheduled for 02:00 PM today.',time:'1 hr ago',category:'appointment',unread:false,color:'orange'},
+  {id:5,type:'doctor',icon:'✅',title:'Doctor Account Approved',desc:'Dr. Kiran Patel\'s registration has been approved. Account is now active.',time:'2 hr ago',category:'doctor',unread:false,color:'green'},
+  {id:6,type:'appointment',icon:'📅',title:'Appointment Rescheduled',desc:'Appointment #1038 for Sunita Kapoor rescheduled from 11:00 AM to 03:30 PM by Dr. Suresh Kumar.',time:'3 hr ago',category:'appointment',unread:false,color:'teal'},
+  {id:7,type:'system',icon:'🔒',title:'Failed Login Attempt',desc:'Multiple failed login attempts detected from IP address 192.168.1.45. Account temporarily locked.',time:'4 hr ago',category:'system',unread:false,color:'red'},
+  {id:8,type:'system',icon:'💾',title:'System Backup Completed',desc:'Nightly database backup completed successfully. 2,847 records archived to secure storage.',time:'6 hr ago',category:'system',unread:false,color:'green'},
+  {id:9,type:'doctor',icon:'📋',title:'Patient Records Updated',desc:'Dr. Meera Joshi updated medical records for 12 patients. Prescription changes logged.',time:'8 hr ago',category:'doctor',unread:false,color:'blue'},
+  {id:10,type:'appointment',icon:'📅',title:'High Appointment Load Warning',desc:'Thursday appointment slots are 94% full. Consider opening additional slots with Dr. Ravi Shankar.',time:'Yesterday',category:'appointment',unread:false,color:'orange'},
+  {id:11,type:'system',icon:'📊',title:'Monthly Report Generated',desc:'System automatically generated the February 2026 performance report. Available for download.',time:'Yesterday',category:'system',unread:false,color:'teal'},
+  {id:12,type:'emergency',icon:'🏥',title:'Emergency Room Capacity Alert',desc:'ER is at 87% capacity. Consider diverting non-critical cases to outpatient department.',time:'2 days ago',category:'emergency',unread:false,color:'red'},
+];
+
+let activeFilter = 'all';
+
+function getIcon(color) {
+  const map = {
+    red:'var(--danger-light)',
+    blue:'var(--primary-ghost)',
+    green:'var(--success-light)',
+    orange:'var(--warning-light)',
+    teal:'var(--accent-light)',
+  };
+  return map[color] || 'var(--neutral-100)';
+}
+
+function getTextColor(color) {
+  const map = { red:'var(--danger)', blue:'var(--primary)', green:'var(--success-mid)', orange:'var(--warning)', teal:'var(--accent)' };
+  return map[color] || 'var(--neutral-600)';
+}
+
+function renderNotifs() {
+  const filtered = activeFilter === 'all' ? notifications : notifications.filter(n => n.category === activeFilter);
+  const unread = filtered.filter(n => n.unread);
+  const read = filtered.filter(n => !n.unread);
+
+  function renderItem(n) {
+    return `
+      <div class="notif-item-wrapper" id="notif-${n.id}">
+        ${n.unread ? `<div class="notif-unread-bar" style="background:${getTextColor(n.color)}"></div>` : ''}
+        <div class="notif-item" style="${n.unread ? 'background:#F0F6FF' : ''}">
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <div style="width:38px;height:38px;border-radius:50%;background:${getIcon(n.color)};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${n.icon}</div>
+            <div style="flex:1">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+                <div>
+                  <div style="font-size:13px;font-weight:${n.unread ? '700' : '600'};color:var(--neutral-800);margin-bottom:3px">${n.title}</div>
+                  <div style="font-size:12px;color:var(--neutral-600);line-height:1.4">${n.desc}</div>
+                </div>
+                <div style="text-align:right;flex-shrink:0">
+                  <div style="font-size:11px;color:var(--neutral-400);white-space:nowrap">${n.time}</div>
+                  ${n.unread ? '<div style="width:8px;height:8px;border-radius:50%;background:var(--primary);margin:4px 0 0 auto"></div>' : ''}
+                </div>
+              </div>
+              <div class="notif-actions">
+                ${n.category === 'emergency' ? '<button class="btn btn-danger btn-sm" style="font-size:11px">Respond Now</button>' : ''}
+                ${n.category === 'doctor' && n.unread ? '<button class="btn btn-success btn-sm" style="font-size:11px">Approve</button><button class="btn btn-ghost btn-sm" style="font-size:11px">Decline</button>' : ''}
+                <button class="btn btn-ghost btn-sm" style="font-size:11px" onclick="markRead(${n.id})">Mark Read</button>
+                <button class="btn btn-ghost btn-sm" style="font-size:11px" onclick="dismissNotif(${n.id})">Dismiss</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="height:1px;background:var(--neutral-100)"></div>`;
+  }
+
+  let html = '';
+  if (unread.length > 0) {
+    html += `<div class="notif-section-label">Unread (${unread.length})</div>`;
+    html += unread.map(renderItem).join('');
+  }
+  if (read.length > 0) {
+    html += `<div class="notif-section-label">Earlier</div>`;
+    html += read.map(renderItem).join('');
+  }
+  if (filtered.length === 0) {
+    html = '<div class="empty-state"><div style="font-size:36px;margin-bottom:12px">🔔</div><div style="font-size:14px;font-weight:600">No notifications</div><div style="font-size:12px;margin-top:4px">You\'re all caught up!</div></div>';
+  }
+  document.getElementById('notifList').innerHTML = html;
+}
+
+function markRead(id) {
+  const n = notifications.find(x => x.id === id);
+  if (n) { n.unread = false; renderNotifs(); }
+}
+
+function dismissNotif(id) {
+  const idx = notifications.findIndex(x => x.id === id);
+  if (idx > -1) { notifications.splice(idx, 1); renderNotifs(); }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initPage('Notifications', 'System Alerts');
+  const content = document.getElementById('pageContent');
+  const unreadCount = notifications.filter(n => n.unread).length;
+
+  content.innerHTML = `
+    <div class="notif-page-header fade-up">
+      <div>
+        <div class="section-title">Notifications Center</div>
+        <div class="section-subtitle">${unreadCount} unread notifications requiring your attention</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="notifications.forEach(n=>n.unread=false);renderNotifs()">Mark All Read</button>
+        <button class="btn btn-outline btn-sm">Notification Settings</button>
+      </div>
+    </div>
+
+    <div class="summary-row fade-up delay-1">
+      <div class="summary-pill" style="background:var(--danger-light);border-color:#FFCDD2;color:var(--danger)">
+        🚨 <span>3 Emergencies</span>
+      </div>
+      <div class="summary-pill" style="background:var(--primary-ghost);border-color:#BBDEFB;color:var(--primary)">
+        👨‍⚕️ <span>2 Doctor Approvals</span>
+      </div>
+      <div class="summary-pill" style="background:var(--warning-light);border-color:#FFE0B2;color:var(--warning)">
+        📅 <span>3 Appointment Alerts</span>
+      </div>
+      <div class="summary-pill" style="background:var(--accent-light);border-color:#B2EBF2;color:var(--accent)">
+        🖥️ <span>3 System Alerts</span>
+      </div>
+    </div>
+
+    <div class="card fade-up delay-2">
+      <div class="card-header">
+        <div class="notif-filter-tabs">
+          <button class="notif-tab active" data-filter="all">All <span class="count">${notifications.filter(n=>n.unread).length}</span></button>
+          <button class="notif-tab" data-filter="emergency">Emergency</button>
+          <button class="notif-tab" data-filter="doctor">Doctors</button>
+          <button class="notif-tab" data-filter="appointment">Appointments</button>
+          <button class="notif-tab" data-filter="system">System</button>
+        </div>
+        <div style="font-size:12px;color:var(--neutral-500)">${notifications.length} total</div>
+      </div>
+      <div id="notifList"></div>
+    </div>
+  `;
+
+  renderNotifs();
+
+  document.querySelectorAll('.notif-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.notif-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      activeFilter = tab.dataset.filter;
+      renderNotifs();
+    });
+  });
+});
+</script>
+</body>
+</html>
