@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>My Appointments — MediVita</title>
+<meta name="description" content="View and manage your scheduled appointments at MediVita Hospital."/>
+<link rel="stylesheet" href="/medivita/assets/css/portal.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+.filter-bar {
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  padding: 16px 20px; background: white; border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200); margin-bottom: 20px;
+}
+.filter-btn {
+  padding: 7px 16px; border-radius: 99px; font-size: .78rem; font-weight: 600;
+  border: 2px solid var(--gray-200); background: white; cursor: pointer;
+  color: var(--gray-600); transition: var(--transition);
+}
+.filter-btn:hover  { border-color: var(--blue-400); color: var(--blue-600); }
+.filter-btn.active { border-color: var(--blue-600); background: var(--blue-600); color: white; }
+.filter-bar-right  { margin-left: auto; display: flex; gap: 10px; }
+
+/* Detail drawer */
+.detail-drawer {
+  display: none;
+  background: linear-gradient(135deg, var(--blue-50), #f0f9ff);
+  border: 1.5px solid var(--blue-200);
+  border-radius: var(--radius-lg);
+  padding: 24px; margin-top: 12px;
+  animation: fadeUp .3s var(--ease);
+}
+.detail-drawer.show { display: block; }
+.detail-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(180px,1fr)); gap: 14px; }
+.detail-item { background: white; border-radius: var(--radius-sm); padding: 14px; }
+.detail-item label { font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: var(--gray-400); font-weight: 700; display: block; margin-bottom: 4px; }
+.detail-item p     { font-size: .85rem; font-weight: 600; color: var(--gray-900); }
+
+/* Cancel modal */
+.cancel-modal { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.5); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
+.cancel-modal.show { display: flex; }
+.cancel-modal-inner { background: white; border-radius: var(--radius-xl); padding: 36px; max-width: 400px; width: 90%; text-align: center; animation: bounceIn .35s var(--ease-bounce); box-shadow: var(--shadow-xl); }
+
+/* Loading skeleton */
+.skel-row { height: 52px; background: var(--gray-100); border-radius: 8px; margin-bottom: 8px; animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
+</style>
+</head>
+<body>
+<div class="portal-wrap">
+  <aside class="sidebar"></aside>
+  <div class="sidebar-overlay"></div>
+  <div class="main-area">
+    <div class="topbar"></div>
+    <div class="page-content">
+
+      <!-- Stat Cards -->
+      <div class="grid-2" style="margin-bottom:20px;align-items:start">
+        <div>
+          <div class="stat-card anim-fade-up">
+            <div class="stat-card-icon" style="background:var(--blue-50);color:var(--blue-600)"><i class="fas fa-calendar-check"></i></div>
+            <h2 id="cntUpcoming">—</h2><p>Upcoming / Pending</p>
+          </div>
+        </div>
+        <div>
+          <div class="stat-card anim-fade-up d1">
+            <div class="stat-card-icon" style="background:var(--green-50);color:var(--green-600)"><i class="fas fa-check-circle"></i></div>
+            <h2 id="cntCompleted">—</h2><p>Completed Appointments</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter bar -->
+      <div class="filter-bar anim-fade-up d2">
+        <button class="filter-btn active" id="fbAll"       onclick="setFilter('all',this)">All</button>
+        <button class="filter-btn"        id="fbPending"   onclick="setFilter('pending',this)">Pending</button>
+        <button class="filter-btn"        id="fbApproved"  onclick="setFilter('approved',this)">Approved</button>
+        <button class="filter-btn"        id="fbCompleted" onclick="setFilter('completed',this)">Completed</button>
+        <button class="filter-btn"        id="fbCancelled" onclick="setFilter('cancelled',this)">Cancelled</button>
+        <div class="filter-bar-right">
+          <input type="text" class="form-control" placeholder="Search doctor or dept…" id="searchInput"
+            style="width:190px;padding:8px 12px;font-size:.8rem" oninput="renderTable()"/>
+          <a href="/medivita/frontend/patient/book-appointment.html" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Book New</a>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="card anim-fade-up d3">
+        <div class="table-wrap">
+          <table id="apptTable">
+            <thead>
+              <tr>
+                <th>Doctor</th>
+                <th>Department</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="apptBody">
+              <!-- Skeleton loader -->
+              <tr><td colspan="7"><div class="skel-row"></div><div class="skel-row"></div><div class="skel-row"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Detail drawer -->
+      <div class="detail-drawer anim-fade-up" id="detailDrawer">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <h4 style="font-size:.95rem;font-weight:700;color:var(--gray-900)"><i class="fas fa-info-circle" style="color:var(--blue-600);margin-right:8px"></i>Appointment Details</h4>
+          <button onclick="document.getElementById('detailDrawer').classList.remove('show')" style="background:var(--gray-100);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:.75rem"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="detail-grid" id="detailContent"></div>
+        <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap" id="detailActions"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Cancel Modal -->
+<div class="cancel-modal" id="cancelModal">
+  <div class="cancel-modal-inner">
+    <div style="width:56px;height:56px;background:var(--red-50);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.3rem;color:var(--red-600)">
+      <i class="fas fa-calendar-times"></i>
+    </div>
+    <h3 style="font-size:1rem;font-weight:800;color:var(--gray-900);margin-bottom:8px">Cancel Appointment?</h3>
+    <p style="font-size:.82rem;color:var(--gray-500);margin-bottom:6px" id="cancelMsg">Are you sure you want to cancel this appointment?</p>
+    <p style="font-size:.76rem;color:var(--gray-400);margin-bottom:22px">This action can be undone by booking a new appointment.</p>
+    <div style="display:flex;gap:12px;justify-content:center">
+      <button id="confirmCancelBtn" class="btn btn-danger"><i class="fas fa-times"></i> Yes, Cancel</button>
+      <button onclick="document.getElementById('cancelModal').classList.remove('show')" class="btn btn-secondary">Keep It</button>
+    </div>
+  </div>
+</div>
+
+<script src="/medivita/assets/js/portal.js"></script>
+<script>
+/* =============================================
+   MY APPOINTMENTS — DYNAMIC BACKEND LOGIC
+   ============================================= */
+
+let allAppointments = [];
+let currentFilter   = 'all';
+
+// Status badge HTML
+const statusBadge = {
+  pending:   '<span class="badge badge-amber"><i class="fas fa-clock" style="font-size:.5rem"></i> Pending</span>',
+  approved:  '<span class="badge badge-blue"><i class="fas fa-circle" style="font-size:.5rem"></i> Approved</span>',
+  completed: '<span class="badge badge-green"><i class="fas fa-check" style="font-size:.5rem"></i> Completed</span>',
+  cancelled: '<span class="badge badge-red"><i class="fas fa-times" style="font-size:.5rem"></i> Cancelled</span>',
+};
+
+// Type labels
+const typeLabel = {
+  consultation: 'Consultation',
+  followup:     'Follow-up',
+  emergency:    'Emergency',
+  teleconsult:  'Teleconsult',
+};
+
+// Avatar gradients per dept
+const gradMap = {
+  'Cardiology':       'linear-gradient(135deg,#667eea,#764ba2)',
+  'Neurology':        'linear-gradient(135deg,#f093fb,#f5576c)',
+  'General Medicine': 'linear-gradient(135deg,#4facfe,#00f2fe)',
+  'Oncology':         'linear-gradient(135deg,#43e97b,#38f9d7)',
+  'Dermatology':      'linear-gradient(135deg,#fccb90,#d57eeb)',
+  'Orthopedics':      'linear-gradient(135deg,#a18cd1,#fbc2eb)',
+  'Pediatrics':       'linear-gradient(135deg,#fa709a,#fee140)',
+  'ENT':              'linear-gradient(135deg,#30cfd0,#330867)',
+};
+
+// ── Load appointments from backend ─────────────────────────────────────────
+async function loadAppointments() {
+  try {
+    const res  = await fetch('/medivita/backend/patient/get_patient_appointments.php');
+    const data = await res.json();
+
+    if (!data.success) throw new Error(data.message);
+
+    allAppointments = data.appointments || [];
+
+    // Update stat cards
+    const upcoming  = allAppointments.filter(a => ['pending','approved'].includes(a.status)).length;
+    const completed = allAppointments.filter(a => a.status === 'completed').length;
+    document.getElementById('cntUpcoming').textContent  = upcoming;
+    document.getElementById('cntCompleted').textContent = completed;
+
+    renderTable();
+
+  } catch (e) {
+    document.getElementById('apptBody').innerHTML =
+      `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--red-500)">
+        <i class="fas fa-exclamation-circle" style="font-size:1.5rem;margin-bottom:8px;display:block"></i>
+        Failed to load appointments. <a href="javascript:loadAppointments()" style="color:var(--blue-600)">Retry</a>
+      </td></tr>`;
+    console.error('loadAppointments error:', e);
+  }
+}
+
+// ── Set active filter ──────────────────────────────────────────────────────
+function setFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+// ── Render table ───────────────────────────────────────────────────────────
+function renderTable() {
+  const tbody  = document.getElementById('apptBody');
+  const search = (document.getElementById('searchInput').value || '').toLowerCase();
+
+  const rows = allAppointments.filter(a => {
+    const matchF = currentFilter === 'all' || a.status === currentFilter;
+    const matchS = !search ||
+      a.doctor_name.toLowerCase().includes(search) ||
+      a.department.toLowerCase().includes(search);
+    return matchF && matchS;
+  });
+
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--gray-400)">
+      <i class="fas fa-calendar-times" style="font-size:1.5rem;margin-bottom:8px;display:block"></i>
+      No appointments found
+    </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = rows.map(a => {
+    const d        = new Date(a.appointment_date).toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
+    const grad     = gradMap[a.department] || 'linear-gradient(135deg,#a18cd1,#fbc2eb)';
+    const initials = a.doctor_name.split(' ').filter(w => w).slice(1).map(n => n[0]).join('') || a.doctor_name[0];
+    const canCancel = ['pending','approved'].includes(a.status);
+    const badge     = statusBadge[a.status] || `<span class="badge badge-gray">${a.status}</span>`;
+    const type      = typeLabel[a.appointment_type] || a.appointment_type || '—';
+
+    return `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:34px;height:34px;border-radius:50%;background:${grad};display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:white;flex-shrink:0">${initials}</div>
+          <span class="td-bold">${a.doctor_name}</span>
+        </div>
+      </td>
+      <td>${a.department}</td>
+      <td>${d}</td>
+      <td style="font-weight:600;color:var(--blue-600)">${a.appointment_time}</td>
+      <td><span class="badge badge-gray">${type}</span></td>
+      <td>${badge}</td>
+      <td>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-xs btn-secondary" onclick="viewDetails('${a._id}')"><i class="fas fa-eye"></i> Details</button>
+          ${canCancel ? `<button class="btn btn-xs btn-danger" onclick="cancelAppt('${a._id}','${a.doctor_name}')"><i class="fas fa-times"></i> Cancel</button>` : ''}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── View details ───────────────────────────────────────────────────────────
+function viewDetails(id) {
+  const a = allAppointments.find(x => x._id === id);
+  if (!a) return;
+  const d = new Date(a.appointment_date).toLocaleDateString('en-IN', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
+  const type = typeLabel[a.appointment_type] || a.appointment_type || '—';
+
+  document.getElementById('detailContent').innerHTML = `
+    <div class="detail-item"><label>Patient</label><p>${a.patient_name || '—'}</p></div>
+    <div class="detail-item"><label>Doctor</label><p>${a.doctor_name}</p></div>
+    <div class="detail-item"><label>Department</label><p>${a.department}</p></div>
+    <div class="detail-item"><label>Date</label><p>${d}</p></div>
+    <div class="detail-item"><label>Time</label><p>${a.appointment_time}</p></div>
+    <div class="detail-item"><label>Type</label><p>${type}</p></div>
+    <div class="detail-item"><label>Status</label><p style="text-transform:capitalize">${a.status}</p></div>
+    ${a.reason ? `<div class="detail-item" style="grid-column:1/-1"><label>Reason</label><p>${a.reason}</p></div>` : ''}
+  `;
+
+  document.getElementById('detailActions').innerHTML = `
+    ${a.status === 'approved' ? `<button class="btn btn-primary btn-sm"><i class="fas fa-video"></i> Join Teleconsult</button>` : ''}
+    ${a.status === 'completed' ? `<button class="btn btn-success btn-sm" onclick="window.location.href = '/medivita/frontend/patient/medical-records.html'"><i class="fas fa-file-medical"></i> View Prescription</button>` : ''}
+    <button class="btn btn-secondary btn-sm" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+  `;
+
+  const drawer = document.getElementById('detailDrawer');
+  drawer.classList.add('show');
+  drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ── Cancel appointment ─────────────────────────────────────────────────────
+function cancelAppt(id, doctorName) {
+  document.getElementById('cancelMsg').textContent = `Cancel appointment with ${doctorName}?`;
+  document.getElementById('cancelModal').classList.add('show');
+
+  document.getElementById('confirmCancelBtn').onclick = async () => {
+    const btn = document.getElementById('confirmCancelBtn');
+    btn.disabled = true;
+    btn.textContent = 'Cancelling…';
+
+    try {
+      const fd = new FormData();
+      fd.append('appointment_id', id);
+      const res  = await fetch('/medivita/backend/shared/cancel_appointment.php', { method: 'POST', body: fd });
+      const data = await res.json();
+
+      if (!data.success) throw new Error(data.message);
+
+      // Update local data
+      const appt = allAppointments.find(a => a._id === id);
+      if (appt) appt.status = 'cancelled';
+
+      document.getElementById('cancelModal').classList.remove('show');
+      document.getElementById('detailDrawer').classList.remove('show');
+      renderTable();
+
+      // Update stat cards
+      const upcoming = allAppointments.filter(a => ['pending','approved'].includes(a.status)).length;
+      document.getElementById('cntUpcoming').textContent = upcoming;
+
+    } catch (e) {
+      alert(e.message || 'Failed to cancel appointment.');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-times"></i> Yes, Cancel';
+    }
+  };
+}
+
+// ── Bootstrap ─────────────────────────────────────────────────────────────
+initPortal('my-appointments', 'My Appointments', 'View and manage your scheduled appointments')
+  .then(user => {
+    if (user) loadAppointments();
+  });
+</script>
+</body>
+</html>
