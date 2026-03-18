@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Message to Doctor — MediVita Patient Portal</title>
+  <meta name="description" content="Securely message your doctor regarding your appointments at MediVita."/>
+
+  <!-- Portal shared styles -->
+  <link rel="stylesheet" href="/medivita/assets/css/portal.css"/>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <!-- Google Fonts used in messaging UI -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── Messaging-page specific variables ─────── */
+    :root {
+      --blue-deep:      #1a5fa8;
+      --blue-mid:       #2979cc;
+      --blue-light:     #e8f1fb;
+      --blue-accent:    #4fa3e8;
+      --teal-msg:       #0ea5a0;
+      --teal-light:     #e3f6f5;
+      --grey-100:       #f0f4f9;
+      --grey-200:       #e2e8f3;
+      --grey-400:       #9aabc2;
+      --grey-600:       #5c6f88;
+      --grey-800:       #2b3a52;
+      --msg-doctor-bg:  #eef4fd;
+      --msg-doctor-txt: #1e3a5f;
+      --msg-patient-bg: #2979cc;
+      --msg-patient-txt:#ffffff;
+      --shadow-card:    0 2px 16px rgba(26,95,168,0.09);
+      --radius-card:    16px;
+      --radius-msg:     14px;
+      --radius-input:   12px;
+      --font-heading:   'Sora', sans-serif;
+      --font-body:      'DM Sans', sans-serif;
+    }
+
+    /* ── Message Page Layout ─────────────────────
+       Fits inside .page-content from portal.css    */
+
+    /* Page header */
+    .msg-page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      gap: 16px;
+    }
+
+    .msg-header-left {}
+
+    .msg-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--grey-400);
+      margin-bottom: 6px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .msg-breadcrumb span { color: var(--blue-mid); }
+
+    .msg-page-title {
+      font-family: var(--font-heading);
+      font-size: clamp(20px, 2.2vw, 28px);
+      font-weight: 700;
+      color: var(--grey-800);
+      letter-spacing: -0.4px;
+      line-height: 1.2;
+    }
+
+    .msg-page-title span { color: var(--blue-mid); }
+
+    .msg-page-subtitle {
+      margin-top: 5px;
+      font-size: 13px;
+      color: var(--grey-600);
+      font-weight: 400;
+    }
+
+    .msg-header-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--blue-light);
+      color: var(--blue-mid);
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .msg-header-badge .active-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--teal-msg);
+      animation: activePulse 2s infinite;
+    }
+
+    @keyframes activePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(1.35); }
+    }
+
+    /* ── Content Grid ────────────────────────────── */
+    .msg-content-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    /* ── Left Panel ──────────────────────────────── */
+    .msg-panel-left {
+      position: sticky;
+      top: calc(var(--topbar-h) + 16px);
+    }
+
+    .msg-card {
+      background: #ffffff;
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--grey-200);
+      overflow: hidden;
+    }
+
+    .msg-card-header {
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid var(--grey-200);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .msg-card-header-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: var(--blue-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--blue-mid);
+      font-size: 1rem;
+    }
+
+    .msg-card-header-text h3 {
+      font-family: var(--font-heading);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--grey-800);
+    }
+
+    .msg-card-header-text p {
+      font-size: 11.5px;
+      color: var(--grey-400);
+      margin-top: 2px;
+    }
+
+    .msg-card-body {
+      padding: 20px 20px 22px;
+    }
+
+    /* Doctor Dropdown */
+    .field-group { margin-bottom: 18px; }
+
+    .field-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--grey-600);
+      margin-bottom: 8px;
+    }
+
+    .select-wrapper { position: relative; }
+
+    .select-wrapper select {
+      width: 100%;
+      appearance: none;
+      background: var(--grey-100);
+      border: 1.5px solid var(--grey-200);
+      border-radius: var(--radius-input);
+      padding: 11px 38px 11px 13px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--grey-800);
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .select-wrapper select:focus {
+      border-color: var(--blue-accent);
+      box-shadow: 0 0 0 3px rgba(79,163,232,0.15);
+      background: #fff;
+    }
+
+    .select-arrow {
+      position: absolute;
+      right: 13px; top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--grey-400);
+      font-size: 0.75rem;
+    }
+
+    /* Doctor Info Card */
+    .doctor-info-card {
+      background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-mid) 100%);
+      border-radius: 12px;
+      padding: 16px;
+      color: white;
+      display: none;
+      animation: slideInUp 0.3s ease;
+    }
+
+    @keyframes slideInUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .doctor-info-card.visible { display: block; }
+
+    .dr-card-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .dr-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-heading);
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    .dr-name {
+      font-family: var(--font-heading);
+      font-size: 14.5px;
+      font-weight: 700;
+    }
+
+    .dr-spec {
+      font-size: 11.5px;
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+
+    .dr-card-divider {
+      height: 1px;
+      background: rgba(255,255,255,0.18);
+      margin-bottom: 12px;
+    }
+
+    .dr-meta { display: flex; flex-direction: column; gap: 6px; }
+
+    .dr-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      opacity: 0.88;
+    }
+
+    .dr-meta-row i { font-size: 0.7rem; opacity: 0.75; flex-shrink: 0; width: 12px; text-align: center; }
+
+    /* Appointment quick-list */
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--grey-200);
+      margin: 18px 0 16px;
+    }
+
+    .appointments-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--grey-400);
+      margin-bottom: 11px;
+    }
+
+    .appointment-list { display: flex; flex-direction: column; gap: 7px; }
+
+    .appt-list-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 11px;
+      border-radius: 10px;
+      border: 1.5px solid var(--grey-200);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .appt-list-item:hover {
+      border-color: var(--blue-accent);
+      background: var(--blue-light);
+    }
+
+    .appt-list-item.active {
+      border-color: var(--blue-mid);
+      background: var(--blue-light);
+    }
+
+    .appt-color-dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .appt-list-info { flex: 1; min-width: 0; }
+
+    .appt-list-name {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--grey-800);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .appt-list-spec {
+      font-size: 10.5px;
+      color: var(--grey-400);
+      margin-top: 1px;
+    }
+
+    .appt-list-date {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--blue-mid);
+      background: var(--blue-light);
+      padding: 2px 7px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    /* ── Right Panel: Chat ───────────────────────── */
+    .msg-panel-right {}
+
+    .chat-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    /* Chat Topbar */
+    .chat-topbar {
+      padding: 15px 22px;
+      border-bottom: 1px solid var(--grey-200);
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .chat-topbar-avatar {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-heading);
+      font-size: 15px; font-weight: 700;
+      color: white; flex-shrink: 0;
+    }
+
+    .chat-topbar-info { flex: 1; min-width: 0; }
+
+    .chat-topbar-name {
+      font-family: var(--font-heading);
+      font-size: 14.5px; font-weight: 700;
+      color: var(--grey-800);
+    }
+
+    .chat-topbar-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      color: var(--grey-400);
+      margin-top: 2px;
+    }
+
+    .chat-status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--teal-msg);
+    }
+
+    .chat-topbar-appt {
+      font-size: 11.5px; font-weight: 500;
+      color: var(--blue-mid);
+      background: var(--blue-light);
+      padding: 5px 12px;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chat-topbar-appt i { font-size: 0.65rem; }
+
+    /* Empty state */
+    .chat-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 72px 28px;
+      gap: 14px;
+    }
+
+    .empty-icon {
+      width: 76px; height: 76px;
+      background: var(--blue-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: var(--blue-accent);
+    }
+
+    .empty-title {
+      font-family: var(--font-heading);
+      font-size: 17px; font-weight: 700;
+      color: var(--grey-800);
+    }
+
+    .empty-sub {
+      font-size: 13px;
+      color: var(--grey-400);
+      text-align: center;
+      max-width: 270px;
+      line-height: 1.6;
+    }
+
+    /* Messages area */
+    .chat-messages {
+      height: 430px;
+      overflow-y: auto;
+      padding: 22px 22px 12px;
+      background: #f7f9fc;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      scroll-behavior: smooth;
+    }
+
+    .chat-messages::-webkit-scrollbar { width: 4px; }
+    .chat-messages::-webkit-scrollbar-track { background: transparent; }
+    .chat-messages::-webkit-scrollbar-thumb { background: var(--grey-200); border-radius: 10px; }
+
+    /* Date separator */
+    .date-sep {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--grey-400);
+      font-size: 10.5px; font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .date-sep::before, .date-sep::after {
+      content: ''; flex: 1; height: 1px;
+      background: var(--grey-200);
+    }
+
+    /* Message bubble row */
+    .msg-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      animation: msgAppear 0.25s ease;
+    }
+
+    @keyframes msgAppear {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg-row.doctor  { justify-content: flex-start; }
+    .msg-row.patient { justify-content: flex-end; }
+
+    .msg-avatar-sm {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-heading);
+      font-size: 10.5px; font-weight: 700;
+      color: white; flex-shrink: 0;
+    }
+
+    .msg-bubble-wrap { max-width: 68%; display: flex; flex-direction: column; gap: 3px; }
+    .msg-row.patient .msg-bubble-wrap { align-items: flex-end; }
+
+    .msg-sender {
+      font-size: 10.5px; font-weight: 600;
+      color: var(--grey-400);
+      padding: 0 4px;
+    }
+
+    .msg-bubble {
+      padding: 10px 14px;
+      border-radius: var(--radius-msg);
+      font-size: 13px; line-height: 1.55;
+      word-break: break-word;
+    }
+
+    .msg-row.doctor .msg-bubble {
+      background: var(--msg-doctor-bg);
+      color: var(--msg-doctor-txt);
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 1px 4px rgba(26,95,168,0.07);
+    }
+
+    .msg-row.patient .msg-bubble {
+      background: var(--msg-patient-bg);
+      color: var(--msg-patient-txt);
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 2px 8px rgba(41,121,204,0.28);
+    }
+
+    .msg-time {
+      font-size: 10px; color: var(--grey-400);
+      padding: 0 4px;
+    }
+
+    /* Chat Input Footer */
+    .chat-footer {
+      padding: 14px 18px;
+      border-top: 1px solid var(--grey-200);
+      background: #fff;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      background: var(--grey-100);
+      border: 1.5px solid var(--grey-200);
+      border-radius: 14px;
+      padding: 9px 9px 9px 15px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-row:focus-within {
+      border-color: var(--blue-accent);
+      box-shadow: 0 0 0 3px rgba(79,163,232,0.12);
+      background: #fff;
+    }
+
+    .msg-input {
+      flex: 1; border: none; background: transparent; outline: none;
+      font-family: var(--font-body);
+      font-size: 13px; color: var(--grey-800);
+      resize: none; max-height: 100px; line-height: 1.5;
+    }
+
+    .msg-input::placeholder { color: var(--grey-400); }
+    .msg-input:disabled { cursor: not-allowed; opacity: 0.5; }
+
+    .send-btn {
+      width: 38px; height: 38px;
+      border-radius: 10px; border: none;
+      background: var(--blue-mid); color: white;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.2s, transform 0.15s;
+      font-size: 0.95rem;
+    }
+
+    .send-btn:hover:not(:disabled) { background: var(--blue-deep); transform: scale(1.05); }
+    .send-btn:active:not(:disabled) { transform: scale(0.96); }
+    .send-btn:disabled { background: var(--grey-200); color: var(--grey-400); cursor: not-allowed; }
+
+    .footer-hint {
+      font-size: 10.5px;
+      color: var(--grey-400);
+      margin-top: 7px;
+      text-align: center;
+    }
+
+    /* ── Responsive ──────────────────────────────── */
+    @media (max-width: 1080px) {
+      .msg-content-grid { grid-template-columns: 280px 1fr; }
+    }
+
+    @media (max-width: 860px) {
+      .msg-content-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .msg-panel-left { position: static; }
+      .chat-messages  { height: 340px; }
+    }
+
+    @media (max-width: 600px) {
+      .msg-page-header { flex-direction: column; gap: 10px; }
+      .msg-header-badge { align-self: flex-start; }
+      .chat-messages { height: 290px; }
+      .msg-bubble-wrap { max-width: 86%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ========================== PORTAL LAYOUT ========================== -->
+<div class="portal-wrap">
+  <!-- Sidebar: injected by portal.js -->
+  <aside class="sidebar"></aside>
+  <div class="sidebar-overlay"></div>
+
+  <!-- Main area -->
+  <div class="main-area">
+    <!-- Topbar: injected by portal.js -->
+    <div class="topbar"></div>
+
+    <!-- Page content -->
+    <div class="page-content">
+
+      <!-- Page Header -->
+      <div class="msg-page-header anim-fade-up">
+        <div class="msg-header-left">
+          <div class="msg-breadcrumb">
+            Patient Portal
+            <i class="fas fa-chevron-right" style="font-size:8px"></i>
+            <span>Message to Doctor</span>
+          </div>
+          <h1 class="msg-page-title">Message <span>Doctor</span></h1>
+          <p class="msg-page-subtitle">Communicate securely with your doctor regarding your appointment</p>
+        </div>
+        <div class="msg-header-badge">
+          <div class="active-dot"></div>
+          Secure Messaging
+        </div>
+      </div>
+
+      <!-- Main Grid -->
+      <div class="msg-content-grid">
+
+        <!-- ── LEFT PANEL ─────────────────────────── -->
+        <div class="msg-panel-left">
+          <div class="msg-card">
+
+            <div class="msg-card-header">
+              <div class="msg-card-header-icon">
+                <i class="fas fa-stethoscope"></i>
+              </div>
+              <div class="msg-card-header-text">
+                <h3>Select Doctor</h3>
+                <p>From your booked appointments</p>
+              </div>
+            </div>
+
+            <div class="msg-card-body">
+
+              <!-- Dropdown -->
+              <div class="field-group">
+                <label class="field-label" for="doctorSelect">Choose Doctor</label>
+                <div class="select-wrapper">
+                  <select id="doctorSelect" onchange="selectDoctor(this.value)">
+                    <option value="">— Select a doctor —</option>
+                    <!-- Populated by JS -->
+                  </select>
+                  <i class="fas fa-chevron-down select-arrow"></i>
+                </div>
+              </div>
+
+              <!-- Doctor Detail Card -->
+              <div class="doctor-info-card" id="doctorCard">
+                <div class="dr-card-top">
+                  <div class="dr-avatar" id="dcAvatar"></div>
+                  <div>
+                    <div class="dr-name" id="dcName"></div>
+                    <div class="dr-spec" id="dcSpec"></div>
+                  </div>
+                </div>
+                <div class="dr-card-divider"></div>
+                <div class="dr-meta">
+                  <div class="dr-meta-row">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="dcDate"></span>
+                  </div>
+                  <div class="dr-meta-row">
+                    <i class="fas fa-clock"></i>
+                    <span id="dcTime"></span>
+                  </div>
+                  <div class="dr-meta-row">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="dcRoom"></span>
+                  </div>
+                </div>
+              </div>
+
+              <hr class="section-divider">
+
+              <!-- Appointment quick-list -->
+              <div class="appointments-label">Your Appointments</div>
+              <div class="appointment-list" id="appointmentList">
+                <!-- Rendered by JS -->
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ── RIGHT PANEL ────────────────────────── -->
+        <div class="msg-panel-right">
+          <div class="msg-card chat-card">
+
+            <!-- Chat Topbar -->
+            <div class="chat-topbar" id="chatTopbar" style="display:none;">
+              <div class="chat-topbar-avatar" id="ctAvatar"></div>
+              <div class="chat-topbar-info">
+                <div class="chat-topbar-name" id="ctName"></div>
+                <div class="chat-topbar-status">
+                  <div class="chat-status-dot"></div>
+                  <span id="ctSpec"></span>
+                </div>
+              </div>
+              <div class="chat-topbar-appt">
+                <i class="fas fa-calendar"></i>
+                <span id="ctDate"></span>
+              </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="chat-empty" id="chatEmpty">
+              <div class="empty-icon">
+                <i class="fas fa-comment-medical"></i>
+              </div>
+              <div class="empty-title">No Conversation Selected</div>
+              <p class="empty-sub">Select a doctor from your booked appointments on the left to start messaging.</p>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="chat-messages" id="chatMessages" style="display:none;"></div>
+
+            <!-- Chat Footer / Input -->
+            <div class="chat-footer">
+              <div class="input-row">
+                <textarea
+                  class="msg-input"
+                  id="msgInput"
+                  rows="1"
+                  placeholder="Select a doctor to start messaging…"
+                  disabled
+                  onkeydown="handleKey(event)"
+                  oninput="autoResize(this)"
+                ></textarea>
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled title="Send Message">
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+              </div>
+              <p class="footer-hint" id="footerHint">Select a doctor from your booked appointments to enable messaging.</p>
+            </div>
+
+          </div>
+        </div>
+
+      </div><!-- /msg-content-grid -->
+    </div><!-- /page-content -->
+  </div><!-- /main-area -->
+</div><!-- /portal-wrap -->
+
+
+<!-- Portal shared JS (handles auth + sidebar + topbar injection) -->
+<script src="/medivita/assets/js/portal.js"></script>
+
+<script>
+let appointmentsData = [];
+
+/* ── STATE ──────────────────────────────────────────── */
+let selectedDoctorId = null;
+const runtimeMessages = {};
+
+/* ── INIT ────────────────────────────────────────────── */
+async function initMessaging(user) {
+  try {
+    window.currentUser = user;
+    const pId = window.currentUser._id || window.currentUser.id;
+    const res = await fetch(`/medivita/backend/patient/get_doctors_for_patient.php?patientId=${pId}`);
+    appointmentsData = await res.json();
+    populateDropdown();
+    renderAppointmentList();
+  } catch(e) { console.error('Error fetching doctors:', e); }
+}
+
+function populateDropdown() {
+  const sel = document.getElementById('doctorSelect');
+  sel.innerHTML = '';
+  if (appointmentsData.length === 0) {
+    const opt = document.createElement('option');
+    opt.value = "";
+    opt.textContent = "No doctors available. Please book an appointment first.";
+    sel.appendChild(opt);
+    sel.disabled = true;
+    return;
+  }
+  sel.disabled = false;
+  const defOpt = document.createElement('option');
+  defOpt.value = "";
+  defOpt.textContent = "— Select a doctor —";
+  sel.appendChild(defOpt);
+  
+  appointmentsData.forEach(doc => {
+    const opt = document.createElement('option');
+    opt.value = doc.id;
+    opt.textContent = `${doc.doctorName} — ${doc.specialization}`;
+    sel.appendChild(opt);
+  });
+}
+
+function renderAppointmentList() {
+  const list = document.getElementById('appointmentList');
+  list.innerHTML = '';
+  if (appointmentsData.length === 0) {
+    list.innerHTML = '<div style="font-size:12px;color:var(--grey-600);padding:10px;">No upcoming or past appointments found. Please book an appointment first.</div>';
+    return;
+  }
+  appointmentsData.forEach(doc => {
+    const item = document.createElement('div');
+    item.className = 'appt-list-item';
+    item.id = `appt-${doc.id}`;
+    item.onclick = () => {
+      document.getElementById('doctorSelect').value = doc.id;
+      selectDoctor(doc.id);
+    };
+    item.innerHTML = `
+      <div class="appt-color-dot" style="background:${doc.color}"></div>
+      <div class="appt-list-info">
+        <div class="appt-list-name">${doc.doctorName}</div>
+        <div class="appt-list-spec">${doc.specialization}</div>
+      </div>
+      <div class="appt-list-date">${doc.appointmentDate}</div>
+    `;
+    list.appendChild(item);
+  });
+}
+
+/* ── SELECT DOCTOR ──────────────────────────────────── */
+function selectDoctor(id) {
+  selectedDoctorId = id || null;
+
+  document.querySelectorAll('.appt-list-item').forEach(el => el.classList.remove('active'));
+
+  if (!id) {
+    showEmptyState();
+    hideDoctorCard();
+    return;
+  }
+
+  const doc = appointmentsData.find(d => d.id === id);
+  if (!doc) return;
+
+  const apptEl = document.getElementById(`appt-${id}`);
+  if (apptEl) apptEl.classList.add('active');
+
+  showDoctorCard(doc);
+  showChatTopbar(doc);
+  loadConversation(doc);
+  enableInput(doc);
+}
+
+function showDoctorCard(doc) {
+  const card = document.getElementById('doctorCard');
+  const av   = document.getElementById('dcAvatar');
+  av.textContent          = doc.initials;
+  av.style.background     = doc.color + '33';
+  av.style.color          = doc.color;
+  av.style.border         = `2px solid ${doc.color}55`;
+  document.getElementById('dcName').textContent = doc.doctorName;
+  document.getElementById('dcSpec').textContent = doc.specialization;
+  document.getElementById('dcDate').textContent = `Appointment: ${doc.appointmentDate}`;
+  document.getElementById('dcTime').textContent = doc.appointmentTime;
+  document.getElementById('dcRoom').textContent = doc.room;
+  card.classList.add('visible');
+}
+
+function hideDoctorCard() {
+  document.getElementById('doctorCard').classList.remove('visible');
+}
+
+function showChatTopbar(doc) {
+  const av = document.getElementById('ctAvatar');
+  av.textContent    = doc.initials;
+  av.style.background = `linear-gradient(135deg, ${doc.color}, ${doc.color}cc)`;
+  document.getElementById('ctName').textContent = doc.doctorName;
+  document.getElementById('ctSpec').textContent = doc.specialization;
+  document.getElementById('ctDate').textContent = `Appt: ${doc.appointmentDate}`;
+  document.getElementById('chatTopbar').style.display = 'flex';
+}
+
+/* ── LOAD CONVERSATION ──────────────────────────────── */
+async function loadConversation(doc) {
+  const pId = window.currentUser._id || window.currentUser.id;
+  try {
+    const res = await fetch(`/medivita/backend/doctor/get_patient_messages.php?patientId=${pId}&doctorId=${doc.id}`);
+    const msgs = await res.json();
+    runtimeMessages[doc.id] = msgs;
+  } catch(e) { 
+    console.error('Error loading messages:', e);
+    runtimeMessages[doc.id] = [];
+  }
+
+  const chatContainer = document.getElementById('chatMessages');
+  const emptyEl       = document.getElementById('chatEmpty');
+
+  emptyEl.style.display      = 'none';
+  chatContainer.style.display = 'flex';
+  chatContainer.innerHTML     = '';
+
+  const dateStr = 'Conversation History';
+  const sep     = document.createElement('div');
+  sep.className = 'date-sep';
+  sep.textContent = dateStr;
+  chatContainer.appendChild(sep);
+
+  if (runtimeMessages[doc.id] && runtimeMessages[doc.id].length > 0) {
+    runtimeMessages[doc.id].forEach(msg => {
+      appendBubble(msg, doc, chatContainer);
+    });
+  }
+
+  scrollChat();
+}
+
+function showEmptyState() {
+  document.getElementById('chatEmpty').style.display    = 'flex';
+  document.getElementById('chatMessages').style.display = 'none';
+  document.getElementById('chatTopbar').style.display   = 'none';
+  disableInput();
+}
+
+/* ── MESSAGES ───────────────────────────────────────── */
+function appendBubble(msg, doc, container) {
+  const row      = document.createElement('div');
+  row.className  = `msg-row ${msg.sender}`;
+  const isDoctor = msg.sender === 'doctor';
+  const initials = isDoctor ? doc.initials : 'Me';
+  const avatarBg = isDoctor
+    ? `background:linear-gradient(135deg,${doc.color},${doc.color}bb)`
+    : `background:linear-gradient(135deg,#1a5fa8,#2979cc)`;
+  const senderLabel = isDoctor ? doc.doctorName.split(' ').slice(0, 2).join(' ') : 'You';
+
+  row.innerHTML = `
+    ${isDoctor ? `<div class="msg-avatar-sm" style="${avatarBg}">${initials}</div>` : ''}
+    <div class="msg-bubble-wrap">
+      <span class="msg-sender">${senderLabel}</span>
+      <div class="msg-bubble">${escapeHTML(msg.text)}</div>
+      <span class="msg-time">${msg.time}</span>
+    </div>
+    ${!isDoctor ? `<div class="msg-avatar-sm" style="${avatarBg}">${initials}</div>` : ''}
+  `;
+  container.appendChild(row);
+}
+
+function sendMessage() {
+  const input = document.getElementById('msgInput');
+  const text  = input.value.trim();
+  if (!text || !selectedDoctorId) return;
+
+  const doc  = appointmentsData.find(d => d.id === selectedDoctorId);
+  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const newMsg = { sender: 'patient', text, time };
+
+  if (!runtimeMessages[selectedDoctorId]) runtimeMessages[selectedDoctorId] = [];
+  runtimeMessages[selectedDoctorId].push(newMsg);
+
+  const container = document.getElementById('chatMessages');
+  appendBubble(newMsg, doc, container);
+
+  input.value        = '';
+  input.style.height = 'auto';
+  scrollChat();
+
+  const pId = window.currentUser._id || window.currentUser.id;
+  
+  fetch('/medivita/backend/doctor/send_message.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      patientId: pId,
+      doctorId: selectedDoctorId,
+      message: text
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (!data.success) console.error('API Error:', data.error);
+  })
+  .catch(e => console.error('Fetch error:', e));
+}
+
+function scrollChat() {
+  const c = document.getElementById('chatMessages');
+  setTimeout(() => { c.scrollTop = c.scrollHeight; }, 50);
+}
+
+/* ── INPUT HELPERS ──────────────────────────────────── */
+function enableInput(doc) {
+  const input   = document.getElementById('msgInput');
+  const sendBtn = document.getElementById('sendBtn');
+  input.disabled   = false;
+  sendBtn.disabled = false;
+  input.placeholder = `Message ${doc.doctorName.split(' ')[0]}…`;
+  document.getElementById('footerHint').textContent = 'Press Enter to send • Shift+Enter for new line';
+}
+
+function disableInput() {
+  const input   = document.getElementById('msgInput');
+  const sendBtn = document.getElementById('sendBtn');
+  input.disabled   = true;
+  sendBtn.disabled = true;
+  input.placeholder = 'Select a doctor to start messaging…';
+  document.getElementById('footerHint').textContent = 'Select a doctor from your booked appointments to enable messaging.';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
+function escapeHTML(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/* ── BOOTSTRAP ──────────────────────────────────────── */
+// Use portal.js initPortal to: check auth, inject sidebar (with
+// 'message-to-doctor' as the active item), inject topbar, then init messaging.
+initPortal('message-to-doctor', 'Message to Doctor', 'Communicate securely with your doctor')
+  .then(user => {
+    if (user) {
+      initMessaging(user);
+    }
+  });
+</script>
+
+</body>
+</html>

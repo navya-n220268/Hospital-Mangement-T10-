@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Book Appointment — MediVita</title>
+<meta name="description" content="Book an appointment with a specialist doctor at MediVita Hospital."/>
+<link rel="stylesheet" href="/medivita/assets/css/portal.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+/* ── Steps bar ── */
+.steps-bar {
+  display: flex; gap: 0; margin-bottom: 28px;
+  background: white; border-radius: var(--radius-lg); padding: 18px 24px;
+  border: 1px solid var(--gray-200); align-items: center;
+}
+.step { display: flex; align-items: center; gap: 10px; flex: 1; }
+.step-num {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .8rem; font-weight: 700; border: 2px solid var(--gray-300);
+  color: var(--gray-500); transition: var(--transition);
+}
+.step.active .step-num { background: var(--blue-600); border-color: var(--blue-600); color: white; }
+.step.done   .step-num { background: var(--green-500); border-color: var(--green-500); color: white; }
+.step-text { font-size: .78rem; }
+.step-text p { font-weight: 600; color: var(--gray-900); }
+.step-text span { color: var(--gray-400); }
+.step-connector { flex: 0.2; height: 2px; background: var(--gray-200); margin: 0 6px; }
+.step.done  + .step-connector { background: var(--green-400); }
+.step.active + .step-connector { background: var(--blue-200); }
+
+/* ── Doctor cards ── */
+.doctor-option {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px; border: 2px solid var(--gray-200);
+  border-radius: var(--radius); cursor: pointer; transition: var(--transition);
+  background: white;
+}
+.doctor-option:hover  { border-color: var(--blue-400); background: var(--blue-50); }
+.doctor-option.selected { border-color: var(--blue-600); background: var(--blue-50); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+.doc-opt-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .88rem; font-weight: 700; color: white; flex-shrink: 0;
+}
+.doc-opt-info { flex: 1; min-width: 0; }
+.doc-opt-info h4  { font-size: .88rem; font-weight: 700; color: var(--gray-900); }
+.doc-opt-info p   { font-size: .75rem; color: var(--gray-500); }
+.doc-opt-info .stars { color: #f59e0b; font-size: .7rem; margin-top: 2px; }
+.doc-opt-right    { text-align: right; flex-shrink: 0; }
+.doc-opt-right p  { font-size: .78rem; font-weight: 600; color: var(--green-600); }
+.doc-opt-right span { font-size: .7rem; color: var(--gray-400); }
+.doc-opt-radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--gray-300); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+.doctor-option.selected .doc-opt-radio { border-color: var(--blue-600); background: var(--blue-600); }
+.doctor-option.selected .doc-opt-radio::after { content: ''; width: 7px; height: 7px; background: white; border-radius: 50%; display: block; }
+
+/* ── Time slots ── */
+.slots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); gap: 10px; }
+.time-slot {
+  padding: 11px 8px; text-align: center;
+  border: 2px solid var(--gray-200); border-radius: var(--radius-sm);
+  font-size: .8rem; font-weight: 600; color: var(--gray-700);
+  cursor: pointer; transition: var(--transition); background: white;
+}
+.time-slot:hover   { border-color: var(--blue-400); color: var(--blue-600); background: var(--blue-50); }
+.time-slot.selected { border-color: var(--blue-600); background: var(--blue-600); color: white; }
+.time-slot.booked  { background: var(--gray-100); color: var(--gray-300); cursor: not-allowed; border-color: var(--gray-100); text-decoration: line-through; }
+
+/* ── Summary card ── */
+.summary-card {
+  background: linear-gradient(135deg, var(--blue-50), #f0f9ff);
+  border: 1.5px solid var(--blue-200); border-radius: var(--radius-xl);
+  padding: 24px;
+}
+.summary-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--blue-100); font-size: .84rem; }
+.summary-row:last-child { border-bottom: none; }
+.summary-row span   { color: var(--gray-500); font-weight: 500; }
+.summary-row strong { color: var(--gray-900); font-weight: 700; }
+
+/* ── Confirm modal ── */
+.confirm-overlay {
+  display: none; position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,.5); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center;
+}
+.confirm-overlay.show { display: flex; }
+.confirm-modal {
+  background: white; border-radius: var(--radius-xl); padding: 40px;
+  max-width: 420px; width: 90%; text-align: center;
+  animation: bounceIn .35s var(--ease-bounce);
+  box-shadow: var(--shadow-xl);
+}
+
+/* ── Loading / empty states ── */
+.dept-skeleton { display: flex; flex-direction: column; gap: 8px; }
+.skel { background: var(--gray-100); border-radius: 8px; height: 40px; animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
+
+.empty-hint { font-size:.84rem; color:var(--gray-400); text-align:center; padding:16px; }
+
+/* ── Spinner ── */
+.spinner-inline { display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,.4); border-top-color:white; border-radius:50%; animation:spin .6s linear infinite; }
+@keyframes spin { to{ transform:rotate(360deg) } }
+</style>
+</head>
+<body>
+<div class="portal-wrap">
+  <aside class="sidebar"></aside>
+  <div class="sidebar-overlay"></div>
+  <div class="main-area">
+    <div class="topbar"></div>
+    <div class="page-content">
+
+      <!-- Steps -->
+      <div class="steps-bar anim-fade-up">
+        <div class="step active" id="s1">
+          <div class="step-num">1</div>
+          <div class="step-text"><p>Department</p><span>Choose specialty</span></div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step" id="s2">
+          <div class="step-num">2</div>
+          <div class="step-text"><p>Doctor</p><span>Select doctor</span></div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step" id="s3">
+          <div class="step-num">3</div>
+          <div class="step-text"><p>Date &amp; Time</p><span>Pick slot</span></div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step" id="s4">
+          <div class="step-num">4</div>
+          <div class="step-text"><p>Confirm</p><span>Book appointment</span></div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="align-items:start;gap:24px">
+
+        <!-- Left: Form Steps -->
+        <div style="display:flex;flex-direction:column;gap:20px">
+
+          <!-- Step 1: Department -->
+          <div class="card anim-fade-up d1" id="step1Card">
+            <div class="card-header"><h3><i class="fas fa-hospital-alt"></i> Step 1 — Select Department</h3></div>
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label">Department / Specialty</label>
+                <select class="form-control" id="deptSelect" onchange="onDeptChange(this.value)">
+                  <option value="">— Loading departments… —</option>
+                </select>
+                <p id="deptError" style="font-size:.76rem;color:var(--red-600);margin-top:6px;display:none">
+                  <i class="fas fa-exclamation-circle"></i> Failed to load departments. <a href="javascript:loadDepartments()" style="color:var(--blue-600)">Retry</a>
+                </p>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Appointment Type</label>
+                <select class="form-control" id="apptType" onchange="updateSummary()">
+                  <option value="consultation">New Consultation</option>
+                  <option value="followup">Follow-up Visit</option>
+                  <option value="emergency">Urgent / Emergency</option>
+                  <option value="teleconsult">Teleconsultation</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Reason for Visit <span style="color:var(--gray-400);font-size:.72rem">(optional)</span></label>
+                <textarea class="form-control" id="apptReason" rows="3" placeholder="Briefly describe your symptoms or reason for visit…" style="resize:vertical"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Doctor -->
+          <div class="card anim-fade-up d2" id="step2Card">
+            <div class="card-header"><h3><i class="fas fa-user-md"></i> Step 2 — Select Doctor</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:10px" id="doctorList">
+                <p class="empty-hint"><i class="fas fa-arrow-up" style="margin-right:6px"></i>Please select a department first</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Date & Time -->
+          <div class="card anim-fade-up d3" id="step3Card">
+            <div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Step 3 — Choose Date &amp; Time</h3></div>
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label">Select Date</label>
+                <input type="date" class="form-control" id="apptDate" onchange="onDateChange()"/>
+              </div>
+              <div id="slotsSection" style="display:none">
+                <label class="form-label">Available Time Slots</label>
+                <div class="slots-grid" id="slotsGrid"></div>
+                <div style="display:flex;gap:16px;margin-top:14px;font-size:.75rem;color:var(--gray-500)">
+                  <span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:var(--blue-600);display:inline-block"></span>Selected</span>
+                  <span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;border:2px solid var(--gray-200);display:inline-block"></span>Available</span>
+                  <span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:var(--gray-100);display:inline-block"></span>Booked</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end left -->
+
+        <!-- Right: Summary + Confirm -->
+        <div style="display:flex;flex-direction:column;gap:20px">
+
+          <div class="card anim-fade-up d2">
+            <div class="card-header"><h3><i class="fas fa-clipboard-check"></i> Appointment Summary</h3></div>
+            <div class="card-body">
+              <div class="summary-card">
+                <div class="summary-row"><span>Patient Name</span><strong id="sumPatient">—</strong></div>
+                <div class="summary-row"><span>Department</span><strong id="sumDept">—</strong></div>
+                <div class="summary-row"><span>Doctor</span><strong id="sumDoc">—</strong></div>
+                <div class="summary-row"><span>Date</span><strong id="sumDate">—</strong></div>
+                <div class="summary-row"><span>Time</span><strong id="sumTime">—</strong></div>
+                <div class="summary-row"><span>Type</span><strong id="sumType">New Consultation</strong></div>
+              </div>
+              <div style="margin-top:20px">
+                <button class="btn btn-primary" id="confirmBtn" style="width:100%;justify-content:center;padding:14px" onclick="confirmBooking()">
+                  <i class="fas fa-check-circle"></i> Confirm Appointment
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Info card -->
+          <div class="card anim-fade-up d3">
+            <div class="card-header"><h3><i class="fas fa-info-circle"></i> Booking Policy</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;gap:10px"><i class="fas fa-check" style="color:var(--green-500);flex-shrink:0;margin-top:3px"></i><p style="font-size:.8rem;color:var(--gray-700)">Free cancellation up to 4 hours before appointment</p></div>
+                <div style="display:flex;gap:10px"><i class="fas fa-check" style="color:var(--green-500);flex-shrink:0;margin-top:3px"></i><p style="font-size:.8rem;color:var(--gray-700)">Arrive 15 minutes before your scheduled time</p></div>
+                <div style="display:flex;gap:10px"><i class="fas fa-check" style="color:var(--green-500);flex-shrink:0;margin-top:3px"></i><p style="font-size:.8rem;color:var(--gray-700)">Bring your MediVita patient ID card and insurance documents</p></div>
+                <div style="display:flex;gap:10px"><i class="fas fa-bell" style="color:var(--blue-500);flex-shrink:0;margin-top:3px"></i><p style="font-size:.8rem;color:var(--gray-700)">SMS and email reminders will be sent 24 hours prior</p></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Success Modal -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-modal">
+    <div style="width:72px;height:72px;background:var(--green-50);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:1.8rem;color:var(--green-500);">
+      <i class="fas fa-check-circle"></i>
+    </div>
+    <h3 style="font-size:1.15rem;font-weight:800;color:var(--gray-900);margin-bottom:8px">Appointment Booked!</h3>
+    <p style="font-size:.85rem;color:var(--gray-500);line-height:1.7;margin-bottom:6px" id="confirmMsg">Your appointment has been successfully booked.</p>
+    <p style="font-size:.78rem;color:var(--gray-400);margin-bottom:24px">Status is <strong>Pending</strong> — approval notification will be sent shortly.</p>
+    <div style="display:flex;gap:12px;justify-content:center">
+      <a href="/medivita/frontend/patient/my-appointments.html" class="btn btn-primary"><i class="fas fa-calendar"></i> View Appointments</a>
+      <button onclick="resetForm()" class="btn btn-secondary">Book Another</button>
+    </div>
+  </div>
+</div>
+
+<script src="/medivita/assets/js/portal.js"></script>
+<script>
+/* =============================================
+   BOOK APPOINTMENT — DYNAMIC BACKEND LOGIC
+   ============================================= */
+
+let currentUser   = null;   // logged-in patient data
+let selDoctorId   = '';     // selected doctor _id (MongoDB)
+let selDoctorName = '';     // selected doctor display name
+let selDept       = '';     // selected department label
+let selSlot       = '';     // selected time slot string
+
+// Standard time slots offered
+const allSlots = [
+  '08:00 AM','08:30 AM','09:00 AM','09:30 AM',
+  '10:00 AM','10:30 AM','11:00 AM','11:30 AM',
+  '02:00 PM','02:30 PM','03:00 PM','03:30 PM',
+  '04:00 PM','04:30 PM','05:00 PM'
+];
+
+// Gradient palette for avatars (cycles through)
+const avatarGradients = [
+  'linear-gradient(135deg,#667eea,#764ba2)',
+  'linear-gradient(135deg,#f093fb,#f5576c)',
+  'linear-gradient(135deg,#4facfe,#00f2fe)',
+  'linear-gradient(135deg,#43e97b,#38f9d7)',
+  'linear-gradient(135deg,#fa709a,#fee140)',
+  'linear-gradient(135deg,#a18cd1,#fbc2eb)',
+  'linear-gradient(135deg,#fccb90,#d57eeb)',
+  'linear-gradient(135deg,#30cfd0,#330867)',
+];
+
+// ── Initialise portal ──────────────────────────────────────────────────────
+async function initBooking(user) {
+  currentUser = user;
+
+  // Show patient name in summary
+  document.getElementById('sumPatient').textContent = currentUser.name || '—';
+
+  // Set min date to today
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('apptDate').setAttribute('min', today);
+
+  // Load departments from backend
+  await loadDepartments();
+
+  // Check for department in URL (from symptom checker)
+  const params = new URLSearchParams(window.location.search);
+  const urlDept = params.get('department');
+  if (urlDept) {
+    const sel = document.getElementById('deptSelect');
+    // Ensure the department exists in the list
+    for (let opt of sel.options) {
+      if (opt.value.toLowerCase() === urlDept.toLowerCase()) {
+        sel.value = opt.value;
+        onDeptChange(opt.value);
+        break;
+      }
+    }
+  }
+}
+
+// ── Load departments dynamically ───────────────────────────────────────────
+async function loadDepartments() {
+  const sel  = document.getElementById('deptSelect');
+  const err  = document.getElementById('deptError');
+  sel.innerHTML = '<option value="">— Loading departments… —</option>';
+  sel.disabled = true;
+  err.style.display = 'none';
+
+  try {
+    const res  = await fetch('/medivita/backend/shared/get_departments.php');
+    const data = await res.json();
+
+    if (!data.success || !data.departments || data.departments.length === 0) {
+      throw new Error('No departments found');
+    }
+
+    sel.innerHTML = '<option value="">— Choose a department —</option>';
+    data.departments.forEach(dept => {
+      // dept can be  { name: "Cardiology" }  or (unexpected) a plain string
+      const deptName = (typeof dept === 'object' && dept !== null) ? dept.name : dept;
+      if (!deptName) return;          // skip nulls / empties
+      const opt = document.createElement('option');
+      opt.value       = deptName;
+      opt.textContent = deptName;
+      sel.appendChild(opt);
+    });
+    sel.disabled = false;
+
+  } catch (e) {
+    sel.innerHTML = '<option value="">— Failed to load —</option>';
+    err.style.display = 'block';
+    sel.disabled = false;
+    console.error('loadDepartments error:', e);
+  }
+}
+
+// ── Department changed ─────────────────────────────────────────────────────
+async function onDeptChange(dept) {
+  selDept       = dept;
+  selDoctorId   = '';
+  selDoctorName = '';
+  selSlot       = '';
+
+  document.getElementById('sumDept').textContent = dept || '—';
+  document.getElementById('sumDoc').textContent  = '—';
+  document.getElementById('sumTime').textContent = '—';
+  updateStepIndicator();
+
+  const list = document.getElementById('doctorList');
+
+  if (!dept) {
+    list.innerHTML = '<p class="empty-hint"><i class="fas fa-arrow-up" style="margin-right:6px"></i>Please select a department first</p>';
+    return;
+  }
+
+  // Show loading
+  list.innerHTML = '<p class="empty-hint"><i class="fas fa-spinner fa-spin" style="margin-right:6px"></i>Loading doctors…</p>';
+
+  try {
+    const res  = await fetch(`/medivita/backend/shared/get_doctors_by_department.php?department=${encodeURIComponent(dept)}`);
+    const data = await res.json();
+
+    if (!data.success) throw new Error(data.message);
+
+    if (!data.doctors || data.doctors.length === 0) {
+      list.innerHTML = `<p class="empty-hint"><i class="fas fa-user-md" style="margin-right:6px"></i>No doctors available for <strong>${dept}</strong> right now.</p>`;
+      return;
+    }
+
+    list.innerHTML = '';
+    data.doctors.forEach((doc, i) => {
+      const grad     = avatarGradients[i % avatarGradients.length];
+      const initials = doc.name.split(' ').filter(w => w).slice(1).map(w => w[0]).join('') || doc.name[0];
+      const stars    = Array.from({length: 5}, (_, j) =>
+        `<i class="${j < (doc.rating || 4) ? 'fas' : 'far'} fa-star"></i>`
+      ).join('');
+
+      const div = document.createElement('div');
+      div.className      = 'doctor-option';
+      div.dataset.id     = doc._id;
+      div.dataset.name   = doc.name;
+      div.dataset.dept   = doc.department;
+      div.innerHTML = `
+        <div class="doc-opt-avatar" style="background:${grad}">${initials}</div>
+        <div class="doc-opt-info">
+          <h4>${doc.name}</h4>
+          <p>${doc.department} · ${doc.experience || 'Experienced'}</p>
+          <div class="stars">${stars}</div>
+        </div>
+        <div class="doc-opt-right">
+          <p><i class="fas fa-circle" style="font-size:.45rem;vertical-align:middle"></i> Available</p>
+          <span>slots open</span>
+        </div>
+        <div class="doc-opt-radio"></div>`;
+      div.addEventListener('click', () => selectDoctor(div));
+      list.appendChild(div);
+    });
+
+  } catch (e) {
+    list.innerHTML = `<p class="empty-hint" style="color:var(--red-500)"><i class="fas fa-exclamation-circle"></i> Failed to load doctors. <a href="javascript:onDeptChange('${dept}')" style="color:var(--blue-600)">Retry</a></p>`;
+    console.error('onDeptChange error:', e);
+  }
+}
+
+// ── Doctor selected ────────────────────────────────────────────────────────
+function selectDoctor(el) {
+  document.querySelectorAll('.doctor-option').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+  selDoctorId   = el.dataset.id;
+  selDoctorName = el.dataset.name;
+  document.getElementById('sumDoc').textContent = selDoctorName;
+  updateStepIndicator();
+}
+
+// ── Date changed ───────────────────────────────────────────────────────────
+function onDateChange() {
+  const val = document.getElementById('apptDate').value;
+  if (!val) return;
+
+  selSlot = '';
+  document.getElementById('sumTime').textContent = '—';
+  document.getElementById('sumDate').textContent =
+    new Date(val).toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
+
+  document.getElementById('slotsSection').style.display = 'block';
+
+  const grid = document.getElementById('slotsGrid');
+  grid.innerHTML = '';
+  // Static slots — in production these could be fetched from an availability endpoint
+  allSlots.forEach(slot => {
+    const div     = document.createElement('div');
+    div.className = 'time-slot';
+    div.textContent = slot;
+    div.addEventListener('click', () => selectSlot(div, slot));
+    grid.appendChild(div);
+  });
+
+  updateStepIndicator();
+}
+
+// ── Slot selected ──────────────────────────────────────────────────────────
+function selectSlot(el, slot) {
+  document.querySelectorAll('.time-slot:not(.booked)').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  selSlot = slot;
+  document.getElementById('sumTime').textContent = slot;
+  updateSummary();
+  updateStepIndicator();
+}
+
+// ── Update appointment type in summary ─────────────────────────────────────
+function updateSummary() {
+  const typeMap = {
+    consultation: 'New Consultation',
+    followup:     'Follow-up Visit',
+    emergency:    'Urgent / Emergency',
+    teleconsult:  'Teleconsultation',
+  };
+  const typeVal = document.getElementById('apptType').value;
+  document.getElementById('sumType').textContent = typeMap[typeVal] || typeVal;
+}
+
+// ── Update step indicator ──────────────────────────────────────────────────
+function updateStepIndicator() {
+  const dept  = document.getElementById('deptSelect').value;
+  const date  = document.getElementById('apptDate').value;
+
+  const s1Done = !!dept;
+  const s2Done = !!selDoctorId;
+  const s3Done = !!date && !!selSlot;
+
+  const setStep = (id, done, active) => {
+    const el = document.getElementById(id);
+    el.classList.remove('done','active');
+    if (done)        el.classList.add('done');
+    else if (active) el.classList.add('active');
+  };
+
+  setStep('s1', s1Done, true);
+  setStep('s2', s2Done, s1Done);
+  setStep('s3', s3Done, s2Done);
+  setStep('s4', false,  s3Done);
+}
+
+// ── Confirm & submit booking ───────────────────────────────────────────────
+async function confirmBooking() {
+  // Validate
+  if (!document.getElementById('deptSelect').value) {
+    shakeAlert('Please select a department.'); return;
+  }
+  if (!selDoctorId) {
+    shakeAlert('Please select a doctor from the list.'); return;
+  }
+  if (!document.getElementById('apptDate').value) {
+    shakeAlert('Please select an appointment date.'); return;
+  }
+  if (!selSlot) {
+    shakeAlert('Please select a time slot.'); return;
+  }
+
+  // Show loading state
+  const btn = document.getElementById('confirmBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-inline"></span> Booking…';
+
+  try {
+    const formData = new FormData();
+    formData.append('doctor_id',        selDoctorId);
+    formData.append('department',       document.getElementById('deptSelect').value);
+    formData.append('appointment_date', document.getElementById('apptDate').value);
+    formData.append('appointment_time', selSlot);
+    formData.append('appointment_type', document.getElementById('apptType').value);
+    formData.append('reason',           document.getElementById('apptReason').value);
+
+    const res  = await fetch('/medivita/backend/shared/book_appointment.php', { method: 'POST', body: formData });
+    const data = await res.json();
+
+    if (!data.success) {
+      throw new Error(data.message || 'Booking failed.');
+    }
+
+    // Success!
+    const dateFormatted = new Date(document.getElementById('apptDate').value)
+      .toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
+    document.getElementById('confirmMsg').textContent =
+      `${selDoctorName} · ${data.department} · ${dateFormatted} at ${selSlot}`;
+    document.getElementById('confirmOverlay').classList.add('show');
+
+  } catch (e) {
+    shakeAlert(e.message || 'An error occurred. Please try again.');
+    console.error('confirmBooking error:', e);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Appointment';
+  }
+}
+
+// ── Reset form after booking ───────────────────────────────────────────────
+function resetForm() {
+  document.getElementById('confirmOverlay').classList.remove('show');
+  document.getElementById('deptSelect').value = '';
+  document.getElementById('apptType').value   = 'consultation';
+  document.getElementById('apptReason').value = '';
+  document.getElementById('apptDate').value   = '';
+  document.getElementById('doctorList').innerHTML = '<p class="empty-hint"><i class="fas fa-arrow-up" style="margin-right:6px"></i>Please select a department first</p>';
+  document.getElementById('slotsSection').style.display = 'none';
+  selDoctorId = ''; selDoctorName = ''; selDept = ''; selSlot = '';
+  document.getElementById('sumDept').textContent = '—';
+  document.getElementById('sumDoc').textContent  = '—';
+  document.getElementById('sumDate').textContent = '—';
+  document.getElementById('sumTime').textContent = '—';
+  document.getElementById('sumType').textContent = 'New Consultation';
+  document.getElementById('sumPatient').textContent = currentUser?.name || '—';
+  updateStepIndicator();
+}
+
+// ── Utility: simple alert with animation ──────────────────────────────────
+function shakeAlert(msg) {
+  alert(msg);
+}
+
+// ── Bootstrap ─────────────────────────────────────────────────────────────
+initPortal('book-appointment', 'Book Appointment', 'Schedule a new appointment with a specialist')
+  .then(user => { if (user) initBooking(user); });
+
+// Sync summary type on load
+updateSummary();
+</script>
+</body>
+</html>
