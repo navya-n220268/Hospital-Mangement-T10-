@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Profile Settings — MediVita</title>
+  <link rel="stylesheet" href="/medivita/assets/css/doctor.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* Profile hero */
+    .profile-hero {
+      background: linear-gradient(135deg, var(--navy), var(--navy-4));
+      border-radius: var(--r-xl);
+      padding: 28px 32px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+
+    .profile-hero::before {
+      content: '';
+      position: absolute;
+      right: -50px;
+      top: -50px;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: rgba(14, 165, 233, .07)
+    }
+
+    .profile-hero::after {
+      content: '';
+      position: absolute;
+      right: 60px;
+      bottom: -60px;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: rgba(20, 184, 166, .06)
+    }
+
+    .ph-avatar-wrap {
+      position: relative;
+      flex-shrink: 0
+    }
+
+    .ph-avatar {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #0ea5e9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--f-display);
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: white;
+      border: 3px solid rgba(255, 255, 255, .22);
+    }
+
+    .ph-edit-btn {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: white;
+      border: 2px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .62rem;
+      cursor: pointer;
+      transition: all var(--dur) var(--ease);
+    }
+
+    .ph-edit-btn:hover {
+      background: var(--teal);
+      transform: scale(1.1)
+    }
+
+    .ph-info h2 {
+      font-family: var(--f-display);
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 4px
+    }
+
+    .ph-info p {
+      font-size: .8rem;
+      color: rgba(255, 255, 255, .65)
+    }
+
+    .ph-info .ph-badges {
+      display: flex;
+      gap: 8px;
+      margin-top: 11px;
+      flex-wrap: wrap
+    }
+
+    .ph-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: .7rem;
+      background: rgba(255, 255, 255, .1);
+      padding: 4px 11px;
+      border-radius: 99px;
+      color: rgba(255, 255, 255, .85)
+    }
+
+    .ph-completeness {
+      margin-left: auto;
+      text-align: center;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1
+    }
+
+    .ph-comp-pct {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--f-display);
+      font-size: .9rem;
+      font-weight: 700;
+      color: white
+    }
+
+    .ph-completeness p {
+      font-size: .68rem;
+      color: rgba(255, 255, 255, .55);
+      margin-top: 6px
+    }
+
+    /* Tabs */
+    .profile-tabs {
+      display: flex;
+      gap: 4px;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 22px
+    }
+
+    .ptab {
+      padding: 10px 18px;
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--text-3);
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all var(--dur) var(--ease)
+    }
+
+    .ptab:hover {
+      color: var(--blue)
+    }
+
+    .ptab.active {
+      color: var(--blue);
+      border-bottom-color: var(--blue)
+    }
+
+    /* Credential card */
+    .cred-card {
+      background: var(--surface);
+      border-radius: var(--r-md);
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border: 1px solid var(--border)
+    }
+
+    .cred-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--r-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .9rem;
+      flex-shrink: 0
+    }
+
+    .cred-info p {
+      font-size: .84rem;
+      font-weight: 700;
+      color: var(--text-1)
+    }
+
+    .cred-info span {
+      font-size: .73rem;
+      color: var(--text-3)
+    }
+
+    /* Toggle switch */
+    .toggle {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+      cursor: pointer
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0
+    }
+
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: var(--border-2);
+      border-radius: 22px;
+      transition: .3s
+    }
+
+    .toggle input:checked+.toggle-track {
+      background: var(--green)
+    }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      background: white;
+      border-radius: 50%;
+      transition: .3s;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .2)
+    }
+
+    .toggle input:checked~.toggle-thumb {
+      left: 21px
+    }
+
+    /* Schedule grid */
+    .sched-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px
+    }
+
+    .sched-day {
+      padding: 8px 6px;
+      border-radius: var(--r-sm);
+      border: 1.5px solid var(--border);
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--dur) var(--ease);
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--text-3)
+    }
+
+    .sched-day:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+      background: var(--blue-dim)
+    }
+
+    .sched-day.on {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: white
+    }
+  </style>
+</head>
+
+<body>
+  <div class="portal-wrap">
+    <aside class="sidebar"></aside>
+    <div class="sb-overlay"></div>
+    <div class="main-area">
+      <div class="topbar"></div>
+      <div class="page-content">
+
+        <!-- Profile Hero -->
+        <div class="profile-hero afu">
+          <div class="ph-avatar-wrap">
+            <div class="ph-avatar dyn-doc-initials">DR</div>
+            <div class="ph-edit-btn"><i class="fas fa-camera"></i></div>
+          </div>
+          <div class="ph-info">
+            <h2 class="dyn-doc-name">Doctor Name</h2>
+            <p>MBBS, MD (Cardiology) · Senior Cardiologist · MediVita Hospital</p>
+            <div class="ph-badges">
+              <span class="ph-badge"><i class="fas fa-id-badge"></i> MV-DOC-1042</span>
+              <span class="ph-badge"><i class="fas fa-award"></i> 18 yrs experience</span>
+              <span class="ph-badge"><i class="fas fa-star"></i> 4.8 rating</span>
+              <span class="ph-badge"><i class="fas fa-check-circle" style="color:var(--teal)"></i> Verified</span>
+            </div>
+          </div>
+          <div class="ph-completeness">
+            <div style="position:relative;display:inline-block">
+              <svg width="72" height="72" viewBox="0 0 72 72">
+                <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="5" />
+                <circle cx="36" cy="36" r="28" fill="none" stroke="#14b8a6" stroke-width="5" stroke-dasharray="176"
+                  stroke-dashoffset="25" stroke-linecap="round" transform="rotate(-90 36 36)" />
+              </svg>
+              <div class="ph-comp-pct">86%</div>
+            </div>
+            <p>Profile complete</p>
+          </div>
+        </div>
+
+
+
+        <!-- Personal Info Tab -->
+        <div id="tab-personal" class="afu d2">
+          <div class="g2" style="gap:22px;align-items:start">
+            <div class="card">
+              <div class="card-hd">
+                <h3><i class="fas fa-user"></i> Personal Information</h3>
+              </div>
+              <div class="card-body">
+                <div class="g2" style="gap:14px">
+                  <div class="form-group">
+                    <label class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="docFirstName" value="" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="docLastName" value="" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Specialization</label>
+                  <select class="form-control" id="docSpec">
+                    <option selected>Cardiology</option>
+                    <option>General Medicine</option>
+                    <option>Neurology</option>
+                    <option>Pulmonology</option>
+                    <option>Oncology</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Sub-Speciality</label>
+                  <input type="text" class="form-control" id="docSubSpec"
+                    value="Interventional Cardiology, Cardiac Electrophysiology" />
+                </div>
+                <div class="g2" style="gap:14px">
+                  <div class="form-group">
+                    <label class="form-label">Years of Experience</label>
+                    <input type="number" class="form-control" id="docExp" value="18" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Consultation Fee (₹)</label>
+                    <input type="number" class="form-control" id="docFee" value="1500" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Contact Number</label>
+                  <input type="tel" class="form-control" id="docPhone" value="+91 98765 00011" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email Address</label>
+                  <input type="email" class="form-control" id="docEmail" value="doctor@medivita.in" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Office Address</label>
+                  <textarea class="form-control"
+                    rows="2">Room 301, Block A, Cardiology OPD, MediVita Hospital, Sector 62, Noida - 201301</textarea>
+                </div>
+                <!-- <button class="btn btn-primary" onclick="saveProfile()"><i class="fas fa-save"></i> Update Profile</button> -->
+              </div>
+            </div>
+
+            <!-- Right side -->
+            <div style="display:flex;flex-direction:column;gap:18px">
+              <div class="card">
+                <div class="card-hd">
+                  <h3><i class="fas fa-hospital"></i> Hospital Info</h3>
+                </div>
+                <div class="card-body">
+                  <div class="form-group"><label class="form-label">Hospital Name</label><input type="text"
+                      class="form-control" value="MediVita Hospital" /></div>
+                  <div class="form-group"><label class="form-label">Department</label><input type="text"
+                      class="form-control" value="Cardiology Department" /></div>
+                  <div class="form-group"><label class="form-label">Employee ID</label><input type="text"
+                      class="form-control" value="MV-DOC-1042" readonly style="opacity:.7" /></div>
+                  <div class="form-group"><label class="form-label">Medical Registration No.</label><input type="text"
+                      class="form-control" value="MCI-87654" /></div>
+                  <button class="btn btn-ghost btn-sm" onclick="showToast('Hospital details saved')"><i
+                      class="fas fa-save"></i> Save</button>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-hd">
+                  <h3><i class="fas fa-graduation-cap"></i> Education</h3>
+                </div>
+                <div class="card-body">
+                  <div class="form-group"><label class="form-label">MBBS from</label><input type="text"
+                      class="form-control" value="AIIMS New Delhi (2004)" /></div>
+                  <div class="form-group"><label class="form-label">MD from</label><input type="text"
+                      class="form-control" value="PGI Chandigarh — Cardiology (2008)" /></div>
+                  <div class="form-group"><label class="form-label">Fellowship</label><input type="text"
+                      class="form-control" value="Interventional Cardiology, Cleveland Clinic (2010)" /></div>
+                  <!-- <button class="btn btn-ghost btn-sm" onclick="showToast('Education details saved')"><i
+                      class="fas fa-save"></i> Save</button> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+    </div>
+  </div>
+  <script src="/medivita/assets/js/doctor.js?v=3"></script>
+  <script>
+    buildPortal('profile', 'Profile Settings', 'Manage your professional information').then(user => {
+      if (user && user.role === 'doctor') {
+        fetchDoctorProfile();
+      }
+    });
+
+    async function fetchDoctorProfile() {
+      try {
+        const res = await fetch('/medivita/backend/doctor/get_logged_doctor.php');
+        const data = await res.json();
+        if (data.success && data.doctor) {
+          const doc = data.doctor;
+          const parts = doc.name.split(' ');
+
+          const elFn = document.getElementById('docFirstName');
+          const elLn = document.getElementById('docLastName');
+          const elEm = document.getElementById('docEmail');
+          const elPh = document.getElementById('docPhone');
+          const elSp = document.getElementById('docSpec');
+          const elEx = document.getElementById('docExp');
+
+          if (elFn) elFn.value = parts[0] || '';
+          if (elLn) elLn.value = parts.slice(1).join(' ') || '';
+          if (elEm) elEm.value = doc.email || '';
+          if (elPh) elPh.value = doc.phone || '';
+          if (elEx) elEx.value = doc.experience || '';
+
+          if (elSp && doc.department) {
+            let found = Array.from(elSp.options).some(opt => opt.value === doc.department);
+            if (!found) {
+              const newOpt = new Option(doc.department, doc.department);
+              elSp.add(newOpt);
+            }
+            elSp.value = doc.department;
+          }
+
+          document.getElementById('profileName').textContent = doc.name.startsWith('Dr.') ? doc.name : 'Dr. ' + doc.name;
+          const init = parts.map(n => n[0]).join('').substring(0, 2).toUpperCase();
+          document.getElementById('profileAvatar').textContent = init;
+        }
+      } catch (e) { console.error('Error fetching profile:', e); }
+    }
+
+    function showTab(btn, tabId) {
+      document.querySelectorAll('.ptab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('[id^="tab-"]').forEach(el => el.style.display = 'none');
+      document.getElementById('tab-' + tabId).style.display = 'block';
+    }
+
+    async function saveProfile() {
+      const btn = event.currentTarget;
+      const oldHtml = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+      btn.disabled = true;
+
+      const fn = document.getElementById('docFirstName')?.value || '';
+      const ln = document.getElementById('docLastName')?.value || '';
+      const name = `${fn} ${ln}`.trim();
+      const email = document.getElementById('docEmail')?.value || '';
+      const phone = document.getElementById('docPhone')?.value || '';
+      const spec = document.getElementById('docSpec')?.value || '';
+      const exp = document.getElementById('docExp')?.value || '';
+      const fee = document.getElementById('docFee')?.value || '';
+
+      try {
+        const res = await fetch('/medivita/backend/doctor/update_doctor_profile.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, phone, specialization: spec, department: spec, experience: exp, consultation_fee: fee })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Profile updated successfully! Changes saved.');
+          fetchDoctorProfile();
+        } else {
+          showToast('Error saving profile: ' + (data.message || 'unknown'), 'error');
+        }
+      } catch (e) {
+        showToast('Network error saving profile', 'error');
+      } finally {
+        btn.innerHTML = oldHtml;
+        btn.disabled = false;
+      }
+    }
+
+    // Schedule days
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const working = [0, 1, 2, 3, 4]; // Mon-Fri
+    const el = document.getElementById('schedDays');
+    days.forEach((d, i) => {
+      const btn = document.createElement('div');
+      btn.className = 'sched-day' + (working.includes(i) ? ' on' : '');
+      btn.textContent = d;
+      btn.onclick = () => { btn.classList.toggle('on'); showToast('Schedule updated'); };
+      if (el) el.appendChild(btn);
+    });
+  </script>
+</body>
+
+</html>

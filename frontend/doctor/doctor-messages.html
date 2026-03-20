@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Messages — MediVita Doctor Portal</title>
+<link rel="stylesheet" href="/medivita/assets/css/doctor.css"/>
+<link rel="stylesheet" href="/medivita/assets/css/messages.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+.page-content { padding: 0 !important; overflow: hidden; }
+
+/* Doctor-specific patient card in left panel */
+.patient-thread-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 18px;
+  cursor: pointer;
+  transition: background .15s;
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid var(--surface);
+}
+.patient-thread-item:last-child { border-bottom: none; }
+.patient-thread-item:hover { background: var(--surface); }
+.patient-thread-item.active { background: var(--blue-dim); border-left-color: var(--blue); }
+
+.pt-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0ea5e9, #14b8a6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .82rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+.pt-info { flex: 1; min-width: 0; }
+.pt-name { font-size: .9rem; font-weight: 600; color: var(--text-1); }
+.pt-dept { font-size: .75rem; color: var(--text-3); margin-top: 1px; }
+.pt-preview {
+  font-size: .73rem;
+  color: var(--text-4);
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pt-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.pt-time { font-size: .7rem; color: var(--text-4); }
+.pt-unread {
+  background: var(--red);
+  color: white;
+  font-size: .65rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 99px;
+}
+
+/* Stats bar inside left panel header */
+.msg-stats-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.msg-stat-chip {
+  flex: 1;
+  background: var(--surface);
+  border-radius: var(--r-sm);
+  padding: 8px 10px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+.msg-stat-chip .val {
+  font-family: var(--f-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-1);
+  display: block;
+}
+.msg-stat-chip .lbl {
+  font-size: .68rem;
+  color: var(--text-3);
+}
+
+/* Patient info card inside chat header */
+.patient-info-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 5px 12px;
+  font-size: .78rem;
+  color: var(--text-2);
+  font-weight: 500;
+}
+.patient-info-pill i { color: var(--blue); font-size: .8rem; }
+
+/* Search */
+.msg-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 7px 12px;
+  margin-bottom: 10px;
+  transition: border-color .2s;
+}
+.msg-search:focus-within { border-color: var(--blue); background: white; }
+.msg-search i { color: var(--text-4); font-size: .82rem; flex-shrink: 0; }
+.msg-search input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: var(--f-body);
+  font-size: .85rem;
+  color: var(--text-1);
+  outline: none;
+}
+.msg-search input::placeholder { color: var(--text-4); }
+</style>
+</head>
+<body>
+<div class="portal-wrap">
+  <aside class="sidebar"></aside>
+  <div class="sb-overlay"></div>
+
+  <div class="main-area">
+    <div class="topbar"></div>
+
+    <div class="page-content">
+      <div class="msg-layout">
+
+        <!-- ══ LEFT: Patient Inbox ══ -->
+        <div class="msg-left">
+          <div class="msg-left-header">
+            <h3><i class="fas fa-inbox"></i> Patient Messages</h3>
+
+            <!-- Stats row -->
+            <div class="msg-stats-row" id="statsRow">
+              <div class="msg-stat-chip">
+                <span class="val" id="statTotal">0</span>
+                <span class="lbl">Total</span>
+              </div>
+              <div class="msg-stat-chip">
+                <span class="val" id="statUnread" style="color:var(--red)">0</span>
+                <span class="lbl">Unread</span>
+              </div>
+              <div class="msg-stat-chip">
+                <span class="val" id="statPatients">0</span>
+                <span class="lbl">Patients</span>
+              </div>
+            </div>
+
+            <!-- Search -->
+            <div class="msg-search" style="margin-top:10px">
+              <i class="fas fa-search"></i>
+              <input type="text" id="searchInput" placeholder="Search patients…" oninput="filterThreads(this.value)">
+            </div>
+          </div>
+
+          <!-- Patient Thread List -->
+          <div class="conv-list" id="threadList">
+            <div class="msg-empty-left">
+              <i class="fas fa-comment-slash"></i>
+              <p>No messages from patients yet.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ RIGHT: Chat Area ══ -->
+        <div class="msg-right">
+
+          <!-- Placeholder (no conversation selected) -->
+          <div class="chat-placeholder" id="chatPlaceholder">
+            <div class="chat-placeholder-icon"><i class="fas fa-comments"></i></div>
+            <h3>Patient Messaging Inbox</h3>
+            <p>Select a patient conversation from the left panel to view messages and reply securely.</p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px">
+              <span style="background:var(--teal-dim);color:var(--teal-dk);border-radius:99px;padding:5px 14px;font-size:.78rem;font-weight:600"><i class="fas fa-lock"></i> HIPAA Compliant</span>
+              <span style="background:var(--blue-dim);color:var(--blue-dk);border-radius:99px;padding:5px 14px;font-size:.78rem;font-weight:600"><i class="fas fa-clock"></i> Real-Time</span>
+            </div>
+          </div>
+
+          <!-- Active chat area -->
+          <div id="chatArea" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+
+            <div class="chat-header" id="chatHeader"></div>
+
+            <div class="chat-messages" id="chatMessages"></div>
+
+            <div class="chat-compose">
+              <div class="compose-input-wrap">
+                <button class="compose-attach" title="Attach file" onclick="showToast('File attachment coming soon')">
+                  <i class="fas fa-paperclip"></i>
+                </button>
+                <textarea
+                  class="compose-textarea"
+                  id="composeInput"
+                  placeholder="Reply to patient…"
+                  rows="1"
+                  maxlength="1000"
+                ></textarea>
+              </div>
+              <button class="compose-send" id="sendBtn" title="Send reply" disabled>
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- end msg-layout -->
+    </div>
+  </div>
+</div>
+
+<script src="/medivita/assets/js/doctor.js?v=2"></script>
+<script src="/medivita/assets/js/messages.js"></script>
+<script>
+// ── Init portal chrome ──────────────────────────────────
+let ME_DOC = null;
+
+async function initMessaging() {
+  await buildPortal('messages', 'Messages', 'Patient communications');
+  if (!window.currentUser) return;
+  
+  ME_DOC = {
+    id:       window.currentUser._id || window.currentUser.id || 'dr_auth',
+    name:     'Dr. ' + window.currentUser.name,
+    initials: window.currentUser.name.split(' ').map(n=>n[0]).join('').toUpperCase().substring(0,2),
+    grad:     '135deg,#667eea,#764ba2',
+    dept:     window.currentUser.specialization || 'Cardiology',
+  };
+  
+  await loadInbox();
+}
+
+// ── State ───────────────────────────────────────────────
+let activePatientId = null;
+let activeThread    = null; // { patientId, patientName, doctorId, dept }
+let allThreads      = [];
+let pollTimer       = null;
+
+let serverMsgs      = [];
+
+initMessaging();
+
+async function fetchServerMessages() {
+  try {
+    const res = await fetch(`/medivita/backend/doctor/get_doctor_messages.php?doctorId=${ME_DOC.id}`);
+    serverMsgs = await res.json();
+  } catch(e) { console.error('Error fetching messages', e); }
+}
+
+async function loadInbox() {
+  await fetchServerMessages();
+  
+  const map = {};
+  serverMsgs.forEach(m => {
+    const key = m.patientId;
+    if (!map[key] || m.ts > map[key].ts) map[key] = m;
+  });
+  allThreads = Object.values(map).sort((a, b) => b.ts - a.ts);
+  
+  updateStats();
+  renderThreadList(allThreads);
+}
+
+// ── Stats ───────────────────────────────────────────────
+function updateStats() {
+  const totalMsgs  = serverMsgs.length;
+  const unreadMsgs = serverMsgs.filter(m => m.sender === 'patient' && !m.readByDoctor).length;
+  document.getElementById('statTotal').textContent    = totalMsgs;
+  document.getElementById('statUnread').textContent   = unreadMsgs;
+  document.getElementById('statPatients').textContent = allThreads.length;
+}
+
+// ── Render patient thread list ──────────────────────────
+function renderThreadList(threads) {
+  const listEl = document.getElementById('threadList');
+  if (!threads.length) {
+    listEl.innerHTML = `<div class="msg-empty-left"><i class="fas fa-comment-slash"></i><p>No patient messages yet.</p></div>`;
+    return;
+  }
+
+  listEl.innerHTML = threads.map(last => {
+    const initials = last.patientName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    const isActive = last.patientId === activePatientId;
+    const unread   = serverMsgs.filter(m => m.patientId === last.patientId && m.sender === 'patient' && !m.readByDoctor).length;
+    const preview  = last.text.length > 40 ? last.text.slice(0, 40) + '…' : last.text;
+    return `
+      <div class="patient-thread-item ${isActive ? 'active' : ''}"
+           data-patient-id="${last.patientId}"
+           onclick="openThread('${last.patientId}','${escapeHTML(last.patientName)}','${last.dept}')">
+        <div class="pt-avatar">${initials}</div>
+        <div class="pt-info">
+          <div class="pt-name">${last.patientName}</div>
+          <div class="pt-dept"><i class="fas fa-stethoscope" style="font-size:.68rem;margin-right:3px;color:var(--blue)"></i>${last.dept}</div>
+          <div class="pt-preview">${last.sender === 'doctor' ? 'You: ' : ''}${preview}</div>
+        </div>
+        <div class="pt-meta">
+          <span class="pt-time">${formatTime(last.ts)}</span>
+          ${unread ? `<span class="pt-unread">${unread} new</span>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ── Filter threads by search ────────────────────────────
+function filterThreads(query) {
+  const filtered = query
+    ? allThreads.filter(t => t.patientName.toLowerCase().includes(query.toLowerCase()))
+    : allThreads;
+  renderThreadList(filtered);
+}
+
+// ── Open a patient thread ───────────────────────────────
+function openThread(patientId, patientName, dept) {
+  activePatientId = patientId;
+  activeThread    = { patientId, patientName, dept };
+
+  // Highlight item
+  document.querySelectorAll('.patient-thread-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.patientId === patientId);
+  });
+
+  // Mark as read frontend logic removed from mock; needs a real API call if desired,
+  // but we skip stats refresh temporarily since we just load them.
+
+  const initials = patientName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  const patGrad  = '135deg,#0ea5e9,#14b8a6';
+
+  // Show chat area
+  document.getElementById('chatPlaceholder').style.display = 'none';
+  const chatArea = document.getElementById('chatArea');
+  chatArea.style.display = 'flex';
+
+  // Render header
+  document.getElementById('chatHeader').innerHTML = `
+    <div class="chat-header-avatar" style="background:linear-gradient(${patGrad})">${initials}</div>
+    <div class="chat-header-info">
+      <div class="chat-header-name">${patientName}</div>
+      <div class="chat-header-dept"><i class="fas fa-user-injured" style="color:var(--teal);margin-right:5px"></i>${dept}</div>
+    </div>
+    <div class="chat-header-right">
+      <div class="patient-info-pill"><i class="fas fa-id-card"></i> Patient</div>
+      <button class="chat-action-btn" title="View patient history" onclick="window.location.href = '/medivita/frontend/doctor/patient-history.html'">
+        <i class="fas fa-notes-medical"></i>
+      </button>
+    </div>`;
+
+  renderDoctorChat(patientId, initials, patGrad);
+
+  document.getElementById('sendBtn').disabled = false;
+  document.getElementById('composeInput').focus();
+
+  // Poll for new messages
+  clearInterval(pollTimer);
+  pollTimer = setInterval(async () => {
+    await fetchServerMessages();
+    if (activePatientId) renderDoctorChat(activePatientId, initials, patGrad, false);
+  }, 3000);
+}
+
+// ── Render chat ─────────────────────────────────────────
+function renderDoctorChat(patientId, patInitials, patGrad, scroll = true) {
+  const msgs = serverMsgs.filter(m => m.patientId === patientId).sort((a,b)=>a.ts - b.ts);
+  renderMessages(
+    document.getElementById('chatMessages'),
+    msgs,
+    'doctor',
+    ME_DOC.initials,
+    ME_DOC.grad,
+    patInitials,
+    patGrad
+  );
+  if (scroll) {
+    const c = document.getElementById('chatMessages');
+    c.scrollTop = c.scrollHeight;
+  }
+}
+
+// ── Send reply ──────────────────────────────────────────
+const composeInput = document.getElementById('composeInput');
+const sendBtn      = document.getElementById('sendBtn');
+
+composeInput.addEventListener('input', () => {
+  autoGrow(composeInput);
+  sendBtn.disabled = !composeInput.value.trim();
+});
+
+composeInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendReply();
+  }
+});
+
+sendBtn.addEventListener('click', sendReply);
+
+function sendReply() {
+  const text = composeInput.value.trim();
+  if (!text || !activePatientId) return;
+
+  const newMsg = {
+    patientId:    activeThread.patientId,
+    patientName:  activeThread.patientName,
+    doctorId:     ME_DOC.id,
+    dept:         activeThread.dept,
+    sender:       'doctor',
+    text:         text,
+    ts:           Date.now()
+  };
+  serverMsgs.push(newMsg);
+
+  composeInput.value = '';
+  composeInput.style.height = 'auto';
+  sendBtn.disabled = true;
+
+  const patInitials = activeThread.patientName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  renderDoctorChat(activePatientId, patInitials, '135deg,#0ea5e9,#14b8a6');
+  showToast('Reply sent to ' + activeThread.patientName);
+
+  fetch('/medivita/backend/doctor/reply_message.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      doctorId: ME_DOC.id,
+      patientId: activePatientId,
+      message: text
+    })
+  })
+  .then(() => loadInbox())
+  .catch(e => console.error(e));
+}
+</script>
+</body>
+</html>
