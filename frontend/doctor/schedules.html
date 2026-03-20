@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Schedules — MediVita Doctor Portal</title>
+<meta name="description" content="View and manage your patient appointment schedules in MediVita Doctor Portal."/>
+<link rel="stylesheet" href="/medivita/assets/css/doctor.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+/* ── Stats bar ── */
+.stats-bar {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px;
+  background: white; border: 1px solid var(--border); border-radius: var(--r-lg);
+  padding: 18px 22px; margin-bottom: 20px;
+}
+.sb-stat { text-align: center; padding: 0 10px; border-right: 1px solid var(--border); }
+.sb-stat:last-child { border-right: none; }
+.sb-stat h3 { font-family: var(--f-display); font-size: 1.6rem; font-weight: 700; margin-bottom: 3px; line-height: 1; }
+.sb-stat p  { font-size: .7rem; color: var(--text-3); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
+
+/* ── Filter / toolbar ── */
+.toolbar {
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  padding: 14px 18px; background: white; border: 1px solid var(--border);
+  border-radius: var(--r-lg); margin-bottom: 18px;
+}
+.filter-btn {
+  padding: 7px 16px; border-radius: 99px; font-size: .78rem; font-weight: 600;
+  border: 2px solid var(--border); background: white; cursor: pointer;
+  color: var(--text-3); transition: all var(--dur) var(--ease); font-family: var(--f-body);
+}
+.filter-btn:hover  { border-color: var(--blue); color: var(--blue); }
+.filter-btn.active { border-color: var(--blue); background: var(--blue); color: white; }
+.toolbar-right { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+
+/* ── Schedule table ── */
+.appt-table { width: 100%; border-collapse: collapse; }
+.appt-table thead tr { background: var(--surface); }
+.appt-table th {
+  padding: 12px 16px; text-align: left; font-size: .72rem; font-weight: 700;
+  color: var(--text-3); letter-spacing: .07em; text-transform: uppercase;
+  border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+.appt-table td {
+  padding: 14px 16px; border-bottom: 1px solid var(--surface);
+  color: var(--text-2); vertical-align: middle; font-size: .9rem;
+}
+.appt-table tr:last-child td { border-bottom: none; }
+.appt-table tbody tr:hover td { background: #fbfcff; }
+.td-b { font-weight: 600; color: var(--text-1); }
+
+/* ── Patient avatar ── */
+.p-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .74rem; font-weight: 700; color: white; flex-shrink: 0;
+}
+
+/* ── Detail drawer ── */
+.detail-drawer {
+  display: none;
+  background: linear-gradient(135deg, #f0f9ff, white);
+  border: 1.5px solid var(--blue-lt); border-radius: var(--r-lg);
+  padding: 22px; margin-top: 14px;
+  animation: fadeUp .3s var(--ease);
+}
+.detail-drawer.open { display: block; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+.detail-item { background: white; border-radius: var(--r-sm); padding: 14px; border: 1px solid var(--border); }
+.detail-item label { font-size: .65rem; text-transform: uppercase; letter-spacing: .08em; color: var(--text-4); font-weight: 700; display: block; margin-bottom: 4px; }
+.detail-item p { font-size: .85rem; font-weight: 600; color: var(--text-1); }
+
+/* ── Skeleton ── */
+.skel { background: var(--surface); border-radius: 8px; animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
+
+/* ── Empty / error states ── */
+.empty-state {
+  text-align: center; padding: 52px 20px; color: var(--text-4);
+}
+.empty-state i  { font-size: 2.5rem; margin-bottom: 14px; display: block; }
+.empty-state h4 { font-family: var(--f-display); font-size: 1rem; font-weight: 700; color: var(--text-2); margin-bottom: 6px; }
+.empty-state p  { font-size: .82rem; }
+
+/* ── Date badge ── */
+.date-section-header {
+  font-family: var(--f-display); font-size: .8rem; font-weight: 700;
+  color: var(--text-3); letter-spacing: .08em; text-transform: uppercase;
+  padding: 10px 16px 6px; border-bottom: 1px solid var(--surface);
+  background: var(--surface); display: flex; align-items: center; gap: 8px;
+}
+.date-section-header.today-hdr { color: var(--blue); }
+.date-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); }
+</style>
+</head>
+<body>
+<div class="portal-wrap">
+  <aside class="sidebar"></aside>
+  <div class="sb-overlay"></div>
+  <div class="main-area">
+    <div class="topbar"></div>
+    <div class="page-content">
+
+      <!-- Stats Bar -->
+      <div class="stats-bar afu sec-gap" id="statsBar">
+        <div class="sb-stat"><h3 id="stTotal" style="color:var(--blue)">—</h3><p>Total</p></div>
+        <div class="sb-stat"><h3 id="stPending" style="color:var(--amber)">—</h3><p>Pending</p></div>
+        <div class="sb-stat"><h3 id="stApproved" style="color:var(--blue)">—</h3><p>Approved</p></div>
+        <div class="sb-stat"><h3 id="stCompleted" style="color:var(--green)">—</h3><p>Completed</p></div>
+        <div class="sb-stat"><h3 id="stCancelled" style="color:var(--red)">—</h3><p>Cancelled</p></div>
+      </div>
+
+      <!-- Toolbar / Filters -->
+      <div class="toolbar afu d1">
+        <button class="filter-btn active" id="fbAll"       onclick="setFilter('all',this)">All</button>
+        <button class="filter-btn"        id="fbPending"   onclick="setFilter('pending',this)">Pending</button>
+        <button class="filter-btn"        id="fbApproved"  onclick="setFilter('approved',this)">Approved</button>
+        <button class="filter-btn"        id="fbCompleted" onclick="setFilter('completed',this)">Completed</button>
+        <button class="filter-btn"        id="fbCancelled" onclick="setFilter('cancelled',this)">Cancelled</button>
+        <div class="toolbar-right">
+          <input type="text" id="searchInput" class="form-control"
+            placeholder="Search patient or reason…"
+            style="width:210px;padding:8px 12px;font-size:.8rem"
+            oninput="renderSchedules()"/>
+          <button class="btn btn-ghost btn-xs" onclick="loadSchedules()" title="Refresh">
+            <i class="fas fa-sync-alt"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Table Card -->
+      <div class="card afu d2">
+        <div class="tbl-wrap">
+          <table class="appt-table">
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Age</th>
+                <th>Department</th>
+                <th>Reason / Problem</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="schedBody">
+              <tr><td colspan="9">
+                <div class="skel" style="height:48px;margin-bottom:8px"></div>
+                <div class="skel" style="height:48px;margin-bottom:8px"></div>
+                <div class="skel" style="height:48px"></div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Detail Drawer -->
+      <div class="detail-drawer" id="detailDrawer">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <h4 style="font-family:var(--f-display);font-size:.94rem;font-weight:700;color:var(--text-1)">
+            <i class="fas fa-info-circle" style="color:var(--blue);margin-right:8px"></i>Appointment Details
+          </h4>
+          <button onclick="closeDetail()"
+            style="background:var(--surface);border:1px solid var(--border);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:.75rem;color:var(--text-3)">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="detail-grid" id="detailContent"></div>
+        <div id="detailActions" style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/medivita/assets/js/doctor.js?v=3"></script>
+<script>
+/* =============================================
+   SCHEDULES — DYNAMIC BACKEND LOGIC
+   ============================================= */
+
+let allSchedules  = [];
+let currentFilter = 'all';
+
+const GRADIENTS = [
+  'linear-gradient(135deg,#667eea,#764ba2)',
+  'linear-gradient(135deg,#f093fb,#f5576c)',
+  'linear-gradient(135deg,#4facfe,#00f2fe)',
+  'linear-gradient(135deg,#43e97b,#38f9d7)',
+  'linear-gradient(135deg,#fa709a,#fee140)',
+  'linear-gradient(135deg,#a18cd1,#fbc2eb)',
+  'linear-gradient(135deg,#fccb90,#d57eeb)',
+  'linear-gradient(135deg,#30cfd0,#330867)',
+];
+
+const STATUS_CFG = {
+  pending:   { badge:'badge-amber',  label:'Pending',   icon:'fa-clock' },
+  approved:  { badge:'badge-blue',   label:'Approved',  icon:'fa-circle' },
+  completed: { badge:'badge-green',  label:'Completed', icon:'fa-check' },
+  cancelled: { badge:'badge-gray',   label:'Cancelled', icon:'fa-times' },
+};
+
+const TYPE_LABEL = {
+  consultation: 'Consultation',
+  followup:     'Follow-up',
+  emergency:    'Emergency',
+  teleconsult:  'Teleconsult',
+};
+
+// ── Load schedules from backend ─────────────────────────────────────────────
+async function loadSchedules() {
+  document.getElementById('schedBody').innerHTML = `<tr><td colspan="9">
+    <div class="skel" style="height:48px;margin-bottom:8px"></div>
+    <div class="skel" style="height:48px;margin-bottom:8px"></div>
+    <div class="skel" style="height:48px"></div>
+  </td></tr>`;
+
+  try {
+    const res  = await fetch('/medivita/backend/doctor/get_doctor_schedules.php');
+    const data = await res.json();
+
+    if (!data.success) throw new Error(data.message || 'Failed to load schedules');
+
+    allSchedules = data.schedules || [];
+
+    // Update stat bar
+    const s = data.stats || {};
+    document.getElementById('stTotal').textContent     = s.total     ?? 0;
+    document.getElementById('stPending').textContent   = s.pending   ?? 0;
+    document.getElementById('stApproved').textContent  = s.approved  ?? 0;
+    document.getElementById('stCompleted').textContent = s.completed ?? 0;
+    document.getElementById('stCancelled').textContent = s.cancelled ?? 0;
+
+    renderSchedules();
+
+  } catch(e) {
+    document.getElementById('schedBody').innerHTML = `<tr><td colspan="9">
+      <div class="empty-state">
+        <i class="fas fa-exclamation-circle" style="color:var(--red)"></i>
+        <h4>Failed to load schedules</h4>
+        <p>${e.message}</p>
+        <button class="btn btn-ghost btn-sm" style="margin-top:12px" onclick="loadSchedules()">
+          <i class="fas fa-sync-alt"></i> Retry
+        </button>
+      </div>
+    </td></tr>`;
+  }
+}
+
+// ── Set filter ───────────────────────────────────────────────────────────────
+function setFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  closeDetail();
+  renderSchedules();
+}
+
+// ── Render table ─────────────────────────────────────────────────────────────
+function renderSchedules() {
+  const tbody  = document.getElementById('schedBody');
+  const search = (document.getElementById('searchInput').value || '').toLowerCase();
+  const today  = new Date().toISOString().split('T')[0];
+
+  let rows = allSchedules.filter(s => {
+    const matchF = currentFilter === 'all' || s.status === currentFilter;
+    const matchS = !search ||
+      s.patient_name.toLowerCase().includes(search) ||
+      (s.reason || '').toLowerCase().includes(search) ||
+      (s.department || '').toLowerCase().includes(search);
+    return matchF && matchS;
+  });
+
+  if (rows.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9">
+      <div class="empty-state">
+        <i class="fas fa-calendar-times"></i>
+        <h4>No schedules found</h4>
+        <p>When patients book appointments with you, they'll appear here.</p>
+      </div>
+    </td></tr>`;
+    return;
+  }
+
+  // Group by date
+  const grouped = {};
+  rows.forEach(s => {
+    const d = s.appointment_date || 'Unknown';
+    if (!grouped[d]) grouped[d] = [];
+    grouped[d].push(s);
+  });
+
+  let html = '';
+  const sortedDates = Object.keys(grouped).sort();
+
+  sortedDates.forEach(date => {
+    const isToday    = date === today;
+    const dateLabel  = date === 'Unknown' ? 'Unknown Date'
+      : new Date(date).toLocaleDateString('en-IN', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
+
+    html += `<tr>
+      <td colspan="9" style="padding:0">
+        <div class="date-section-header ${isToday ? 'today-hdr' : ''}">
+          ${isToday ? '<div class="date-dot"></div>' : ''}
+          ${isToday ? '📅 Today — ' : ''}${dateLabel}
+          ${isToday ? '<span class="badge badge-blue" style="font-size:.65rem">' + grouped[date].length + ' appointment' + (grouped[date].length !== 1 ? 's' : '') + '</span>' : ''}
+        </div>
+      </td>
+    </tr>`;
+
+    grouped[date].forEach((s, i) => {
+      const allRows = allSchedules;
+      const globalIdx = allRows.indexOf(s);
+      const grad     = GRADIENTS[(globalIdx >= 0 ? globalIdx : i) % GRADIENTS.length];
+      const initials = s.patient_name.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2);
+      const cfg      = STATUS_CFG[s.status] || { badge:'badge-gray', label: s.status, icon:'fa-circle' };
+      const type     = TYPE_LABEL[s.appointment_type] || s.appointment_type || '—';
+      const reason   = s.reason ? (s.reason.length > 45 ? s.reason.substring(0,45) + '…' : s.reason) : '—';
+      const ageStr   = s.patient_age ? `${s.patient_age} yrs` : '—';
+
+      html += `<tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="p-avatar" style="background:${grad}">${initials}</div>
+            <span class="td-b">${s.patient_name}</span>
+          </div>
+        </td>
+        <td>${ageStr}</td>
+        <td>${s.department || '—'}</td>
+        <td style="max-width:200px" title="${s.reason || '—'}">${reason}</td>
+        <td class="td-b">${new Date(s.appointment_date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</td>
+        <td style="font-weight:700;color:var(--blue)">${s.appointment_time}</td>
+        <td><span class="badge badge-gray" style="font-size:.72rem">${type}</span></td>
+        <td><span class="badge ${cfg.badge}"><i class="fas ${cfg.icon}" style="font-size:.42rem"></i> ${cfg.label}</span></td>
+        <td>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn btn-ghost btn-xs" onclick="viewDetail('${s._id}')">
+              <i class="fas fa-eye"></i> Details
+            </button>
+
+            <button class="btn btn-teal btn-xs" onclick="window.location.href = '/medivita/frontend/doctor/add-prescription.html'">
+              <i class="fas fa-file-prescription"></i> Prescribe
+            </button>
+          </div>
+        </td>
+      </tr>`;
+    });
+  });
+
+  tbody.innerHTML = html;
+}
+
+// ── Detail drawer ─────────────────────────────────────────────────────────────
+function viewDetail(id) {
+  const s = allSchedules.find(x => x._id === id);
+  if (!s) return;
+
+  const d = new Date(s.appointment_date).toLocaleDateString('en-IN',
+    { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
+  const type = TYPE_LABEL[s.appointment_type] || s.appointment_type || '—';
+  const cfg  = STATUS_CFG[s.status] || { badge:'badge-gray', label: s.status };
+
+  document.getElementById('detailContent').innerHTML = `
+    <div class="detail-item"><label>Patient Name</label><p>${s.patient_name}</p></div>
+    <div class="detail-item"><label>Patient Age</label><p>${s.patient_age ? s.patient_age + ' years' : '—'}</p></div>
+    <div class="detail-item"><label>Gender</label><p>${s.patient_gender || '—'}</p></div>
+    <div class="detail-item"><label>Blood Group</label><p>${s.patient_blood || '—'}</p></div>
+    <div class="detail-item"><label>Phone</label><p>${s.patient_phone || '—'}</p></div>
+    <div class="detail-item"><label>Department</label><p>${s.department || '—'}</p></div>
+    <div class="detail-item"><label>Date</label><p>${d}</p></div>
+    <div class="detail-item"><label>Time</label><p>${s.appointment_time}</p></div>
+    <div class="detail-item"><label>Type</label><p>${type}</p></div>
+    <div class="detail-item"><label>Status</label>
+      <p><span class="badge ${cfg.badge}">${cfg.label}</span></p>
+    </div>
+    ${s.reason ? `<div class="detail-item" style="grid-column:1/-1"><label>Reason / Problem</label><p>${s.reason}</p></div>` : ''}
+    ${s.created_at ? `<div class="detail-item"><label>Booked On</label><p>${s.created_at.split(' ')[0]}</p></div>` : ''}
+  `;
+
+  document.getElementById('detailActions').innerHTML = `
+
+    ${s.status !== 'completed' && s.status !== 'cancelled' ? `<button class="btn btn-teal btn-sm" onclick="window.location.href = '/medivita/frontend/doctor/add-prescription.html'"><i class="fas fa-file-prescription"></i> Add Prescription</button>` : ''}
+    <button class="btn btn-ghost btn-sm" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+  `;
+
+  const drawer = document.getElementById('detailDrawer');
+  drawer.classList.add('open');
+  drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function closeDetail() {
+  document.getElementById('detailDrawer').classList.remove('open');
+}
+
+// ── Bootstrap ─────────────────────────────────────────────────────────────────
+buildPortal('schedules', 'Schedules', 'View and manage your patient appointments')
+  .then(user => { if (user) loadSchedules(); });
+</script>
+</body>
+</html>

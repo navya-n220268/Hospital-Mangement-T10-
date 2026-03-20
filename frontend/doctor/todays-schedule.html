@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Today's Schedule — MediVita</title>
+<link rel="stylesheet" href="/medivita/assets/css/doctor.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+/* Timeline column */
+.timeline-col { display:flex; flex-direction:column; gap:0; }
+.tl-slot {
+  display:flex; gap:16px; padding-bottom:0;
+}
+.tl-left { display:flex; flex-direction:column; align-items:center; width:56px; flex-shrink:0; }
+.tl-time { font-size:.7rem; font-weight:700; color:var(--text-3); white-space:nowrap; padding-top:12px; }
+.tl-line { flex:1; width:2px; background:var(--border); margin:4px 0; min-height:20px; }
+.tl-dot { width:11px; height:11px; border-radius:50%; border:2px solid; flex-shrink:0; margin-top:12px; }
+.tl-card {
+  flex:1; background:white; border:1px solid var(--border); border-radius:var(--r-lg);
+  padding:16px 18px; margin-bottom:12px; transition:all var(--dur) var(--ease);
+  box-shadow:var(--sh-xs);
+}
+.tl-card:hover { box-shadow:var(--sh-md); border-color:var(--blue-lt); }
+.tl-card.active-slot { border-left:3px solid var(--blue); background:linear-gradient(135deg,#f0f9ff,#fff); }
+.tl-card.done-slot { opacity:.72; }
+.tl-card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:10px; }
+.tl-patient { display:flex; align-items:center; gap:10px; }
+.tl-avatar { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.76rem; font-weight:700; color:white; flex-shrink:0; }
+.tl-patient-info p { font-size:.86rem; font-weight:700; color:var(--text-1); }
+.tl-patient-info span { font-size:.73rem; color:var(--text-3); }
+.tl-card-meta { display:flex; gap:12px; font-size:.73rem; color:var(--text-3); flex-wrap:wrap; margin-bottom:12px; }
+.tl-card-meta span { display:flex; align-items:center; gap:5px; }
+.tl-card-meta i { color:var(--blue); }
+.tl-actions { display:flex; gap:8px; flex-wrap:wrap; }
+
+/* Stats bar */
+.stats-bar {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:14px;
+  background:white; border:1px solid var(--border); border-radius:var(--r-lg);
+  padding:18px 22px; margin-bottom:20px;
+}
+.sb-stat { text-align:center; padding:0 10px; border-right:1px solid var(--border); }
+.sb-stat:last-child { border-right:none; }
+.sb-stat h3 { font-family:var(--f-display); font-size:1.5rem; font-weight:700; margin-bottom:3px; }
+.sb-stat p { font-size:.71rem; color:var(--text-3); font-weight:500; }
+
+/* Calendar mini */
+.mini-cal { background:white; border:1px solid var(--border); border-radius:var(--r-lg); padding:18px; }
+.cal-hd { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.cal-hd h4 { font-family:var(--f-display); font-size:.86rem; font-weight:700; color:var(--text-1); }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+.cal-day-lbl { font-size:.62rem; font-weight:700; color:var(--text-4); padding:3px; text-align:center; text-transform:uppercase; }
+.cal-day { font-size:.75rem; padding:6px 4px; border-radius:var(--r-xs); cursor:pointer; transition:all var(--dur) var(--ease); color:var(--text-3); text-align:center; }
+.cal-day:hover { background:var(--blue-dim); color:var(--blue); }
+.cal-day.today { background:var(--blue); color:white; font-weight:700; }
+.cal-day.has-appt { font-weight:700; color:var(--teal-dk); }
+.cal-day.has-appt::after { content:''; display:block; width:4px; height:4px; background:var(--teal); border-radius:50%; margin:1px auto 0; }
+.cal-day.empty { pointer-events:none; }
+</style>
+</head>
+<body>
+<div class="portal-wrap">
+  <aside class="sidebar"></aside>
+  <div class="sb-overlay"></div>
+  <div class="main-area">
+    <div class="topbar"></div>
+    <div class="page-content">
+
+      <!-- Stats bar -->
+      <div class="stats-bar afu sec-gap">
+        <div class="sb-stat"><h3 style="color:var(--blue)">8</h3><p>Total Scheduled</p></div>
+        <div class="sb-stat"><h3 style="color:var(--green)">5</h3><p>Completed</p></div>
+        <div class="sb-stat"><h3 style="color:var(--amber)">2</h3><p>Waiting</p></div>
+        <div class="sb-stat"><h3 style="color:var(--red)">1</h3><p>Emergency</p></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start">
+
+        <!-- Timeline -->
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px" class="afu">
+            <h2 style="font-family:var(--f-display);font-size:1rem;font-weight:700;color:var(--text-1)">
+              <i class="fas fa-list-alt" style="color:var(--blue);margin-right:8px"></i>Appointment Timeline
+            </h2>
+            <div style="display:flex;gap:8px">
+              <select class="form-control" style="width:140px;padding:7px 12px;font-size:.76rem">
+                <option>All Patients</option>
+                <option>Completed</option>
+                <option>Pending</option>
+              </select>
+              <a href="/medivita/frontend/doctor/add-prescription.html" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Add Slot</a>
+            </div>
+          </div>
+
+          <div class="timeline-col" id="timelineEl"></div>
+        </div>
+
+        <!-- Mini calendar -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="mini-cal afu d2">
+            <div class="cal-hd">
+              <button style="background:var(--surface);border:1px solid var(--border);width:26px;height:26px;border-radius:var(--r-xs);cursor:pointer;font-size:.7rem;color:var(--text-3)"><i class="fas fa-chevron-left"></i></button>
+              <h4 id="calMonth">March 2026</h4>
+              <button style="background:var(--surface);border:1px solid var(--border);width:26px;height:26px;border-radius:var(--r-xs);cursor:pointer;font-size:.7rem;color:var(--text-3)"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+          </div>
+
+          <!-- Reminder -->
+          <div class="card afu d3">
+            <div class="card-hd"><h3><i class="fas fa-bell"></i> Reminders</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:10px;font-size:.79rem">
+                <div style="display:flex;gap:9px;align-items:flex-start">
+                  <i class="fas fa-circle" style="color:var(--red);font-size:.45rem;margin-top:6px;flex-shrink:0"></i>
+                  <p>Conference with oncology team — 4:00 PM</p>
+                </div>
+                <div style="display:flex;gap:9px;align-items:flex-start">
+                  <i class="fas fa-circle" style="color:var(--amber);font-size:.45rem;margin-top:6px;flex-shrink:0"></i>
+                  <p>Submit monthly report — by EOD</p>
+                </div>
+                <div style="display:flex;gap:9px;align-items:flex-start">
+                  <i class="fas fa-circle" style="color:var(--green);font-size:.45rem;margin-top:6px;flex-shrink:0"></i>
+                  <p>Review Priya Singh lab results</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script src="/medivita/assets/js/doctor.js?v=3"></script>
+<script>
+buildPortal('todays-schedule', "Today's Schedule", 'Manage your patient appointments');
+
+const appointments = [
+  { time:'09:00 AM', name:'Rajiv Mehta',   initials:'RM', grad:'linear-gradient(135deg,#667eea,#764ba2)', reason:'Chest Pain · Angina Assessment', room:'Rm 101', type:'In-Person', status:'completed', age:'54 yrs' },
+  { time:'10:00 AM', name:'Priya Singh',   initials:'PS', grad:'linear-gradient(135deg,#f093fb,#f5576c)', reason:'ECG Follow-up · Cardiac Review', room:'Rm 103', type:'In-Person', status:'active',    age:'38 yrs' },
+  { time:'11:30 AM', name:'Arun Kumar',    initials:'AK', grad:'linear-gradient(135deg,#4facfe,#00f2fe)', reason:'Hypertension · BP Monitoring',  room:'Rm 101', type:'In-Person', status:'waiting',   age:'62 yrs' },
+  { time:'12:30 PM', name:'Meena Joshi',   initials:'MJ', grad:'linear-gradient(135deg,#a18cd1,#fbc2eb)', reason:'Palpitations · New Consult',   room:'Rm 102', type:'Teleconsult',status:'scheduled', age:'45 yrs' },
+  { time:'02:00 PM', name:'Neha Patel',    initials:'NP', grad:'linear-gradient(135deg,#43e97b,#38f9d7)', reason:'Shortness of Breath · Review', room:'Rm 104', type:'In-Person', status:'scheduled', age:'29 yrs' },
+  { time:'03:00 PM', name:'Suresh Verma',  initials:'SV', grad:'linear-gradient(135deg,#fa709a,#fee140)', reason:'Post-op Follow-up · CABG',     room:'Rm 101', type:'In-Person', status:'scheduled', age:'67 yrs' },
+  { time:'04:00 PM', name:'Anita Roy',     initials:'AR', grad:'linear-gradient(135deg,#30cfd0,#330867)', reason:'Cholesterol Review · Diet Plan',room:'Rm 103', type:'Teleconsult',status:'scheduled', age:'51 yrs' },
+  { time:'05:00 PM', name:'Kiran Bhatia',  initials:'KB', grad:'linear-gradient(135deg,#f7971e,#ffd200)', reason:'Emergency · Acute MI suspected', room:'ER',    type:'Emergency', status:'emergency', age:'73 yrs' },
+];
+
+const statusCfg = {
+  completed: { badge:'badge-green', label:'Completed',  dotColor:'var(--green)' },
+  active:    { badge:'badge-blue',  label:'In Progress',dotColor:'var(--blue)'  },
+  waiting:   { badge:'badge-amber', label:'Waiting',    dotColor:'var(--amber)' },
+  scheduled: { badge:'badge-gray',  label:'Scheduled',  dotColor:'var(--border-2)' },
+  emergency: { badge:'badge-red',   label:'Emergency',  dotColor:'var(--red)'   },
+};
+
+const tl = document.getElementById('timelineEl');
+appointments.forEach((a, i) => {
+  const cfg = statusCfg[a.status];
+  const isLast = i === appointments.length - 1;
+  const typeIcon = a.type === 'Teleconsult' ? 'fa-video' : a.type === 'Emergency' ? 'fa-ambulance' : 'fa-hospital';
+  const extraClass = a.status === 'active' ? 'active-slot' : a.status === 'completed' ? 'done-slot' : '';
+
+  tl.innerHTML += `
+    <div class="tl-slot afu" style="animation-delay:${i*.06}s">
+      <div class="tl-left">
+        <div class="tl-time">${a.time}</div>
+        <div class="tl-dot" style="border-color:${cfg.dotColor};background:${a.status==='active'?cfg.dotColor:'white'}"></div>
+        ${!isLast ? '<div class="tl-line"></div>' : ''}
+      </div>
+      <div class="tl-card ${extraClass}">
+        <div class="tl-card-top">
+          <div class="tl-patient">
+            <div class="tl-avatar" style="background:${a.grad}">${a.initials}</div>
+            <div class="tl-patient-info">
+              <p>${a.name}</p>
+              <span>${a.age} · Patient</span>
+            </div>
+          </div>
+          <span class="badge ${cfg.badge}">${cfg.label}</span>
+        </div>
+        <div class="tl-card-meta">
+          <span><i class="fas fa-stethoscope"></i>${a.reason}</span>
+          <span><i class="fas fa-door-open"></i>${a.room}</span>
+          <span><i class="fas ${typeIcon}"></i>${a.type}</span>
+        </div>
+        <div class="tl-actions">
+          <button class="btn btn-ghost btn-xs" onclick="showToast('Opening patient record...')"><i class="fas fa-user"></i> View Patient</button>
+          ${a.status !== 'completed' ? `<button class="btn btn-primary btn-xs" onclick="showToast('Starting consultation...')"><i class="fas fa-stethoscope"></i> Start Consult</button>` : ''}
+          <button class="btn btn-teal btn-xs" onclick="window.location.href = '/medivita/frontend/doctor/add-prescription.html'"><i class="fas fa-file-prescription"></i> Prescribe</button>
+
+        </div>
+      </div>
+    </div>`;
+});
+
+// Mini calendar
+const now = new Date();
+const year = now.getFullYear();
+const month = now.getMonth();
+document.getElementById('calMonth').textContent = now.toLocaleDateString('en-IN', { month:'long', year:'numeric' });
+const firstDay = new Date(year, month, 1).getDay();
+const daysInMonth = new Date(year, month + 1, 0).getDate();
+const grid = document.getElementById('calGrid');
+const dayLabels = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+dayLabels.forEach(d => { grid.innerHTML += `<div class="cal-day-lbl">${d}</div>`; });
+for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="cal-day empty"></div>`;
+const apptDays = [3, 7, 10, 11, 14, 18, 22, 25];
+for (let d = 1; d <= daysInMonth; d++) {
+  const isToday = d === now.getDate();
+  const hasAppt = apptDays.includes(d);
+  grid.innerHTML += `<div class="cal-day${isToday?' today':''} ${hasAppt&&!isToday?'has-appt':''}">${d}</div>`;
+}
+</script>
+</body>
+</html>

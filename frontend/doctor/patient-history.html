@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Patient History — MediVita</title>
+<link rel="stylesheet" href="/medivita/assets/css/doctor.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+/* ── Page Layout ── */
+.ph-header {
+  background: white; border-radius: var(--r-xl); border: 1px solid var(--border);
+  box-shadow: var(--sh-xs); padding: 24px 32px; display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px; position: relative; overflow: hidden;
+}
+.ph-header::before {
+  content: ''; position: absolute; right: -40px; top: -40px;
+  width: 150px; height: 150px; border-radius: 50%;
+  background: rgba(14,165,233,.05);
+}
+.ph-title h2 { font-family: var(--f-display); font-size: 1.35rem; font-weight: 800; color: var(--text-1); margin-bottom: 6px; }
+.ph-title p { font-size: .88rem; color: var(--text-3); }
+.ph-meta { display: flex; align-items: center; gap: 10px; z-index: 1; }
+.ph-meta-box {
+  background: var(--blue-dim); border: 1px solid rgba(14,165,233,.2);
+  border-radius: var(--r-md); padding: 10px 18px;
+  text-align: right;
+}
+.ph-meta-box span { display: block; font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--blue); margin-bottom: 2px; }
+.ph-meta-box strong { font-size: 1rem; color: var(--blue-dk); font-weight: 800; }
+
+/* ── Search Bar ── */
+.search-bar {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  background: white; border: 1px solid var(--border); border-radius: var(--r-lg);
+  padding: 14px 18px; margin-bottom: 20px; box-shadow: var(--sh-xs);
+}
+.search-input-wrap { flex: 1; position: relative; min-width: 250px; }
+.search-input-wrap i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-4); font-size: .85rem; }
+.search-input {
+  width: 100%; padding: 10px 12px 10px 36px; border-radius: 99px; border: 1.5px solid var(--border);
+  background: var(--surface); font-family: var(--f-body); font-size: .85rem; color: var(--text-1);
+  outline: none; transition: all var(--dur) var(--ease);
+}
+.search-input:focus { border-color: var(--blue); background: white; box-shadow: 0 0 0 3px rgba(14,165,233,.1); }
+
+/* ── Table Container ── */
+.table-wrap {
+  background: white; border-radius: var(--r-lg); border: 1px solid var(--border);
+  box-shadow: var(--sh-sm); overflow-x: auto;
+}
+table { width: 100%; border-collapse: collapse; min-width: 900px; }
+th {
+  text-align: left; padding: 14px 20px; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--text-3); border-bottom: 2px solid var(--border); background: var(--surface); white-space: nowrap;
+}
+td {
+  padding: 16px 20px; font-size: .88rem; color: var(--text-1); border-bottom: 1px solid var(--surface); vertical-align: middle;
+}
+tbody tr:hover { background: var(--blue-dim); }
+
+/* ── Name + Avatar Cell ── */
+.name-cell { display: flex; align-items: center; gap: 12px; }
+.name-avatar {
+  width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: .8rem; font-weight: 700; color: white; flex-shrink: 0; background: linear-gradient(135deg, var(--blue-dk), var(--blue));
+}
+.name-info { display: flex; flex-direction: column; }
+.name-info strong { font-family: var(--f-display); font-size: .92rem; color: var(--text-1); }
+.name-info span { font-size: .7rem; color: var(--text-3); }
+
+/* ── Demographics Cell ── */
+.demo-cell p { font-weight: 600; color: var(--text-2); margin-bottom: 2px; }
+.demo-cell span { font-size: .75rem; color: var(--text-4); }
+
+/* ── Diagnosis Cell ── */
+.diag-cell strong { display: block; color: var(--text-1); font-weight: 700; margin-bottom: 3px; max-width: 200px; }
+
+/* ── Meds Cell ── */
+.med-list { list-style: none; padding: 0; margin: 0; }
+.med-list li { font-size: .78rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; color: var(--text-2); }
+.med-list li::before { content: '💊'; font-size: .7rem; }
+.med-name { font-weight: 700; color: var(--teal-dk); }
+.med-str { color: var(--text-4); }
+
+/* ── Empty State ── */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text-4); }
+.empty-state i { font-size: 3rem; margin-bottom: 16px; display: block; opacity: .5; }
+.empty-state h3 { font-size: 1.1rem; color: var(--text-2); margin-bottom: 8px; }
+
+/* ── Skeletons ── */
+.skel { background: var(--surface); border-radius: 4px; animation: pulse 1.4s infinite; display: inline-block; height: 16px; width: 60%; }
+.skel.rnd { border-radius: 50%; width: 38px; height: 38px; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
+</style>
+</head>
+<body>
+<div class="portal-wrap">
+  <aside class="sidebar"></aside>
+  <div class="sb-overlay"></div>
+  <div class="main-area">
+    <div class="topbar"></div>
+    <div class="page-content">
+
+      <!-- Header -->
+      <div class="ph-header afu">
+        <div class="ph-title">
+          <h2>Patient History</h2>
+          <p>Review diagnosis, treatments, and prescriptions restricted to your department.</p>
+        </div>
+        <div class="ph-meta">
+          <div class="ph-meta-box">
+            <span>Department Restrict</span>
+            <strong id="deptBadge"><i class="fas fa-spinner fa-spin"></i></strong>
+          </div>
+          <div class="ph-meta-box" style="background:var(--green-dim);border-color:rgba(16,185,129,.2);">
+            <strong id="totalRecords" style="color:var(--green-dk)">-</strong>
+            <span style="color:var(--green)">Records</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-bar afu d1">
+        <div class="search-input-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" class="search-input" id="searchInput" placeholder="Search by patient name, diagnosis, or doctor..." oninput="filterHistory()"/>
+        </div>
+        <button class="btn btn-primary" onclick="window.location.href = '/medivita/frontend/doctor/add-prescription.html'"><i class="fas fa-plus"></i> New Prescription</button>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrap afu d2">
+        <table>
+          <thead>
+            <tr>
+              <th>Patient Name</th>
+              <th>Age & Gender</th>
+              <th>Diagnosis</th>
+              <th>Prescribed Medicines</th>
+              <th>Prescribing Doctor</th>
+              <th style="width:130px">Appt Date</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <!-- Skeleton Loading -->
+            <tr>
+              <td><div class="name-cell"><div class="skel rnd"></div><div style="flex:1"><div class="skel" style="width:100%;margin-bottom:4px"></div><div class="skel" style="width:60%"></div></div></div></td>
+              <td><div class="skel" style="width:80%;margin-bottom:4px"></div><div class="skel" style="width:50%"></div></td>
+              <td><div class="skel" style="width:90%"></div></td>
+              <td><div class="skel" style="width:100%"></div></td>
+              <td><div class="skel" style="width:80%;margin-bottom:4px"></div></td>
+              <td><div class="skel" style="width:70%"></div></td>
+            </tr>
+            <tr>
+              <td><div class="name-cell"><div class="skel rnd"></div><div style="flex:1"><div class="skel" style="width:100%;margin-bottom:4px"></div><div class="skel" style="width:60%"></div></div></div></td>
+              <td><div class="skel" style="width:80%;margin-bottom:4px"></div><div class="skel" style="width:50%"></div></td>
+              <td><div class="skel" style="width:90%"></div></td>
+              <td><div class="skel" style="width:100%"></div></td>
+              <td><div class="skel" style="width:80%;margin-bottom:4px"></div></td>
+              <td><div class="skel" style="width:70%"></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/medivita/assets/js/doctor.js?v=3"></script>
+<script>
+let allHistory = [];
+
+async function loadPatientHistory() {
+  const tbody = document.getElementById('historyTableBody');
+  const deptBadge = document.getElementById('deptBadge');
+  const totalRecs = document.getElementById('totalRecords');
+
+  try {
+    const res  = await fetch('/medivita/backend/patient/get_patient_history.php');
+    const data = await res.json();
+    
+    if (!data.success) throw new Error(data.message || 'Error fetching records.');
+    
+    // Set Header Data
+    deptBadge.textContent = data.department;
+    totalRecs.textContent = data.count > 0 ? data.count : '0';
+    allHistory = data.records;
+    
+    renderHistory(allHistory);
+    
+  } catch(e) {
+    console.error(e);
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--red)"><i class="fas fa-exclamation-circle"></i> Failed to load patient history. ${e.message}</td></tr>`;
+    deptBadge.innerHTML = `<span style="color:var(--red);text-transform:none"><i class="fas fa-times"></i> Error</span>`;
+  }
+}
+
+function renderHistory(records) {
+  const tbody = document.getElementById('historyTableBody');
+  
+  if (records.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6">
+          <div class="empty-state">
+            <i class="fas fa-folder-open"></i>
+            <h3>No Records Found</h3>
+            <p>No patient history records exist for your department matching your criteria.</p>
+          </div>
+        </td>
+      </tr>`;
+    return;
+  }
+  
+  const html = records.map(r => {
+    // Generate initials for avatar
+    const initials = (r.patient_name || 'U').split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+    
+    // Format medicines
+    let medsHtml = '<ul class="med-list">';
+    if (r.medicines && r.medicines.length > 0) {
+      r.medicines.forEach(m => {
+        medsHtml += `<li><span class="med-name">${m.name || m}</span> <span class="med-str">${m.strength || ''}</span></li>`;
+      });
+    } else {
+      medsHtml += `<li><span class="med-str">—</span></li>`;
+    }
+    medsHtml += '</ul>';
+    
+    // Format Date
+    let dateStr = r.appointment_date || '—';
+    if (dateStr !== '—') {
+      try {
+        dateStr = new Date(dateStr).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+      } catch(e) {}
+    }
+
+    return `
+      <tr>
+        <td>
+          <div class="name-cell">
+            <div class="name-avatar">${initials}</div>
+            <div class="name-info">
+              <strong>${r.patient_name}</strong>
+              <span>${r.patient_id.slice(-6).toUpperCase()}</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="demo-cell">
+            <p>${r.age === '—' ? 'Age: —' : r.age + ' yrs'}</p>
+            <span>${r.gender}</span>
+          </div>
+        </td>
+        <td>
+          <div class="diag-cell">
+            <strong>${r.diagnosis}</strong>
+          </div>
+        </td>
+        <td>${medsHtml}</td>
+        <td>
+          <div style="font-weight:600;color:var(--text-1)">${r.doctor_name}</div>
+          <div style="font-size:.75rem;color:var(--text-3)">${r.department}</div>
+        </td>
+        <td style="font-weight:600;color:var(--blue-dk)">${dateStr}</td>
+      </tr>
+    `;
+  }).join('');
+  
+  tbody.innerHTML = html;
+}
+
+function filterHistory() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  
+  if (!q) {
+    renderHistory(allHistory);
+    return;
+  }
+  
+  const filtered = allHistory.filter(r => {
+    return (r.patient_name || '').toLowerCase().includes(q)
+        || (r.diagnosis || '').toLowerCase().includes(q)
+        || (r.doctor_name || '').toLowerCase().includes(q)
+        || (r.patient_id || '').toLowerCase().includes(q);
+  });
+  
+  renderHistory(filtered);
+}
+
+// Bootstrap
+buildPortal('patient-history', 'Patient History', 'Browse and manage patient records')
+  .then(user => {
+    if (user) {
+      loadPatientHistory();
+    }
+  });
+</script>
+</body>
+</html>
