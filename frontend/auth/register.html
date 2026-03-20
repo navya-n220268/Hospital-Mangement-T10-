@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Create Account — MediVita Hospital Portal</title>
+<meta name="description" content="Create your MediVita Hospital patient or doctor account and manage your healthcare in one place."/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="/medivita/assets/css/styles.css"/>
+<style>
+  /* ── Register page extras ── */
+
+  /* Rotating health quotes — displayed one at a time */
+  .quote-rotator { position: relative; min-height: 90px; }
+
+  .hq {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .6s ease, transform .6s ease;
+    pointer-events: none;
+  }
+  .hq.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    position: relative;
+  }
+
+  /* Dot indicator */
+  .quote-dots { display: flex; gap: 6px; margin-top: 10px; }
+  .qdot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(0,191,182,.3);
+    cursor: pointer;
+    transition: background .3s, transform .3s;
+  }
+  .qdot.active { background: var(--teal-400); transform: scale(1.25); }
+
+  /* Role-conditional field sections */
+  .role-fields {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height .45s ease, opacity .35s ease, margin .35s ease;
+    margin-bottom: 0;
+  }
+  .role-fields.visible {
+    max-height: 500px;
+    opacity: 1;
+    margin-bottom: 0;
+  }
+
+  /* Section heading inside the conditional area */
+  .section-label {
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--teal-700);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--g200);
+  }
+</style>
+</head>
+<body>
+
+<!-- Mobile brand header -->
+<div class="mobile-brand">
+  <div class="mb-mark"><i class="fas fa-heartbeat"></i></div>
+  <div class="mb-name">MediVita<small>Create Account</small></div>
+</div>
+
+<div class="auth-page">
+
+  <!-- ═══════════════════ LEFT PANEL ═══════════════════ -->
+  <div class="auth-panel">
+    <div class="ap-deco"></div>
+
+    <!-- Brand -->
+    <a href="/medivita/index.html" class="ap-logo" style="text-decoration:none;">
+      <div class="ap-logo-mark"><i class="fas fa-heartbeat"></i></div>
+      <div class="ap-logo-txt">MediVita<small>Hospital &amp; Medical Centre</small></div>
+    </a>
+
+    <!-- Tagline -->
+    <div class="ap-body">
+      <h2 class="ap-tagline">Begin Your<br/><em>Health Journey</em></h2>
+
+      <!-- Rotating health quotes panel -->
+      <div class="ap-quote" style="padding-bottom:16px;">
+        <div class="quote-rotator" id="quoteRotator">
+
+          <div class="hq active" data-idx="0">
+            <p>"The first wealth is health — invest in it every single day."</p>
+            <cite>— Ralph Waldo Emerson</cite>
+          </div>
+
+          <div class="hq" data-idx="1">
+            <p>"Take care of your body. It's the only place you have to live."</p>
+            <cite>— Jim Rohn</cite>
+          </div>
+
+          <div class="hq" data-idx="2">
+            <p>"Health is not valued until sickness comes. Start your prevention today."</p>
+            <cite>— Thomas Fuller</cite>
+          </div>
+
+          <div class="hq" data-idx="3">
+            <p>"An ounce of prevention is worth a pound of cure."</p>
+            <cite>— Benjamin Franklin</cite>
+          </div>
+
+          <div class="hq" data-idx="4">
+            <p>"A healthy outside starts from the inside — nourish both."</p>
+            <cite>— Robert Urich</cite>
+          </div>
+
+        </div>
+        <!-- Dot navigation -->
+        <div class="quote-dots" id="quoteDots"></div>
+      </div>
+
+      <div class="ap-badges">
+        <div class="ap-badge"><i class="fas fa-user-check"></i> Verified Profiles</div>
+        <div class="ap-badge"><i class="fas fa-lock"></i> Data Encrypted</div>
+        <div class="ap-badge"><i class="fas fa-calendar-check"></i> Easy Scheduling</div>
+      </div>
+    </div>
+
+    <!-- Panel footer -->
+    <div class="ap-foot">
+      &copy; 2026 MediVita Hospital. All rights reserved.
+      &nbsp;&middot;&nbsp;
+      <a href="/medivita/index.html">Back to Website</a>
+    </div>
+  </div><!-- /auth-panel -->
+
+
+  <!-- ═══════════════════ RIGHT FORM ═══════════════════ -->
+  <div class="auth-form-area">
+    <div class="auth-card wide">
+
+      <!-- Header -->
+      <div class="ac-header">
+        <div class="ac-icon"><i class="fas fa-user-plus"></i></div>
+        <h1 class="ac-title">Create Account</h1>
+        <p class="ac-sub">Join MediVita and manage your healthcare in one place</p>
+      </div>
+
+      <!-- Mobile quote strip -->
+      <div class="quote-strip" id="mobileQuoteStrip">
+        <i class="fas fa-quote-left"></i>
+        <div>
+          <p id="mobileQuoteText">"The first wealth is health — invest in it every single day."</p>
+          <cite id="mobileQuoteCite">— Ralph Waldo Emerson</cite>
+        </div>
+      </div>
+
+      <!-- Alert -->
+      <div class="alert" id="reg-alert" role="alert" aria-live="polite">
+        <i class="fas fa-circle-exclamation"></i>
+        <span class="alert-msg"></span>
+      </div>
+
+      <!-- Register form — submitted via JS fetch to backend/register.php -->
+      <form id="registerForm" novalidate autocomplete="on">
+
+        <!-- Row 1: Full Name + Email -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="reg-name">
+              Full Name <span class="req">*</span>
+            </label>
+            <div class="input-wrap">
+              <i class="fi fas fa-user"></i>
+              <input
+                type="text"
+                id="reg-name"
+                name="name"
+                class="form-input"
+                placeholder="e.g. Rahul Sharma"
+                autocomplete="name"
+                required
+              />
+            </div>
+            <span class="field-err" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reg-email">
+              Email Address <span class="req">*</span>
+            </label>
+            <div class="input-wrap">
+              <i class="fi fas fa-envelope"></i>
+              <input
+                type="email"
+                id="reg-email"
+                name="email"
+                class="form-input"
+                placeholder="you@example.com"
+                autocomplete="email"
+                required
+              />
+            </div>
+            <span class="field-err" aria-live="polite"></span>
+          </div>
+        </div>
+
+        <!-- Row 2: Phone + Role -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="reg-phone">
+              Phone Number <span class="req">*</span>
+            </label>
+            <div class="input-wrap">
+              <i class="fi fas fa-phone"></i>
+              <input
+                type="tel"
+                id="reg-phone"
+                name="phone"
+                class="form-input"
+                placeholder="+91 98765 43210"
+                autocomplete="tel"
+                required
+              />
+            </div>
+            <span class="field-err" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reg-role">
+              Register as <span class="req">*</span>
+            </label>
+            <div class="input-wrap">
+              <i class="fi fas fa-user-tag"></i>
+              <select id="reg-role" name="role" class="form-select" required>
+                <option value="">— Select role —</option>
+                <option value="patient">Patient</option>
+                <option value="doctor">Doctor</option>
+              </select>
+            </div>
+            <span class="field-err" aria-live="polite"></span>
+          </div>
+        </div>
+
+        <!-- ══ PATIENT-ONLY FIELDS ══════════════════════════════ -->
+        <div class="role-fields" id="patientFields">
+          <p class="section-label"><i class="fas fa-notes-medical"></i> Patient Information</p>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="reg-age">
+                Age <span class="req">*</span>
+              </label>
+              <div class="input-wrap">
+                <i class="fi fas fa-calendar-days"></i>
+                <input
+                  type="number"
+                  id="reg-age"
+                  name="age"
+                  class="form-input"
+                  placeholder="e.g. 28"
+                  min="1"
+                  max="120"
+                />
+              </div>
+              <span class="field-err" aria-live="polite"></span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-gender">
+                Gender <span class="req">*</span>
+              </label>
+              <div class="input-wrap">
+                <i class="fi fas fa-venus-mars"></i>
+                <select id="reg-gender" name="gender" class="form-select">
+                  <option value="">— Select gender —</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <span class="field-err" aria-live="polite"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ DOCTOR-ONLY FIELDS ═══════════════════════════════ -->
+        <div class="role-fields" id="doctorFields">
+          <p class="section-label"><i class="fas fa-stethoscope"></i> Professional Details</p>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="reg-specialization">
+                Specialization <span class="req">*</span>
+              </label>
+              <div class="input-wrap">
+                <i class="fi fas fa-stethoscope"></i>
+                <input
+                  type="text"
+                  id="reg-specialization"
+                  name="specialization"
+                  class="form-input"
+                  placeholder="e.g. Cardiologist"
+                />
+              </div>
+              <span class="field-err" aria-live="polite"></span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-department">
+                Department <span class="req">*</span>
+              </label>
+              <div class="input-wrap">
+                <i class="fi fas fa-hospital"></i>
+                <input
+                  type="text"
+                  id="reg-department"
+                  name="department"
+                  class="form-input"
+                  placeholder="e.g. Cardiology"
+                />
+              </div>
+              <span class="field-err" aria-live="polite"></span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reg-experience">
+              Years of Experience
+            </label>
+            <div class="input-wrap">
+              <i class="fi fas fa-briefcase-medical"></i>
+              <input
+                type="text"
+                id="reg-experience"
+                name="experience"
+                class="form-input"
+                placeholder="e.g. 8 years"
+              />
+            </div>
+            <span class="field-err" aria-live="polite"></span>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label class="form-label" for="reg-password">
+            Password <span class="req">*</span>
+          </label>
+          <div class="input-wrap">
+            <i class="fi fas fa-lock"></i>
+            <input
+              type="password"
+              id="reg-password"
+              name="password"
+              class="form-input"
+              placeholder="At least 8 characters"
+              autocomplete="new-password"
+              required
+            />
+            <button
+              type="button"
+              class="pw-eye"
+              data-pw-toggle
+              data-target="reg-password"
+              title="Show password"
+              aria-label="Toggle password visibility"
+            ><i class="fas fa-eye"></i></button>
+          </div>
+          <!-- Password strength meter -->
+          <div class="pw-strength">
+            <div class="pw-strength-bar">
+              <div class="pw-seg"></div>
+              <div class="pw-seg"></div>
+              <div class="pw-seg"></div>
+              <div class="pw-seg"></div>
+            </div>
+            <span class="pw-strength-lbl"></span>
+          </div>
+          <span class="field-err" aria-live="polite"></span>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+          <label class="form-label" for="reg-confirm">
+            Confirm Password <span class="req">*</span>
+          </label>
+          <div class="input-wrap">
+            <i class="fi fas fa-lock"></i>
+            <input
+              type="password"
+              id="reg-confirm"
+              name="confirm"
+              class="form-input"
+              placeholder="Repeat your password"
+              autocomplete="new-password"
+              required
+            />
+            <button
+              type="button"
+              class="pw-eye"
+              data-pw-toggle
+              data-target="reg-confirm"
+              title="Show password"
+              aria-label="Toggle confirm password visibility"
+            ><i class="fas fa-eye"></i></button>
+          </div>
+          <span class="field-err" aria-live="polite"></span>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" id="regSubmitBtn" class="btn-submit">
+          <i class="fas fa-user-plus"></i> Create My Account
+        </button>
+
+      </form>
+
+      <div class="auth-divider"><span>Already have an account?</span></div>
+
+      <div class="auth-foot">
+        <a href="/medivita/frontend/auth/login.html">&larr; Sign in instead</a>
+      </div>
+
+      <a href="/medivita/index.html" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to main website
+      </a>
+
+    </div><!-- /auth-card -->
+  </div><!-- /auth-form-area -->
+
+</div><!-- /auth-page -->
+
+<script src="/medivita/assets/js/script.js"></script>
+<script>
+/* ── Rotating health quotes (left panel) ── */
+(function () {
+  var quotes = document.querySelectorAll('.hq');
+  var dotsEl = document.getElementById('quoteDots');
+  if (!quotes.length || !dotsEl) return;
+  var current = 0;
+
+  quotes.forEach(function (_, i) {
+    var d = document.createElement('div');
+    d.className = 'qdot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', function () { goTo(i); });
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(idx) {
+    quotes[current].classList.remove('active');
+    dotsEl.querySelectorAll('.qdot')[current].classList.remove('active');
+    current = idx;
+    quotes[current].classList.add('active');
+    dotsEl.querySelectorAll('.qdot')[current].classList.add('active');
+    syncMobileQuote(current);
+  }
+
+  setInterval(function () { goTo((current + 1) % quotes.length); }, 4000);
+
+  var mobileQuotes = [
+    { text: '"The first wealth is health — invest in it every single day."', cite: '— Ralph Waldo Emerson' },
+    { text: '"Take care of your body. It\'s the only place you have to live."', cite: '— Jim Rohn' },
+    { text: '"Health is not valued until sickness comes. Start your prevention today."', cite: '— Thomas Fuller' },
+    { text: '"An ounce of prevention is worth a pound of cure."', cite: '— Benjamin Franklin' },
+    { text: '"A healthy outside starts from the inside — nourish both."', cite: '— Robert Urich' },
+  ];
+
+  function syncMobileQuote(idx) {
+    var t = document.getElementById('mobileQuoteText');
+    var c = document.getElementById('mobileQuoteCite');
+    if (t) t.textContent = mobileQuotes[idx].text;
+    if (c) c.textContent = mobileQuotes[idx].cite;
+  }
+})();
+</script>
+</body>
+</html>
