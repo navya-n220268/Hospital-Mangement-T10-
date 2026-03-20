@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Complete Your Profile — MediVita Hospital Portal</title>
+<meta name="description" content="Complete your MediVita profile to start using the hospital portal."/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="/medivita/assets/css/styles.css"/>
+<style>
+  /* ── Extra styles specific to complete-profile page ── */
+  .google-info-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: linear-gradient(135deg, var(--teal-50), #cdf5f3);
+    border: 1px solid var(--teal-200);
+    border-left: 4px solid var(--teal-500);
+    border-radius: var(--r12);
+    padding: 14px 18px;
+    margin-bottom: 24px;
+  }
+  .google-info-bar .g-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--teal-700), var(--teal-500));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .google-info-bar .g-text strong {
+    display: block;
+    font-size: .93rem;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .google-info-bar .g-text span {
+    font-size: .82rem;
+    color: var(--g500);
+  }
+  .google-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #fff;
+    border: 1px solid var(--g200);
+    border-radius: var(--r99);
+    padding: 3px 10px;
+    font-size: .73rem;
+    font-weight: 600;
+    color: var(--g700);
+    letter-spacing: .02em;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .google-badge i { color: #4285F4; }
+
+  /* Role dropdown */
+  select.form-input {
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+  }
+  .input-wrap i {
+    pointer-events: none;
+  }
+
+  .step-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .step-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--g200);
+  }
+  .step-dot.active { background: var(--teal-500); width: 24px; border-radius: 4px; }
+
+  .phone-hint {
+    font-size: .76rem;
+    color: var(--g500);
+    padding-left: 16px;
+    margin-top: 5px;
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+<!-- Mobile brand header -->
+<div class="mobile-brand">
+  <div class="mb-mark"><i class="fas fa-heartbeat"></i></div>
+  <div class="mb-name">MediVita<small>Hospital Portal</small></div>
+</div>
+
+<!-- Two-column auth layout -->
+<div class="auth-page">
+
+  <!-- ═══ LEFT PANEL ═══ -->
+  <div class="auth-panel">
+    <div class="ap-deco"></div>
+
+    <a href="/medivita/index.html" class="ap-logo" style="text-decoration:none;">
+      <div class="ap-logo-mark"><i class="fas fa-heartbeat"></i></div>
+      <div class="ap-logo-txt">MediVita<small>Hospital &amp; Medical Centre</small></div>
+    </a>
+
+    <div class="ap-body">
+      <h2 class="ap-tagline">Almost<br/><em>There!</em></h2>
+
+      <div class="ap-quote">
+        <p>"Providing a few more details helps us personalise your care experience and connect you with the right medical team."</p>
+        <cite>— MediVita Care Team</cite>
+      </div>
+
+      <div class="ap-badges">
+        <div class="ap-badge"><i class="fas fa-shield-heart"></i> Secure &amp; Private</div>
+        <div class="ap-badge"><i class="fas fa-lock"></i> Encrypted Data</div>
+        <div class="ap-badge"><i class="fas fa-user-md"></i> Personalised Care</div>
+        <div class="ap-badge"><i class="fab fa-google"></i> Google Verified</div>
+      </div>
+    </div>
+
+    <div class="ap-foot">
+      &copy; 2026 MediVita Hospital. All rights reserved.
+      &nbsp;&middot;&nbsp;
+      <a href="/medivita/index.html">Back to Website</a>
+    </div>
+  </div><!-- /auth-panel -->
+
+  <!-- ═══ RIGHT FORM ═══ -->
+  <div class="auth-form-area">
+    <div class="auth-card">
+
+      <!-- Header -->
+      <div class="ac-header">
+        <div class="ac-icon"><i class="fas fa-user-plus"></i></div>
+        <h1 class="ac-title">Complete Profile</h1>
+        <p class="ac-sub">Just a couple more details to set up your account</p>
+      </div>
+
+      <!-- Step indicator -->
+      <div class="step-indicator">
+        <div class="step-dot"></div>
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+      </div>
+
+      <!-- Alert box -->
+      <div class="alert" id="profile-alert" role="alert" aria-live="polite">
+        <i class="fas fa-circle-exclamation"></i>
+        <span class="alert-msg"></span>
+      </div>
+
+      <!-- Google account info strip (populated by JS) -->
+      <div class="google-info-bar" id="google-info-bar">
+        <div class="g-avatar"><i class="fab fa-google"></i></div>
+        <div class="g-text">
+          <strong id="g-display-name">Loading...</strong>
+          <span id="g-display-email">—</span>
+        </div>
+        <div class="google-badge"><i class="fab fa-google"></i> Verified</div>
+      </div>
+
+      <!-- Profile form -->
+      <form id="profileForm" novalidate autocomplete="on">
+
+        <!-- Phone Number -->
+        <div class="form-group">
+          <label class="form-label" for="phone">
+            Phone Number <span class="req">*</span>
+          </label>
+          <div class="input-wrap">
+            <i class="fi fas fa-phone"></i>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              class="form-input"
+              placeholder="+91 98765 43210"
+              autocomplete="tel"
+              maxlength="15"
+              required
+            />
+          </div>
+          <span class="phone-hint">Enter with country code, e.g. +91 9876543210</span>
+          <span class="field-err" aria-live="polite"></span>
+        </div>
+
+        <!-- Role selector -->
+        <div class="form-group">
+          <label class="form-label" for="role">
+            I am a <span class="req">*</span>
+          </label>
+          <div class="input-wrap">
+            <i class="fi fas fa-user-tag"></i>
+            <select id="role" name="role" class="form-input" required>
+              <option value="" disabled selected>Select Role</option>
+              <option value="patient">Patient</option>
+              <option value="doctor">Doctor</option>
+            </select>
+          </div>
+          <span class="field-err" id="role-err" aria-live="polite"></span>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" id="profileSubmitBtn" class="btn-submit">
+          <i class="fas fa-check-circle"></i> Create My Account
+        </button>
+
+      </form>
+
+      <div class="auth-divider"><span>Signed in with Google</span></div>
+
+      <div class="auth-foot">
+        Not you? &nbsp;<a href="/medivita/frontend/auth/login.html" id="wrongAccountLink">Use a different account &rarr;</a>
+      </div>
+
+      <a href="/medivita/frontend/auth/login.html" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Login
+      </a>
+
+    </div><!-- /auth-card -->
+  </div><!-- /auth-form-area -->
+
+</div><!-- /auth-page -->
+
+<script>
+(function () {
+  'use strict';
+
+  // ── Populate Google info strip via session data injected by PHP ──
+  // We fetch session data from a lightweight endpoint
+  fetch('/medivita/backend/patient/get-session-info.php')
+    .then(r => r.json())
+    .then(data => {
+      if (!data.google_name && !data.google_email) {
+        // No session — user landed here without OAuth flow
+        window.location.href = '/medivita/frontend/auth/login.html';
+        return;
+      }
+      document.getElementById('g-display-name').textContent  = data.google_name  || '—';
+      document.getElementById('g-display-email').textContent = data.google_email || '—';
+    })
+    .catch(() => {
+      window.location.href = '/medivita/frontend/auth/login.html';
+    });
+
+
+
+  // ── Alert helper ─────────────────────────────────────────────────
+  function showAlert(msg, type) {
+    const box = document.getElementById('profile-alert');
+    box.querySelector('.alert-msg').textContent = msg;
+    box.className = 'alert visible alert-' + (type || 'error');
+  }
+  function hideAlert() {
+    document.getElementById('profile-alert').className = 'alert';
+  }
+
+  // ── Phone validation ─────────────────────────────────────────────
+  function validatePhone(val) {
+    // Allow optional + prefix, digits, spaces, dashes, parentheses, 7–15 chars
+    return /^\+?[\d\s\-().]{7,15}$/.test(val.trim());
+  }
+
+  // ── Form submission ──────────────────────────────────────────────
+  document.getElementById('profileForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    hideAlert();
+
+    const phone    = document.getElementById('phone').value.trim();
+    const role     = document.getElementById('role').value;
+    const phoneErr = document.querySelector('#phone ~ .field-err') ||
+                     document.querySelector('.field-err');
+    const roleErr  = document.getElementById('role-err');
+
+    let valid = true;
+
+    // Validate phone
+    if (!phone) {
+      phoneErr.textContent = 'Phone number is required.';
+      valid = false;
+    } else if (!validatePhone(phone)) {
+      phoneErr.textContent = 'Please enter a valid phone number.';
+      valid = false;
+    } else {
+      phoneErr.textContent = '';
+    }
+
+    // Validate role
+    if (!role) {
+      roleErr.textContent = 'Please select your role.';
+      valid = false;
+    } else {
+      roleErr.textContent = '';
+    }
+
+    if (!valid) return;
+
+    // Disable button, show spinner
+    const btn = document.getElementById('profileSubmitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+
+    fetch('/medivita/backend/auth/save-profile.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ phone, role })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        showAlert('Profile saved! Redirecting…', 'success');
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Done!';
+        setTimeout(() => {
+          window.location.href = data.redirect;
+        }, 1000);
+      } else {
+        showAlert(data.message || 'Something went wrong. Please try again.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Create My Account';
+      }
+    })
+    .catch(() => {
+      showAlert('Network error. Please check your connection and try again.', 'error');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-check-circle"></i> Create My Account';
+    });
+  });
+
+  // ── Phone input — restrict to valid chars while typing ───────────
+  document.getElementById('phone').addEventListener('input', function () {
+    this.value = this.value.replace(/[^\d\s\-+().]/g, '');
+  });
+})();
+</script>
+</body>
+</html>
