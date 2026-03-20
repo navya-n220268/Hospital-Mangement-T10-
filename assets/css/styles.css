@@ -1,0 +1,727 @@
+/* ============================================================
+   MediVita Hospital — Auth Pages Shared Stylesheet
+   Used by: login.html, register.html
+   ============================================================ */
+
+/* ── RESET & BASE ──────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Brand palette — mirrors index.html */
+  --teal-900: #003d3b;
+  --teal-800: #005450;
+  --teal-700: #006b66;
+  --teal-600: #007d78;
+  --teal-500: #009e96;
+  --teal-400: #00bfb6;
+  --teal-200: #99e5e2;
+  --teal-50:  #e6faf9;
+
+  --warm-white: #fafaf8;
+  --cream:      #f4f1eb;
+  --navy:       #0b1f3a;
+  --gold:       #c9993f;
+
+  --g900: #111827;
+  --g700: #374151;
+  --g500: #6b7280;
+  --g400: #9ca3af;
+  --g300: #d1d5db;
+  --g200: #e5e7eb;
+  --g100: #f3f4f6;
+  --g50:  #f9fafb;
+  --white: #ffffff;
+
+  --red:         #c0392b;
+  --red-mid:     #dc2626;
+  --red-light:   #fdedec;
+  --red-border:  #fca5a5;
+
+  --success:        #15803d;
+  --success-mid:    #16a34a;
+  --success-light:  #f0fdf4;
+  --success-border: #86efac;
+
+  /* Typography */
+  --fd: 'Cormorant Garamond', Georgia, serif;
+  --fb: 'Outfit', sans-serif;
+
+  /* Shadows */
+  --sh-sm:  0 1px 4px rgba(0,0,0,.06);
+  --sh-md:  0 4px 24px rgba(0,0,0,.10);
+  --sh-lg:  0 12px 48px rgba(0,0,0,.14);
+  --sh-xl:  0 24px 72px rgba(0,0,0,.18);
+  --sh-glow: 0 0 0 3px rgba(0,158,150,.14);
+
+  /* Radii */
+  --r4:  4px;
+  --r8:  8px;
+  --r12: 12px;
+  --r16: 16px;
+  --r20: 20px;
+  --r99: 99px;
+
+  --ease: .3s cubic-bezier(.22, 1, .36, 1);
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--fb);
+  color: var(--g900);
+  background: var(--warm-white);
+  min-height: 100vh;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+button, input, select, textarea { font-family: var(--fb); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--g100); }
+::-webkit-scrollbar-thumb { background: var(--teal-500); border-radius: 99px; }
+
+
+/* ── PAGE LAYOUT (two-column split) ────────────────────────── */
+/*
+  Desktop  : [Decorative panel | Form area]  50/50
+  ≤ 900px  : Form area only (panel hidden)
+*/
+.auth-page {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+
+/* ── LEFT DECORATIVE PANEL ──────────────────────────────────── */
+.auth-panel {
+  position: relative;
+  background: linear-gradient(148deg, var(--teal-900) 0%, #004d48 45%, var(--teal-700) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 52px;
+  overflow: hidden;
+}
+
+/* Dot-grid texture */
+.auth-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,.055) 1px, transparent 1px);
+  background-size: 30px 30px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Large decorative circle — bottom-right */
+.auth-panel::after {
+  content: '';
+  position: absolute;
+  bottom: -130px;
+  right: -90px;
+  width: 440px;
+  height: 440px;
+  border-radius: 50%;
+  background: rgba(0,191,182,.11);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Small decorative circle — top-left */
+.ap-deco {
+  position: absolute;
+  top: -90px;
+  left: -70px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.04);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* All panel children sit above decorative layers */
+.ap-logo,
+.ap-body,
+.ap-foot { position: relative; z-index: 1; }
+
+/* Brand logo row */
+.ap-logo {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.ap-logo-mark {
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, var(--teal-500), var(--teal-400));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(0,158,150,.4);
+  flex-shrink: 0;
+}
+
+.ap-logo-txt {
+  font-family: var(--fd);
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.ap-logo-txt small {
+  display: block;
+  font-family: var(--fb);
+  font-size: .62rem;
+  font-weight: 400;
+  opacity: .65;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* Tagline headline */
+.ap-tagline {
+  font-family: var(--fd);
+  font-size: clamp(2rem, 3.2vw, 3rem);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.18;
+  margin-bottom: 22px;
+}
+
+.ap-tagline em {
+  font-style: italic;
+  color: var(--teal-400);
+}
+
+/* Quote block */
+.ap-quote {
+  background: rgba(255,255,255,.09);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.16);
+  border-left: 4px solid var(--teal-400);
+  border-radius: var(--r16);
+  padding: 18px 22px;
+  margin-bottom: 28px;
+}
+
+.ap-quote p {
+  font-size: 1rem;
+  color: rgba(255,255,255,.88);
+  font-style: italic;
+  line-height: 1.78;
+  margin-bottom: 9px;
+}
+
+.ap-quote cite {
+  font-size: .82rem;
+  color: var(--teal-400);
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* Feature badge pills */
+.ap-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.ap-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255,255,255,.09);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: var(--r99);
+  padding: 7px 16px;
+  font-size: .82rem;
+  color: rgba(255,255,255,.82);
+}
+
+.ap-badge i {
+  color: var(--teal-400);
+  font-size: .76rem;
+}
+
+/* Panel footer */
+.ap-foot {
+  font-size: .78rem;
+  color: rgba(255,255,255,.38);
+  line-height: 1.7;
+}
+
+.ap-foot a {
+  color: rgba(255,255,255,.5);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ap-foot a:hover { color: var(--teal-400); }
+
+
+/* ── RIGHT FORM AREA ─────────────────────────────────────────── */
+.auth-form-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 48px;
+  background: var(--warm-white);
+  overflow-y: auto;
+}
+
+/* Card container */
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--white);
+  border-radius: var(--r20);
+  box-shadow: var(--sh-md);
+  border: 1.5px solid var(--g200);
+  padding: 40px 38px;
+  animation: cardSlideIn .5s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+/* Register card is slightly wider to accommodate two-col rows */
+.auth-card.wide { max-width: 500px; }
+
+@keyframes cardSlideIn {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Card header */
+.ac-header { text-align: center; margin-bottom: 28px; }
+
+.ac-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--teal-700), var(--teal-500));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: #fff;
+  margin: 0 auto 16px;
+  box-shadow: 0 6px 22px rgba(0,158,150,.3);
+}
+
+.ac-title {
+  font-family: var(--fd);
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+
+.ac-sub {
+  font-size: .92rem;
+  color: var(--g500);
+  line-height: 1.55;
+}
+
+
+/* ── ALERT MESSAGES ──────────────────────────────────────────── */
+.alert {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--r12);
+  font-size: .88rem;
+  line-height: 1.5;
+  margin-bottom: 18px;
+  border: 1px solid transparent;
+}
+
+.alert.visible { display: flex; }
+
+.alert i { font-size: 1rem; flex-shrink: 0; }
+
+.alert-error {
+  background: var(--red-light);
+  border-color: var(--red-border);
+  color: var(--red);
+}
+
+.alert-success {
+  background: var(--success-light);
+  border-color: var(--success-border);
+  color: var(--success);
+}
+
+
+/* ── FORM STRUCTURE ──────────────────────────────────────────── */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.form-group { margin-bottom: 18px; }
+
+.form-label {
+  display: block;
+  font-size: .83rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 7px;
+  letter-spacing: .01em;
+}
+
+.form-label .req { color: var(--red-mid); margin-left: 2px; }
+
+/* Input wrapper — holds icon prefix and optional eye toggle */
+.input-wrap { position: relative; }
+
+/* Icon inside field */
+.input-wrap .fi {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--g400);
+  font-size: .88rem;
+  pointer-events: none;
+  transition: color var(--ease);
+  z-index: 1;
+}
+
+.input-wrap:focus-within .fi { color: var(--teal-600); }
+
+/* All input / select elements */
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 12px 16px 12px 42px;   /* left space for icon */
+  border-radius: var(--r99);       /* fully pill-shaped */
+  border: 1.5px solid var(--g300);
+  font-family: var(--fb);
+  font-size: .94rem;
+  color: var(--g900);
+  background-color: var(--g100);
+  outline: none;
+  transition: border-color var(--ease), background-color var(--ease), box-shadow var(--ease);
+}
+
+.form-input:focus,
+.form-select:focus {
+  border-color: var(--teal-500);
+  background-color: var(--white);
+  box-shadow: var(--sh-glow);
+}
+
+.form-input::placeholder { color: var(--g400); font-size: .88rem; }
+
+/* Select — remove default arrow, add custom chevron */
+.form-select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background: var(--g100) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 16px center;
+  background-size: 16px !important;
+  padding-right: 40px;
+}
+
+.form-select:focus {
+  background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23009e96' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 16px center;
+  background-size: 16px !important;
+}
+
+.form-select option {
+  background-color: var(--white);
+  color: var(--g900);
+}
+
+/* Password visibility toggle button */
+.pw-eye {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--g400);
+  font-size: .88rem;
+  padding: 4px 6px;
+  transition: color var(--ease);
+  z-index: 1;
+}
+
+.pw-eye:hover { color: var(--teal-600); }
+
+/* Validation states */
+.form-input.is-invalid,
+.form-select.is-invalid {
+  border-color: var(--red-mid);
+  background: #fff8f8;
+}
+
+.form-input.is-valid,
+.form-select.is-valid {
+  border-color: var(--success-mid);
+}
+
+/* Field-level error message */
+.field-err {
+  display: block;
+  font-size: .76rem;
+  color: var(--red-mid);
+  margin-top: 5px;
+  padding-left: 16px;
+  min-height: 16px;
+}
+
+
+/* ── PASSWORD STRENGTH METER ─────────────────────────────────── */
+.pw-strength { margin-top: 8px; padding: 0 4px; }
+
+.pw-strength-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 5px;
+}
+
+.pw-seg {
+  flex: 1;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--g200);
+  transition: background .3s ease;
+}
+
+/* Segment fill classes applied by JS */
+.pw-seg.weak   { background: #ef4444; }
+.pw-seg.fair   { background: #f97316; }
+.pw-seg.good   { background: #eab308; }
+.pw-seg.strong { background: var(--success-mid); }
+
+.pw-strength-lbl {
+  font-size: .74rem;
+  color: var(--g500);
+  transition: color .3s;
+}
+
+
+/* ── SUBMIT BUTTON ──────────────────────────────────────────── */
+.btn-submit {
+  width: 100%;
+  padding: 13px 24px;
+  border-radius: var(--r99);
+  border: none;
+  background: linear-gradient(135deg, var(--teal-700), var(--teal-500));
+  color: #fff;
+  font-family: var(--fb);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  box-shadow: 0 6px 22px rgba(0,158,150,.35);
+  transition: transform var(--ease), box-shadow var(--ease), background .2s;
+  margin-top: 6px;
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,158,150,.48);
+}
+
+.btn-submit:active { transform: translateY(0); }
+
+.btn-submit:disabled {
+  opacity: .7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
+/* ── DIVIDER ─────────────────────────────────────────────────── */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--g200);
+}
+
+.auth-divider span {
+  font-size: .8rem;
+  color: var(--g400);
+  white-space: nowrap;
+}
+
+
+/* ── FOOTER LINK ROW ─────────────────────────────────────────── */
+.auth-foot {
+  text-align: center;
+  font-size: .91rem;
+  color: var(--g500);
+}
+
+.auth-foot a {
+  color: var(--teal-700);
+  font-weight: 600;
+  transition: color var(--ease);
+}
+
+.auth-foot a:hover { color: var(--teal-500); }
+
+/* Back to site link */
+.back-link {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  font-size: .82rem;
+  color: var(--g400);
+  transition: color var(--ease);
+}
+
+.back-link:hover { color: var(--teal-600); }
+
+.back-link i { font-size: .72rem; margin-right: 4px; }
+
+
+/* ── HEALTH QUOTE STRIP (register page) ──────────────────────── */
+.quote-strip {
+  background: linear-gradient(135deg, var(--teal-50), #cdf5f3);
+  border: 1px solid var(--teal-200);
+  border-left: 4px solid var(--teal-500);
+  border-radius: var(--r12);
+  padding: 14px 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin-bottom: 22px;
+}
+
+.quote-strip i {
+  color: var(--teal-700);
+  font-size: 1.05rem;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.quote-strip p {
+  font-size: .87rem;
+  font-style: italic;
+  color: var(--teal-800);
+  line-height: 1.65;
+}
+
+.quote-strip cite {
+  display: block;
+  font-size: .77rem;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--teal-700);
+  margin-top: 5px;
+}
+
+
+/* ── SPINNER ANIMATION ───────────────────────────────────────── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.fa-spin { animation: spin .75s linear infinite; }
+
+
+/* ── MOBILE BRAND BAR (replaces hidden panel) ───────────────── */
+.mobile-brand {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 24px 0;
+}
+
+.mb-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--teal-700), var(--teal-500));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .95rem;
+  color: #fff;
+}
+
+.mb-name {
+  font-family: var(--fd);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1.1;
+}
+
+.mb-name small {
+  display: block;
+  font-family: var(--fb);
+  font-size: .58rem;
+  color: var(--g500);
+  font-weight: 400;
+  letter-spacing: .08em;
+}
+
+
+/* ── RESPONSIVE ──────────────────────────────────────────────── */
+@media (max-width: 960px) {
+  /* Hide decorative panel — show form only */
+  .auth-page { grid-template-columns: 1fr; }
+  .auth-panel { display: none; }
+  .mobile-brand { display: flex; }
+
+  .auth-form-area {
+    padding: 32px 28px 48px;
+    justify-content: flex-start;
+  }
+
+  .auth-card,
+  .auth-card.wide {
+    max-width: 100%;
+    padding: 32px 24px;
+  }
+}
+
+@media (max-width: 520px) {
+  .form-row { grid-template-columns: 1fr; }
+
+  .auth-card {
+    border-radius: var(--r16);
+    box-shadow: none;
+    border-color: var(--g200);
+  }
+
+  .auth-form-area { padding: 24px 16px 40px; }
+}
