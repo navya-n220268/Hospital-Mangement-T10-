@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Add Prescription — MediVita</title>
+<meta name="description" content="Doctor Prescription module — prescribe medicines for your patients."/>
+<link rel="stylesheet" href="/medivita/assets/css/doctor.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+/* ── Prescription paper ── */
+.rx-paper {
+  background: white; border-radius: var(--r-xl);
+  border: 1px solid var(--border); box-shadow: var(--sh-lg); overflow: hidden;
+}
+.rx-header {
+  background: linear-gradient(135deg, var(--navy), var(--navy-4));
+  padding: 24px 32px; color: white;
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; overflow: hidden;
+}
+.rx-header::before { content:''; position:absolute; right:-30px; top:-30px; width:120px; height:120px; border-radius:50%; background:rgba(14,165,233,.1); }
+.rx-header::after  { content:''; position:absolute; right:40px; bottom:-40px; width:90px; height:90px; border-radius:50%; background:rgba(20,184,166,.08); }
+.rx-logo { display:flex; align-items:center; gap:11px; }
+.rx-logo-mark { width:38px; height:38px; background:linear-gradient(135deg,var(--blue),var(--teal)); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:.95rem; color:white; }
+.rx-hosp-name { font-family:var(--f-display); font-size:1.1rem; font-weight:700; }
+.rx-hosp-sub  { font-size:.67rem; color:rgba(255,255,255,.5); margin-top:1px; }
+.rx-doc-info  { text-align:right; position:relative; z-index:1; }
+.rx-doc-info p    { font-family:var(--f-display); font-size:.88rem; font-weight:700; }
+.rx-doc-info span { font-size:.7rem; color:rgba(255,255,255,.55); }
+.rx-body { padding: 28px 32px; }
+
+/* ── Patient selector ── */
+.patient-selector {
+  margin-bottom: 22px;
+}
+.patient-selector label {
+  font-size: .78rem; font-weight: 700; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: 8px;
+}
+.patient-select-wrap {
+  display: flex; gap: 12px; align-items: center;
+}
+.patient-select-wrap select {
+  flex: 1; padding: 12px 16px; border-radius: var(--r-md);
+  border: 2px solid var(--border); background: var(--surface);
+  font-family: var(--f-body); font-size: .92rem; color: var(--text-1);
+  outline: none; transition: all var(--dur) var(--ease);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%238fa3bb' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+}
+.patient-select-wrap select:focus { border-color: var(--blue); background-color: white; box-shadow: 0 0 0 3px rgba(14,165,233,.1); }
+
+/* ── Patient info chip ── */
+.patient-chip {
+  display: none; align-items: center; gap: 12px;
+  padding: 12px 18px; border-radius: var(--r-md);
+  background: var(--blue-dim); border: 1.5px solid rgba(14,165,233,.2);
+  margin-bottom: 18px;
+}
+.patient-chip.show { display: flex; }
+.patient-chip-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-dk), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-size: .82rem; font-weight: 700; color: white; flex-shrink: 0;
+}
+.patient-chip-info p    { font-size: .88rem; font-weight: 700; color: var(--text-1); }
+.patient-chip-info span { font-size: .73rem; color: var(--text-3); }
+
+/* ── Patient strip ── */
+.rx-patient-strip {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  overflow: hidden; margin-bottom: 24px;
+}
+.rx-ps-cell { padding: 12px 16px; border-right: 1px solid var(--border); }
+.rx-ps-cell:last-child { border-right: none; }
+.rx-ps-cell label { font-size:.63rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--text-4); display:block; margin-bottom:4px; }
+.rx-ps-cell .val { font-size:.84rem; font-weight:600; color:var(--text-1); }
+.rx-ps-cell input { border:none; background:transparent; font-family:var(--f-body); font-size:.84rem; font-weight:600; color:var(--text-1); outline:none; width:100%; }
+
+/* ── Medicines table ── */
+.med-table-wrap { border:1px solid var(--border); border-radius:var(--r-md); overflow:hidden; margin-bottom:16px; }
+.med-table-hd { display:grid; grid-template-columns:2.5fr 1fr 1.2fr 1fr 38px; gap:0; background:var(--surface); }
+.med-table-hd div { padding:10px 13px; font-size:.65rem; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.07em; border-right:1px solid var(--border); }
+.med-table-hd div:last-child { border-right:none; }
+.med-row { display:grid; grid-template-columns:2.5fr 1fr 1.2fr 1fr 38px; border-top:1px solid var(--surface); }
+.med-row input, .med-row select { border:none; background:transparent; padding:10px 13px; font-family:var(--f-body); font-size:.81rem; color:var(--text-1); outline:none; width:100%; border-right:1px solid var(--surface); transition:all var(--dur) var(--ease); }
+.med-row input:focus, .med-row select:focus { background:var(--blue-dim); }
+.med-row .del-btn { display:flex; align-items:center; justify-content:center; background:transparent; border:none; cursor:pointer; color:var(--text-4); font-size:.82rem; transition:all var(--dur) var(--ease); }
+.med-row .del-btn:hover { color:var(--red); }
+
+/* ── Rx symbol ── */
+.rx-symbol { font-family:var(--f-display); font-size:2.2rem; font-weight:700; color:var(--blue); margin-bottom:16px; line-height:1; }
+
+/* ── Footer ── */
+.rx-footer { background:var(--surface); border-top:1px solid var(--border); padding:18px 32px; display:flex; align-items:center; justify-content:space-between; }
+.rx-footer-left { font-size:.75rem; color:var(--text-3); }
+.rx-footer-left p { font-weight:600; color:var(--text-2); margin-bottom:2px; }
+
+/* ── Side card templates ── */
+.rx-templates .template-btn {
+  display:flex; align-items:center; gap:10px; padding:11px 14px;
+  border-radius:var(--r-sm); border:1px solid var(--border); background:white;
+  cursor:pointer; transition:all var(--dur) var(--ease);
+  font-size:.79rem; font-weight:500; color:var(--text-2); margin-bottom:8px;
+}
+.rx-templates .template-btn:hover { border-color:var(--blue); background:var(--blue-dim); color:var(--blue-dk); }
+.rx-templates .template-btn i { color:var(--blue); width:14px; text-align:center; }
+
+/* ── Recent rx card ── */
+.recent-rx-item { padding: 12px; background: var(--surface); border-radius: var(--r-sm); margin-bottom: 8px; }
+.recent-rx-item:last-child { margin-bottom: 0; }
+.recent-rx-item p    { font-size: .8rem; font-weight: 700; color: var(--text-1); }
+.recent-rx-item span { font-size: .72rem; color: var(--text-3); }
+
+/* ── Success modal ── */
+.rx-success-icon { width:64px; height:64px; background:var(--green-dim); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:1.5rem; color:var(--green); }
+
+/* ── Skeletons ── */
+.skel { background:var(--surface); border-radius:8px; animation:pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
+</style>
+</head>
+<body>
+<div class="portal-wrap">
+  <aside class="sidebar"></aside>
+  <div class="sb-overlay"></div>
+  <div class="main-area">
+    <div class="topbar"></div>
+    <div class="page-content">
+
+      <div style="display:grid;grid-template-columns:1fr 280px;gap:22px;align-items:start">
+
+        <!-- Main Prescription Form -->
+        <div class="afu">
+
+          <!-- Patient Selector -->
+          <div class="card" style="margin-bottom:18px">
+            <div class="card-hd">
+              <h3><i class="fas fa-user-injured"></i> Select Patient</h3>
+              <span id="patientCount" class="badge badge-blue" style="display:none"></span>
+            </div>
+            <div class="card-body">
+              <div class="patient-selector">
+                <label>Choose patient from your appointments</label>
+                <div class="patient-select-wrap">
+                  <select id="patientSelect" onchange="onPatientSelect()" disabled>
+                    <option value="">— Loading your patients… —</option>
+                  </select>
+                  <button class="btn btn-ghost btn-sm" onclick="loadPatients()" title="Refresh patient list">
+                    <i class="fas fa-sync-alt"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Patient info chip (shown after selection) -->
+              <div class="patient-chip" id="patientChip">
+                <div class="patient-chip-avatar" id="chipAvatar">?</div>
+                <div class="patient-chip-info">
+                  <p id="chipName">—</p>
+                  <span id="chipInfo">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Prescription Paper -->
+          <div class="rx-paper">
+            <div class="rx-header">
+              <div class="rx-logo" style="position:relative;z-index:1">
+                <div class="rx-logo-mark"><i class="fas fa-heartbeat"></i></div>
+                <div>
+                  <div class="rx-hosp-name">MediVita Hospital</div>
+                  <div class="rx-hosp-sub" id="headerDept">Loading department…</div>
+                </div>
+              </div>
+              <div class="rx-doc-info">
+                <p id="headerDocName">Loading…</p>
+                <span id="headerDocSpec">MBBS, MD</span><br/>
+                <span id="headerDocPhone"></span>
+              </div>
+            </div>
+
+            <div class="rx-body">
+              <!-- Patient strip -->
+              <div class="rx-patient-strip">
+                <div class="rx-ps-cell">
+                  <label>Patient Name</label>
+                  <div class="val" id="stripPatientName">Select patient above</div>
+                </div>
+                <div class="rx-ps-cell">
+                  <label>Age / Gender</label>
+                  <div class="val" id="stripAgeGender">—</div>
+                </div>
+                <div class="rx-ps-cell">
+                  <label>Appointment</label>
+                  <div class="val" id="stripApptDate">—</div>
+                </div>
+                <div class="rx-ps-cell">
+                  <label>Rx Date</label>
+                  <input type="date" id="rxDate"/>
+                </div>
+              </div>
+
+              <!-- Symptoms + Diagnosis -->
+              <div class="g2" style="gap:18px;margin-bottom:18px">
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">Chief Complaints / Symptoms</label>
+                  <textarea class="form-control" id="rxSymptoms" rows="3" placeholder="Describe patient symptoms…"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">Diagnosis <span style="color:var(--red)">*</span></label>
+                  <textarea class="form-control" id="rxDiagnosis" rows="3" placeholder="Primary and secondary diagnoses…"></textarea>
+                </div>
+              </div>
+
+              <!-- Medicines -->
+              <div style="margin-bottom:18px">
+                <div class="rx-symbol">℞</div>
+                <label class="form-label" style="margin-bottom:10px;font-size:.78rem">Prescribed Medicines <span style="color:var(--red)">*</span></label>
+                <div class="med-table-wrap">
+                  <div class="med-table-hd">
+                    <div>Medicine / Drug Name</div>
+                    <div>Strength</div>
+                    <div>Frequency</div>
+                    <div>Duration</div>
+                    <div></div>
+                  </div>
+                  <div id="medRows"></div>
+                </div>
+                <button class="btn btn-ghost btn-xs" onclick="addMedRow()" style="margin-top:10px">
+                  <i class="fas fa-plus" style="color:var(--blue)"></i> Add Medicine
+                </button>
+              </div>
+
+              <!-- Dosage + Instructions -->
+              <div class="g2" style="gap:18px;margin-bottom:18px">
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">Dosage Instructions</label>
+                  <textarea class="form-control" id="rxDosage" rows="3" placeholder="Special dosage instructions, timing, food interaction…"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">Additional Instructions / Advice</label>
+                  <textarea class="form-control" id="rxAdvice" rows="3" placeholder="Lifestyle, diet, activity restrictions…"></textarea>
+                </div>
+              </div>
+
+              <!-- Next visit + tests -->
+              <div class="g2" style="gap:18px">
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">Next Visit Date</label>
+                  <input type="date" class="form-control" id="rxNextVisit"/>
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">Investigation / Tests Ordered</label>
+                  <input type="text" class="form-control" id="rxTests" placeholder="e.g. ECG, CBC, Echo…"/>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer / Signature -->
+            <div class="rx-footer">
+              <div class="rx-footer-left">
+                <p>MediVita Hospital</p>
+                <span>Prescription valid for 30 days from date of issue</span>
+              </div>
+              <div style="text-align:center">
+                <div style="width:140px;border-top:2px solid var(--navy);padding-top:6px;margin:0 auto">
+                  <p id="footerDocName" style="font-family:var(--f-display);font-size:.78rem;font-weight:700;color:var(--text-1)">Dr. —</p>
+                  <p style="font-size:.65rem;color:var(--text-3)">Digital Signature</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action buttons -->
+          <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap">
+            <button class="btn btn-primary" id="submitBtn" onclick="submitPrescription()">
+              <i class="fas fa-file-medical"></i> Save Prescription
+            </button>
+            <button class="btn btn-teal" onclick="window.print()">
+              <i class="fas fa-print"></i> Print
+            </button>
+            <button class="btn btn-ghost" onclick="clearForm()">
+              <i class="fas fa-redo"></i> Clear
+            </button>
+          </div>
+        </div>
+
+        <!-- ── Side Panel ── -->
+        <div style="display:flex;flex-direction:column;gap:18px">
+
+          <!-- Quick Templates -->
+          <div class="card afu d2">
+            <div class="card-hd"><h3><i class="fas fa-clipboard-list"></i> Quick Templates</h3></div>
+            <div class="card-body rx-templates">
+              <div class="template-btn" onclick="loadTemplate('htn')"><i class="fas fa-heart-pulse"></i> Hypertension Protocol</div>
+              <div class="template-btn" onclick="loadTemplate('diab')"><i class="fas fa-syringe"></i> Diabetes Management</div>
+              <div class="template-btn" onclick="loadTemplate('chf')"><i class="fas fa-heart"></i> Heart Failure Regimen</div>
+              <div class="template-btn" onclick="loadTemplate('angina')"><i class="fas fa-stethoscope"></i> Stable Angina</div>
+              <div class="template-btn" onclick="loadTemplate('dvt')"><i class="fas fa-vial"></i> DVT / Anticoagulation</div>
+              <div class="template-btn" onclick="loadTemplate('migraine')"><i class="fas fa-brain"></i> Migraine Management</div>
+            </div>
+          </div>
+
+          <!-- Prescription Tips -->
+          <div class="card afu d3">
+            <div class="card-hd"><h3><i class="fas fa-info-circle"></i> Tips</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:10px;font-size:.77rem;color:var(--text-2)">
+                <div style="display:flex;gap:8px"><i class="fas fa-check" style="color:var(--green);flex-shrink:0;margin-top:3px"></i><p>Include generic name alongside brand name</p></div>
+                <div style="display:flex;gap:8px"><i class="fas fa-check" style="color:var(--green);flex-shrink:0;margin-top:3px"></i><p>Verify drug interactions before combining</p></div>
+                <div style="display:flex;gap:8px"><i class="fas fa-exclamation" style="color:var(--amber);flex-shrink:0;margin-top:3px"></i><p>Mention allergy status before NSAIDs/Penicillin</p></div>
+                <div style="display:flex;gap:8px"><i class="fas fa-info" style="color:var(--blue);flex-shrink:0;margin-top:3px"></i><p>All prescriptions are stored in patient's medical records automatically</p></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Prescriptions (dynamic) -->
+          <div class="card afu d4">
+            <div class="card-hd"><h3><i class="fas fa-history"></i> Recent Prescriptions</h3></div>
+            <div class="card-body" id="recentRxContainer">
+              <div class="skel" style="height:52px;margin-bottom:8px"></div>
+              <div class="skel" style="height:52px;margin-bottom:8px"></div>
+              <div class="skel" style="height:52px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/medivita/assets/js/doctor.js?v=3"></script>
+<script>
+/* =============================================
+   ADD PRESCRIPTION — DYNAMIC BACKEND LOGIC
+   ============================================= */
+
+let currentDoctor  = null;
+let currentPatient = null;
+let patientsCache  = [];
+let recentRxCache  = [];
+
+// ── Default dates ──────────────────────────────────────────────────────────
+document.getElementById('rxDate').value = new Date().toISOString().split('T')[0];
+const nm = new Date(); nm.setMonth(nm.getMonth() + 1);
+document.getElementById('rxNextVisit').value = nm.toISOString().split('T')[0];
+
+// ── Load doctor info & populate header ────────────────────────────────────
+async function loadDoctor() {
+  try {
+    const res  = await fetch('/medivita/backend/doctor/get_logged_doctor.php');
+    const data = await res.json();
+    if (!data.success) return;
+
+    currentDoctor = data.doctor;
+    const name = 'Dr. ' + currentDoctor.name.replace(/^Dr\.?\s*/i, '');
+
+    document.getElementById('headerDocName').textContent = name;
+    document.getElementById('headerDocSpec').textContent =
+      currentDoctor.specialization
+        ? `MBBS, MD (${currentDoctor.specialization})`
+        : 'MBBS, MD';
+    document.getElementById('headerDept').textContent =
+      (currentDoctor.department || currentDoctor.specialization || 'General') + ' Department';
+    if (currentDoctor.phone) {
+      document.getElementById('headerDocPhone').textContent = 'Contact: ' + currentDoctor.phone;
+    }
+    document.getElementById('footerDocName').textContent = name;
+
+  } catch(e) {
+    console.error('loadDoctor error:', e);
+  }
+}
+
+// ── Load only this doctor's patients ──────────────────────────────────────
+async function loadPatients() {
+  const sel = document.getElementById('patientSelect');
+  sel.disabled = true;
+  sel.innerHTML = '<option value="">— Loading your patients… —</option>';
+  document.getElementById('patientChip').classList.remove('show');
+  resetPatientStrip();
+
+  try {
+    const res  = await fetch('/medivita/backend/doctor/get_doctor_patients.php');
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+
+    patientsCache = data.patients || [];
+
+    const cnt = document.getElementById('patientCount');
+    if (patientsCache.length > 0) {
+      cnt.textContent = patientsCache.length + ' patient' + (patientsCache.length > 1 ? 's' : '');
+      cnt.style.display = 'inline-flex';
+    } else {
+      cnt.style.display = 'none';
+    }
+
+    if (patientsCache.length === 0) {
+      sel.innerHTML = '<option value="">— No patients have booked appointments with you yet —</option>';
+      sel.disabled = true;
+      return;
+    }
+
+    sel.innerHTML = '<option value="">— Select a patient —</option>';
+    patientsCache.forEach(p => {
+      const ageGender = [
+        p.patient_age    ? p.patient_age + ' yrs' : '',
+        p.patient_gender ? p.patient_gender       : '',
+      ].filter(Boolean).join(' / ');
+
+      const opt   = document.createElement('option');
+      opt.value   = p.patient_id;
+      opt.textContent = p.patient_name + (ageGender ? ` (${ageGender})` : '') +
+        ` — ${p.appointment_date || 'No date'}`;
+      sel.appendChild(opt);
+    });
+
+    sel.disabled = false;
+
+  } catch(e) {
+    sel.innerHTML = '<option value="">— Failed to load patients —</option>';
+    sel.disabled  = false;
+    console.error('loadPatients error:', e);
+    showToast('Failed to load patients. ' + e.message, 'fa-exclamation-circle');
+  }
+}
+
+// ── On patient select ──────────────────────────────────────────────────────
+function onPatientSelect() {
+  const sel  = document.getElementById('patientSelect');
+  const pid  = sel.value;
+  const chip = document.getElementById('patientChip');
+
+  if (!pid) {
+    chip.classList.remove('show');
+    currentPatient = null;
+    resetPatientStrip();
+    return;
+  }
+
+  const p = patientsCache.find(x => x.patient_id === pid);
+  if (!p) return;
+
+  currentPatient = p;
+
+  // Update chip
+  const initials = p.patient_name.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2);
+  document.getElementById('chipAvatar').textContent = initials;
+  document.getElementById('chipName').textContent   = p.patient_name;
+
+  const ageGender = [
+    p.patient_age    ? p.patient_age + ' yrs'   : '',
+    p.patient_gender ? p.patient_gender          : '',
+    p.patient_blood  ? 'Blood: ' + p.patient_blood : '',
+    p.patient_phone  ? p.patient_phone           : '',
+  ].filter(Boolean).join(' · ');
+  document.getElementById('chipInfo').textContent = ageGender || 'Patient';
+  chip.classList.add('show');
+
+  // Update patient strip
+  document.getElementById('stripPatientName').textContent =
+    p.patient_name;
+  document.getElementById('stripAgeGender').textContent =
+    [
+      p.patient_age    ? p.patient_age + ' yrs' : '',
+      p.patient_gender ? p.patient_gender       : '',
+    ].filter(Boolean).join(' / ') || '—';
+  document.getElementById('stripApptDate').textContent =
+    p.appointment_date || '—';
+
+  // Pre-fill symptoms from appointment reason
+  if (p.reason && !document.getElementById('rxSymptoms').value.trim()) {
+    document.getElementById('rxSymptoms').value = p.reason;
+  }
+}
+
+function resetPatientStrip() {
+  document.getElementById('stripPatientName').textContent = 'Select patient above';
+  document.getElementById('stripAgeGender').textContent   = '—';
+  document.getElementById('stripApptDate').textContent    = '—';
+  document.getElementById('rxSymptoms').value             = '';
+}
+
+// ── Medicine rows ──────────────────────────────────────────────────────────
+function addMedRow(data = {}) {
+  const row = document.createElement('div');
+  row.className = 'med-row';
+  row.innerHTML = `
+    <input type="text"   name="med_name"  placeholder="Drug name…"    value="${data.name     || ''}"/>
+    <input type="text"   name="med_str"   placeholder="e.g. 50mg"     value="${data.strength || ''}"/>
+    <select name="med_freq">
+      <option${data.freq==='Once daily'    ?' selected':''}>Once daily</option>
+      <option${data.freq==='Twice daily'   ?' selected':''}>Twice daily</option>
+      <option${data.freq==='Three times'   ?' selected':''}>Three times</option>
+      <option${data.freq==='As needed'     ?' selected':''}>As needed</option>
+      <option${data.freq==='Every 8 hrs'   ?' selected':''}>Every 8 hrs</option>
+      <option${data.freq==='Every 12 hrs'  ?' selected':''}>Every 12 hrs</option>
+    </select>
+    <input type="text"   name="med_dur"   placeholder="e.g. 7 days"   value="${data.dur     || ''}"/>
+    <button class="del-btn" onclick="this.closest('.med-row').remove()"><i class="fas fa-times"></i></button>`;
+  document.getElementById('medRows').appendChild(row);
+}
+addMedRow(); // Start with one empty row
+
+// ── Collect medicines from table ───────────────────────────────────────────
+function collectMedicines() {
+  const rows   = document.querySelectorAll('.med-row');
+  const result = [];
+  rows.forEach(row => {
+    const name  = row.querySelector('[name="med_name"]').value.trim();
+    const str   = row.querySelector('[name="med_str"]').value.trim();
+    const freq  = row.querySelector('[name="med_freq"]').value;
+    const dur   = row.querySelector('[name="med_dur"]').value.trim();
+    if (name) result.push({ name, strength: str, frequency: freq, duration: dur });
+  });
+  return result;
+}
+
+// ── Submit prescription ────────────────────────────────────────────────────
+async function submitPrescription() {
+  // Validate
+  if (!currentPatient) {
+    showToast('Please select a patient first.', 'fa-exclamation-circle'); return;
+  }
+  const diagnosis = document.getElementById('rxDiagnosis').value.trim();
+  if (!diagnosis) {
+    showToast('Please enter a diagnosis.', 'fa-exclamation-circle'); return;
+  }
+  const medicines = collectMedicines();
+  if (medicines.length === 0) {
+    showToast('Please add at least one medicine.', 'fa-exclamation-circle'); return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+
+  const dosage = document.getElementById('rxDosage').value.trim();
+  const instructions = document.getElementById('rxAdvice').value.trim();
+  let combinedNotes = [];
+  if (dosage) combinedNotes.push('Dosage: ' + dosage);
+  if (instructions) combinedNotes.push('Instructions: ' + instructions);
+
+  const payload = {
+    patient_id:     currentPatient.patient_id,
+    patient_name:   currentPatient.patient_name,
+    appointment_id: currentPatient.appointment_id,
+    diagnosis,
+    symptoms:       document.getElementById('rxSymptoms').value.trim(),
+    medicines,
+    notes:          combinedNotes.join('\n\n'),
+    next_visit:     document.getElementById('rxNextVisit').value,
+    tests:          document.getElementById('rxTests').value.trim(),
+  };
+
+  try {
+    const res  = await fetch('/medivita/backend/shared/add_prescription.php', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(payload),
+    });
+    const data = await res.json();
+
+    if (!data.success) throw new Error(data.message);
+
+    // Success modal
+    showModal(`
+      <div style="text-align:center;padding:8px">
+        <div class="rx-success-icon"><i class="fas fa-check-circle"></i></div>
+        <h3 style="font-family:var(--f-display);font-size:1rem;font-weight:700;margin-bottom:8px">Prescription Saved!</h3>
+        <p style="font-size:.82rem;color:var(--text-3);margin-bottom:6px">
+          Prescription for <strong>${currentPatient.patient_name}</strong> has been saved to the system and is now visible in the patient's medical records.
+        </p>
+        <p style="font-size:.77rem;color:var(--text-4);margin-bottom:22px">Ref: ${data.ref || 'MV-RX-' + Date.now().toString().slice(-6)}</p>
+        <div style="display:flex;gap:10px;justify-content:center">
+          <button class="btn btn-primary btn-sm" onclick="closeModal();clearForm()">
+            <i class="fas fa-plus"></i> New Prescription
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="closeModal()">Done</button>
+        </div>
+      </div>`);
+
+    // Refresh recent prescriptions list
+    loadRecentPrescriptions();
+
+  } catch(e) {
+    showToast('Error: ' + e.message, 'fa-exclamation-circle');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-file-medical"></i> Save Prescription';
+  }
+}
+
+// ── Load recent prescriptions (side panel) ─────────────────────────────────
+async function loadRecentPrescriptions() {
+  const container = document.getElementById('recentRxContainer');
+  try {
+    // Fetch schedules to find prescriptions
+    const res  = await fetch('/medivita/backend/doctor/get_doctor_schedules.php?status=completed');
+    const data = await res.json();
+    const completed = (data.schedules || []).slice(0, 5);
+
+    if (completed.length === 0) {
+      container.innerHTML = `<p style="font-size:.78rem;color:var(--text-4);text-align:center;padding:8px">No prescriptions yet.</p>`;
+      return;
+    }
+
+    container.innerHTML = completed.map(s => `
+      <div class="recent-rx-item">
+        <p>${s.patient_name}</p>
+        <span>${s.department || '—'} · ${s.appointment_date}</span>
+      </div>`).join('');
+
+  } catch(e) {
+    container.innerHTML = `<p style="font-size:.78rem;color:var(--text-4);text-align:center;padding:8px">—</p>`;
+  }
+}
+
+// ── Clear form ─────────────────────────────────────────────────────────────
+function clearForm() {
+  document.getElementById('patientSelect').value = '';
+  document.getElementById('patientChip').classList.remove('show');
+  currentPatient = null;
+  resetPatientStrip();
+  document.getElementById('rxSymptoms').value  = '';
+  document.getElementById('rxDiagnosis').value = '';
+  document.getElementById('rxDosage').value    = '';
+  document.getElementById('rxAdvice').value    = '';
+  document.getElementById('rxTests').value     = '';
+  document.getElementById('medRows').innerHTML = '';
+  addMedRow();
+  showToast('Form cleared');
+}
+
+// ── Quick Templates ────────────────────────────────────────────────────────
+const templates = {
+  htn: {
+    meds: [
+      { name:'Amlodipine',           strength:'5mg',    freq:'Once daily',  dur:'90 days' },
+      { name:'Losartan',             strength:'50mg',   freq:'Once daily',  dur:'90 days' },
+      { name:'Hydrochlorothiazide',  strength:'12.5mg', freq:'Once daily',  dur:'90 days' },
+    ],
+    sym:  'Persistent headache, dizziness, BP > 160/100.',
+    diag: 'Hypertension Stage II',
+    dos:  'Take all medicines in the morning with water. Monitor BP daily.',
+  },
+  diab: {
+    meds: [
+      { name:'Metformin', strength:'500mg', freq:'Twice daily', dur:'90 days' },
+      { name:'Glipizide', strength:'5mg',   freq:'Once daily',  dur:'90 days' },
+    ],
+    sym:  'Polyuria, polydipsia, fatigue. FBS > 200 mg/dL.',
+    diag: 'Type 2 Diabetes Mellitus, poorly controlled',
+    dos:  'Take Metformin with meals. Monitor blood sugar daily.',
+  },
+  chf: {
+    meds: [
+      { name:'Furosemide',     strength:'40mg',   freq:'Once daily',  dur:'30 days' },
+      { name:'Carvedilol',     strength:'6.25mg', freq:'Twice daily', dur:'30 days' },
+      { name:'Spironolactone', strength:'25mg',   freq:'Once daily',  dur:'30 days' },
+    ],
+    sym:  'Bilateral leg oedema, dyspnoea on exertion, orthopnoea.',
+    diag: 'Congestive Heart Failure, NYHA Class III',
+    dos:  'Weigh daily. Report if weight increases by > 2 kg overnight.',
+  },
+  angina: {
+    meds: [
+      { name:'Aspirin',                 strength:'75mg', freq:'Once daily',       dur:'Long term' },
+      { name:'Atorvastatin',            strength:'40mg', freq:'Once daily (night)',dur:'Long term' },
+      { name:'Isosorbide Mononitrate',  strength:'30mg', freq:'Once daily',        dur:'60 days'  },
+    ],
+    sym:  'Exertional chest pain radiating to left arm, relieved by rest.',
+    diag: 'Stable Angina Pectoris',
+    dos:  'Avoid strenuous activity. Keep GTN spray handy for acute attacks.',
+  },
+  dvt: {
+    meds: [
+      { name:'Rivaroxaban', strength:'15mg', freq:'Twice daily', dur:'21 days' },
+      { name:'Rivaroxaban', strength:'20mg', freq:'Once daily',  dur:'3 months' },
+    ],
+    sym:  'Unilateral leg swelling, calf tenderness, warmth.',
+    diag: 'Deep Vein Thrombosis, left lower limb',
+    dos:  'Take with evening meal. Report any unusual bleeding.',
+  },
+  migraine: {
+    meds: [
+      { name:'Sumatriptan',         strength:'50mg',   freq:'As needed',    dur:'PRN' },
+      { name:'Propranolol',         strength:'40mg',   freq:'Twice daily',  dur:'60 days' },
+      { name:'Magnesium Glycinate', strength:'400mg',  freq:'Once daily',   dur:'90 days' },
+    ],
+    sym:  'Recurrent throbbing headache, photophobia, nausea.',
+    diag: 'Chronic Migraine with photophobia',
+    dos:  'Avoid triggers (bright light, caffeine, irregular sleep). Maintain a headache diary.',
+  },
+};
+
+function loadTemplate(t) {
+  const tmpl = templates[t];
+  if (!tmpl) return;
+  document.getElementById('medRows').innerHTML = '';
+  tmpl.meds.forEach(m => addMedRow(m));
+  document.getElementById('rxSymptoms').value  = tmpl.sym;
+  document.getElementById('rxDiagnosis').value = tmpl.diag;
+  if (tmpl.dos) document.getElementById('rxDosage').value = tmpl.dos;
+  showToast('Template loaded: ' + tmpl.diag);
+}
+
+// ── Bootstrap ──────────────────────────────────────────────────────────────
+buildPortal('add-prescription', 'Add Prescription', 'Create and issue patient prescriptions')
+  .then(user => {
+    if (user) {
+      loadDoctor();
+      loadPatients();
+      loadRecentPrescriptions();
+    }
+  });
+</script>
+</body>
+</html>
