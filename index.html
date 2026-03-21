@@ -1,0 +1,2368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>MediVita Hospital — Excellence in Healthcare</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* ============================================================
+   MediVita Hospital — Index Page Styles
+   Changes from original:
+   • Increased base font sizes throughout for better readability
+   • "Book an Appointment" contact section removed
+   • Login button now links to login.html
+   ============================================================ */
+    :root {
+      --teal-900: #003d3b;
+      --teal-800: #005450;
+      --teal-700: #006b66;
+      --teal-500: #009e96;
+      --teal-400: #00bfb6;
+      --teal-200: #99e5e2;
+      --teal-50: #e6faf9;
+      --warm-white: #fafaf8;
+      --cream: #f4f1eb;
+      --gold: #c9993f;
+      --gold-light: #f0c96b;
+      --red: #c0392b;
+      --red-light: #fdedec;
+      --navy: #0b1f3a;
+      --g900: #111827;
+      --g700: #374151;
+      --g500: #6b7280;
+      --g300: #d1d5db;
+      --g100: #f3f4f6;
+      --white: #ffffff;
+      --fd: 'Cormorant Garamond', Georgia, serif;
+      --fb: 'Outfit', sans-serif;
+      --ease: .35s cubic-bezier(.22, 1, .36, 1);
+      --sh-sm: 0 1px 4px rgba(0, 0, 0, .06);
+      --sh-md: 0 4px 20px rgba(0, 0, 0, .1);
+      --sh-lg: 0 12px 48px rgba(0, 0, 0, .14);
+      --sh-xl: 0 24px 72px rgba(0, 0, 0, .2);
+      --r8: 8px;
+      --r14: 14px;
+      --r22: 22px;
+      --r32: 32px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 17px
+    }
+
+    /* ↑ bumped from 16px default */
+    body {
+      font-family: var(--fb);
+      color: var(--g900);
+      background: var(--warm-white);
+      overflow-x: hidden;
+      line-height: 1.7
+    }
+
+    img {
+      max-width: 100%;
+      display: block
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit
+    }
+
+    ul {
+      list-style: none
+    }
+
+    button {
+      font-family: var(--fb);
+      cursor: pointer;
+      border: none;
+      background: none
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--g100)
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--teal-500);
+      border-radius: 99px
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(32px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1)
+      }
+
+      50% {
+        transform: scale(1.06)
+      }
+    }
+
+    @keyframes ringPulse {
+      0% {
+        transform: scale(1);
+        opacity: .75
+      }
+
+      100% {
+        transform: scale(1.8);
+        opacity: 0
+      }
+    }
+
+    @keyframes shimmerBg {
+      0% {
+        background-position: -400px 0
+      }
+
+      100% {
+        background-position: 400px 0
+      }
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 28px
+    }
+
+    /* ↑ Eyebrow labels — slightly larger */
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--teal-700);
+      background: var(--teal-50);
+      border: 1px solid var(--teal-200);
+      padding: 5px 14px;
+      border-radius: 99px;
+      margin-bottom: 14px
+    }
+
+    .eyebrow i {
+      font-size: .7rem
+    }
+
+    /* ↑ Section titles — clamp increased */
+    .stitle {
+      font-family: var(--fd);
+      font-size: clamp(2.1rem, 4.5vw, 3.4rem);
+      font-weight: 700;
+      line-height: 1.18;
+      color: var(--navy);
+      margin-bottom: 16px
+    }
+
+    .stitle em {
+      font-style: italic;
+      color: var(--teal-700)
+    }
+
+    /* ↑ Section descriptions — bumped from 1rem */
+    .sdesc {
+      font-size: 1.08rem;
+      color: var(--g500);
+      max-width: 540px;
+      line-height: 1.85
+    }
+
+    .sh {
+      margin-bottom: 56px
+    }
+
+    .sh.c {
+      text-align: center
+    }
+
+    .sh.c .sdesc {
+      margin: 0 auto
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 14px 30px;
+      border-radius: 99px;
+      font-size: .95rem;
+      font-weight: 600;
+      transition: var(--ease);
+      border: 2px solid transparent;
+      cursor: pointer
+    }
+
+    .btn-teal {
+      background: linear-gradient(135deg, var(--teal-700), var(--teal-500));
+      color: var(--white);
+      box-shadow: 0 6px 24px rgba(0, 158, 150, .35)
+    }
+
+    .btn-teal:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(0, 158, 150, .5)
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, .12);
+      color: var(--white);
+      border-color: rgba(255, 255, 255, .4);
+      backdrop-filter: blur(6px)
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, .22);
+      border-color: var(--white)
+    }
+
+    .btn-oteal {
+      background: transparent;
+      color: var(--teal-700);
+      border-color: var(--teal-500)
+    }
+
+    .btn-oteal:hover {
+      background: var(--teal-700);
+      color: var(--white)
+    }
+
+    .btn-sm {
+      padding: 9px 20px;
+      font-size: .88rem
+    }
+
+    /* SCROLL REVEAL */
+    .rev {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity .7s cubic-bezier(.22, 1, .36, 1), transform .7s cubic-bezier(.22, 1, .36, 1)
+    }
+
+    .rev.in {
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+    .rev.d1 {
+      transition-delay: .1s
+    }
+
+    .rev.d2 {
+      transition-delay: .2s
+    }
+
+    .rev.d3 {
+      transition-delay: .3s
+    }
+
+    .rev.d4 {
+      transition-delay: .4s
+    }
+
+    /* ========== EMERGENCY BANNER ========== */
+    .emg {
+      background: linear-gradient(90deg, #7f1d1d, var(--red), #7f1d1d);
+      background-size: 200% 100%;
+      animation: shimmerBg 4s linear infinite;
+      padding: 10px 0;
+      text-align: center;
+      position: relative;
+      z-index: 300
+    }
+
+    .emg-in {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap
+    }
+
+    .emg p {
+      color: #fff;
+      font-size: .9rem;
+      font-weight: 500
+    }
+
+    /* ↑ bumped */
+    .emg-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      color: var(--red);
+      padding: 7px 22px;
+      border-radius: 99px;
+      font-size: .86rem;
+      font-weight: 700;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .2);
+      transition: var(--ease)
+    }
+
+    .emg-btn:hover {
+      background: var(--red-light);
+      transform: scale(1.04)
+    }
+
+    .emg-btn::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 99px;
+      border: 2px solid rgba(255, 255, 255, .55);
+      animation: ringPulse 2s infinite
+    }
+
+    /* ========== NAVBAR ========== */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: transparent;
+      transition: background .4s, box-shadow .4s
+    }
+
+    .nav.scrolled {
+      background: rgba(0, 50, 48, .96);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 2px 28px rgba(0, 0, 0, .35)
+    }
+
+    .nav-in {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 17px 0;
+      gap: 16px;
+      transition: padding .4s
+    }
+
+    .nav.scrolled .nav-in {
+      padding: 11px 0
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      color: #fff
+    }
+
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--teal-500), var(--teal-400));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(0, 158, 150, .4)
+    }
+
+    .logo-txt {
+      font-family: var(--fd);
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1.1
+    }
+
+    /* ↑ bumped */
+    .logo-txt small {
+      display: block;
+      font-family: var(--fb);
+      font-size: .62rem;
+      font-weight: 400;
+      opacity: .7;
+      letter-spacing: .08em
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px
+    }
+
+    .nl {
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: .9rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, .85);
+      transition: var(--ease)
+    }
+
+    /* ↑ bumped */
+    .nl:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, .12)
+    }
+
+    .nav-acts {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .btn-login {
+      padding: 8px 19px;
+      border-radius: 99px;
+      font-size: .88rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, .85);
+      border: 1.5px solid rgba(255, 255, 255, .35);
+      transition: var(--ease)
+    }
+
+    .btn-login:hover {
+      color: #fff;
+      border-color: #fff;
+      background: rgba(255, 255, 255, .1)
+    }
+
+    .btn-book {
+      padding: 9px 20px;
+      border-radius: 99px;
+      font-size: .88rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--teal-500), var(--teal-400));
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(0, 158, 150, .4);
+      transition: var(--ease)
+    }
+
+    .btn-book:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 7px 22px rgba(0, 158, 150, .5)
+    }
+
+    .hbg {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 8px;
+      color: #fff
+    }
+
+    .hbg span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: currentColor;
+      border-radius: 2px;
+      transition: .3s
+    }
+
+    /* ========== MOBILE MENU ========== */
+    .mob-menu {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: var(--teal-900);
+      flex-direction: column;
+      padding: 80px 32px 48px;
+      overflow-y: auto
+    }
+
+    .mob-menu.open {
+      display: flex
+    }
+
+    .mob-x {
+      position: absolute;
+      top: 18px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .1);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .95rem
+    }
+
+    .mob-menu a {
+      color: rgba(255, 255, 255, .78);
+      font-size: 1.2rem;
+      font-weight: 500;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+      display: block;
+      transition: .25s
+    }
+
+    /* ↑ bumped */
+    .mob-menu a:hover {
+      color: var(--teal-400);
+      padding-left: 8px
+    }
+
+    .mob-ctas {
+      display: flex;
+      gap: 12px;
+      margin-top: 28px;
+      flex-wrap: wrap
+    }
+
+    /* ========== HERO ========== */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: url('https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=1800&q=85') center/cover no-repeat;
+      filter: brightness(.58) saturate(.85)
+    }
+
+    .hero-ov1 {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(110deg, rgba(0, 42, 40, .92) 0%, rgba(0, 55, 53, .72) 50%, rgba(0, 0, 0, .25) 100%)
+    }
+
+    .hero-ov2 {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: radial-gradient(ellipse at 30% 60%, transparent 35%, rgba(0, 0, 0, .45) 100%)
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      padding: 120px 0 160px;
+      width: 100%
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      background: rgba(255, 255, 255, .1);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, .22);
+      color: #fff;
+      padding: 9px 20px;
+      border-radius: 99px;
+      font-size: .83rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      animation: fadeUp .8s both
+    }
+
+    /* ↑ bumped */
+    .hero-pill .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--teal-400);
+      border-radius: 50%;
+      animation: pulse 2s infinite
+    }
+
+    .hero h1 {
+      font-family: var(--fd);
+      font-size: clamp(3rem, 6.5vw, 5.4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      color: #ffffff;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, .9), 0 4px 24px rgba(0, 0, 0, .7), 0 8px 48px rgba(0, 0, 0, .4);
+      max-width: 700px;
+      margin-bottom: 20px;
+      animation: fadeUp .8s .12s both
+    }
+
+    /* ↑ bumped clamp */
+    .hero h1 em {
+      font-style: italic;
+      color: var(--teal-400);
+      text-shadow: 0 0 30px rgba(0, 191, 182, .5), 0 2px 8px rgba(0, 0, 0, .8)
+    }
+
+    .hero-sub {
+      font-size: 1.15rem;
+      color: rgba(255, 255, 255, .9);
+      background: rgba(0, 0, 0, .25);
+      backdrop-filter: blur(4px);
+      padding: 15px 22px;
+      border-radius: var(--r14);
+      border-left: 3px solid var(--teal-400);
+      max-width: 540px;
+      line-height: 1.85;
+      margin-bottom: 36px;
+      animation: fadeUp .8s .24s both
+    }
+
+    /* ↑ bumped */
+    .hero-acts {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      animation: fadeUp .8s .34s both
+    }
+
+    .hero-float {
+      position: absolute;
+      right: 5%;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      animation: fadeUp .8s .5s both
+    }
+
+    .hf-card {
+      background: rgba(0, 0, 0, .45);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: var(--r14);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #fff;
+      min-width: 230px
+    }
+
+    .hf-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0
+    }
+
+    .hf-card p {
+      font-size: .9rem;
+      font-weight: 600
+    }
+
+    /* ↑ bumped */
+    .hf-card small {
+      font-size: .76rem;
+      opacity: .7;
+      display: block;
+      margin-top: 2px
+    }
+
+    /* ↑ bumped */
+    .hero-ribbon {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 3;
+      background: rgba(0, 0, 0, .6);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(255, 255, 255, .1)
+    }
+
+    .ribbon-in {
+      display: flex;
+      justify-content: center
+    }
+
+    .rib-stat {
+      padding: 20px 38px;
+      text-align: center;
+      border-right: 1px solid rgba(255, 255, 255, .1)
+    }
+
+    .rib-stat:last-child {
+      border-right: none
+    }
+
+    .rib-num {
+      font-family: var(--fd);
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, .6)
+    }
+
+    /* ↑ bumped */
+    .rib-lbl {
+      font-size: .76rem;
+      color: rgba(255, 255, 255, .6);
+      margin-top: 5px
+    }
+
+    /* ↑ bumped */
+
+    /* ========== ABOUT ========== */
+    .about {
+      padding: 100px 0;
+      background: var(--warm-white)
+    }
+
+    .about-g {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 72px;
+      align-items: center
+    }
+
+    .about-img-wrap {
+      position: relative
+    }
+
+    .about-img {
+      border-radius: var(--r32);
+      overflow: hidden;
+      aspect-ratio: 4/5;
+      position: relative
+    }
+
+    .about-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .about-img-ov {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0, 40, 38, .75) 0%, transparent 55%)
+    }
+
+    .about-caption {
+      position: absolute;
+      bottom: 22px;
+      left: 22px;
+      right: 22px;
+      color: #fff;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, .7)
+    }
+
+    .about-caption p {
+      font-size: .94rem;
+      font-weight: 600
+    }
+
+    /* ↑ bumped */
+    .about-caption small {
+      font-size: .78rem;
+      opacity: .8
+    }
+
+    /* ↑ bumped */
+    .about-badge-tl {
+      position: absolute;
+      top: -18px;
+      right: -18px;
+      background: var(--teal-700);
+      color: #fff;
+      border-radius: var(--r14);
+      padding: 18px 22px;
+      box-shadow: var(--sh-xl);
+      text-align: center
+    }
+
+    .about-badge-tl .n {
+      font-family: var(--fd);
+      font-size: 2.2rem;
+      font-weight: 700;
+      line-height: 1
+    }
+
+    /* ↑ bumped */
+    .about-badge-tl small {
+      font-size: .72rem;
+      opacity: .85;
+      display: block;
+      margin-top: 2px
+    }
+
+    .about-badge-bl {
+      position: absolute;
+      bottom: -18px;
+      left: -18px;
+      background: #fff;
+      border: 1px solid var(--g100);
+      border-radius: var(--r14);
+      padding: 16px 20px;
+      box-shadow: var(--sh-xl);
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .about-badge-bl .ico {
+      width: 40px;
+      height: 40px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--teal-500), var(--teal-400));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: .95rem
+    }
+
+    .about-badge-bl p {
+      font-weight: 700;
+      color: var(--navy);
+      font-size: .95rem
+    }
+
+    /* ↑ bumped */
+    .about-badge-bl small {
+      color: var(--g500);
+      font-size: .77rem
+    }
+
+    /* ↑ bumped */
+    .afeats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 13px;
+      margin: 26px 0
+    }
+
+    .afeat {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px;
+      background: #fff;
+      border: 1.5px solid var(--g100);
+      border-radius: var(--r8);
+      transition: var(--ease)
+    }
+
+    .afeat:hover {
+      border-color: var(--teal-200);
+      box-shadow: var(--sh-sm)
+    }
+
+    .afeat .fi {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .88rem;
+      flex-shrink: 0
+    }
+
+    .afeat h4 {
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 2px
+    }
+
+    /* ↑ bumped */
+    .afeat p {
+      font-size: .82rem;
+      color: var(--g500)
+    }
+
+    /* ↑ bumped */
+
+    /* ========== STATS BAR ========== */
+    .stats-bar {
+      background: linear-gradient(135deg, var(--teal-900), #001f1e);
+      padding: 60px 0
+    }
+
+    .stats-g {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr)
+    }
+
+    .stat-c {
+      text-align: center;
+      padding: 22px 18px;
+      border-right: 1px solid rgba(255, 255, 255, .1)
+    }
+
+    .stat-c:last-child {
+      border-right: none
+    }
+
+    .stat-ico {
+      width: 54px;
+      height: 54px;
+      border-radius: var(--r8);
+      background: rgba(255, 255, 255, .08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+      font-size: 1.4rem;
+      color: var(--teal-400)
+    }
+
+    /* ↑ bumped */
+    .stat-n {
+      font-family: var(--fd);
+      font-size: 2.9rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+      margin-bottom: 5px
+    }
+
+    /* ↑ bumped */
+    .stat-l {
+      font-size: .84rem;
+      color: rgba(255, 255, 255, .55)
+    }
+
+    /* ↑ bumped */
+
+    /* ========== DOCTORS ========== */
+    .doctors {
+      padding: 100px 0;
+      background: var(--cream)
+    }
+
+    .docs-g {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+      gap: 22px
+    }
+
+    .doc {
+      background: #fff;
+      border-radius: var(--r22);
+      border: 1.5px solid var(--g100);
+      overflow: hidden;
+      transition: var(--ease);
+      box-shadow: var(--sh-sm)
+    }
+
+    .doc:hover {
+      transform: translateY(-7px);
+      box-shadow: var(--sh-xl);
+      border-color: var(--teal-200)
+    }
+
+    .doc-img {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1/1;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--teal-50), var(--cream))
+    }
+
+    .doc-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .5s
+    }
+
+    .doc:hover .doc-img img {
+      transform: scale(1.07)
+    }
+
+    .doc-img::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0, 40, 38, .6) 0%, transparent 50%);
+      pointer-events: none
+    }
+
+    .doc-sp {
+      position: absolute;
+      bottom: 11px;
+      left: 11px;
+      z-index: 2;
+      background: rgba(0, 30, 28, .82);
+      backdrop-filter: blur(8px);
+      color: var(--teal-400);
+      padding: 5px 13px;
+      border-radius: 99px;
+      font-size: .74rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase
+    }
+
+    /* ↑ bumped */
+    .doc-body {
+      padding: 20px
+    }
+
+    .doc-body h3 {
+      font-family: var(--fd);
+      font-size: 1.22rem;
+      color: var(--navy);
+      margin-bottom: 3px
+    }
+
+    /* ↑ bumped */
+    .doc-xp {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: .82rem;
+      color: var(--g500);
+      margin-bottom: 9px
+    }
+
+    /* ↑ bumped */
+    .doc-xp i {
+      color: var(--teal-500)
+    }
+
+    .doc-desc {
+      font-size: .86rem;
+      color: var(--g500);
+      line-height: 1.7;
+      margin-bottom: 14px
+    }
+
+    /* ↑ bumped */
+    .doc-socs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px
+    }
+
+    .ds {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      background: var(--g100);
+      color: var(--g500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .72rem;
+      transition: .25s
+    }
+
+    .ds:hover {
+      background: var(--teal-700);
+      color: #fff
+    }
+
+    /* ========== SERVICES ========== */
+    .services {
+      padding: 100px 0;
+      background: var(--warm-white)
+    }
+
+    .svc-g {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 22px
+    }
+
+    .svc {
+      background: #fff;
+      border: 1.5px solid var(--g100);
+      border-radius: var(--r22);
+      padding: 32px 28px;
+      transition: var(--ease);
+      position: relative;
+      overflow: hidden
+    }
+
+    .svc::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 4px;
+      height: 0;
+      background: linear-gradient(180deg, var(--teal-500), var(--teal-400));
+      transition: height .4s
+    }
+
+    .svc:hover::after {
+      height: 100%
+    }
+
+    .svc:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--sh-lg);
+      border-color: transparent
+    }
+
+    .svc-ico {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--r8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      margin-bottom: 18px;
+      transition: var(--ease)
+    }
+
+    .svc:hover .svc-ico {
+      transform: rotate(-6deg) scale(1.1)
+    }
+
+    .svc h3 {
+      font-family: var(--fd);
+      font-size: 1.28rem;
+      color: var(--navy);
+      margin-bottom: 9px
+    }
+
+    /* ↑ bumped */
+    .svc p {
+      font-size: .9rem;
+      color: var(--g500);
+      line-height: 1.78;
+      margin-bottom: 16px
+    }
+
+    /* ↑ bumped */
+    .svc-lnk {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .88rem;
+      font-weight: 600;
+      color: var(--teal-700);
+      transition: .25s
+    }
+
+    /* ↑ bumped */
+    .svc-lnk:hover {
+      gap: 10px
+    }
+
+    /* ========== FACILITIES ========== */
+    .facilities {
+      padding: 100px 0;
+      background: var(--cream)
+    }
+
+    .fac-g {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(205px, 1fr));
+      gap: 18px
+    }
+
+    .fac {
+      border-radius: var(--r22);
+      padding: 28px 20px;
+      text-align: center;
+      border: 1.5px solid var(--g100);
+      background: #fff;
+      transition: var(--ease)
+    }
+
+    .fac:hover {
+      background: linear-gradient(135deg, var(--teal-900), #001f1e);
+      border-color: transparent;
+      transform: translateY(-6px);
+      box-shadow: var(--sh-xl)
+    }
+
+    .fac:hover .fac-ico {
+      background: rgba(255, 255, 255, .1);
+      color: var(--teal-400)
+    }
+
+    .fac:hover h4 {
+      color: #fff
+    }
+
+    .fac:hover p {
+      color: rgba(255, 255, 255, .6)
+    }
+
+    .fac-ico {
+      width: 62px;
+      height: 62px;
+      border-radius: 16px;
+      background: var(--teal-50);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+      font-size: 1.4rem;
+      transition: var(--ease)
+    }
+
+    .fac h4 {
+      font-family: var(--fd);
+      font-size: 1.06rem;
+      color: var(--navy);
+      margin-bottom: 7px;
+      transition: var(--ease)
+    }
+
+    /* ↑ bumped */
+    .fac p {
+      font-size: .84rem;
+      color: var(--g500);
+      line-height: 1.7;
+      transition: var(--ease)
+    }
+
+    /* ↑ bumped */
+
+    /* ========== TESTIMONIALS ========== */
+    .testi {
+      padding: 100px 0;
+      overflow: hidden;
+      position: relative;
+      background: linear-gradient(135deg, var(--teal-900) 0%, #001a19 100%)
+    }
+
+    .testi::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255, 255, 255, .04) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none
+    }
+
+    .testi .eyebrow {
+      background: rgba(255, 255, 255, .1);
+      color: rgba(255, 255, 255, .8);
+      border-color: rgba(255, 255, 255, .15)
+    }
+
+    .testi .stitle {
+      color: #fff
+    }
+
+    .testi .sdesc {
+      color: rgba(255, 255, 255, .6)
+    }
+
+    .tt-wrap {
+      overflow: hidden
+    }
+
+    .tt-track {
+      display: flex;
+      gap: 20px;
+      transition: transform .65s cubic-bezier(.65, 0, .35, 1)
+    }
+
+    .tc {
+      background: rgba(255, 255, 255, .07);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: var(--r22);
+      padding: 30px 26px;
+      min-width: 345px;
+      flex-shrink: 0
+    }
+
+    .tc-stars {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px
+    }
+
+    .tc-stars i {
+      color: #f0c96b;
+      font-size: .9rem
+    }
+
+    /* ↑ bumped */
+    .tc-txt {
+      font-size: .98rem;
+      color: rgba(255, 255, 255, .82);
+      line-height: 1.85;
+      margin-bottom: 22px;
+      font-style: italic
+    }
+
+    /* ↑ bumped */
+    .tc-auth {
+      display: flex;
+      align-items: center;
+      gap: 13px
+    }
+
+    .tc-ph {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, .18)
+    }
+
+    .tc-ph img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .tc-name {
+      font-weight: 600;
+      color: #fff;
+      font-size: .92rem
+    }
+
+    /* ↑ bumped */
+    .tc-role {
+      font-size: .78rem;
+      color: rgba(255, 255, 255, .5)
+    }
+
+    /* ↑ bumped */
+    .tctl {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 32px
+    }
+
+    .tbtn {
+      width: 43px;
+      height: 43px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 255, 255, .22);
+      background: transparent;
+      color: #fff;
+      font-size: .86rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: .28s
+    }
+
+    .tbtn:hover {
+      background: rgba(255, 255, 255, .12);
+      border-color: #fff
+    }
+
+    .tdots {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 16px
+    }
+
+    .tdot {
+      height: 7px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, .22);
+      cursor: pointer;
+      transition: .35s;
+      width: 7px
+    }
+
+    .tdot.active {
+      width: 22px;
+      background: var(--teal-400)
+    }
+
+    /* ========== LOCATION ========== */
+    /* Contact section removed — location section now follows directly after testimonials */
+    .loc {
+      padding: 84px 0;
+      background: var(--cream)
+    }
+
+    .loc-g {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center
+    }
+
+    .loc-addr {
+      background: #fff;
+      border: 1.5px solid var(--g100);
+      border-radius: var(--r22);
+      padding: 28px;
+      margin-top: 20px
+    }
+
+    .loc-addr p {
+      font-size: .94rem;
+      color: var(--g500);
+      line-height: 1.9
+    }
+
+    /* ↑ bumped */
+    .loc-addr strong {
+      color: var(--navy)
+    }
+
+    .map-box {
+      border-radius: var(--r22);
+      overflow: hidden;
+      height: 375px;
+      box-shadow: var(--sh-lg)
+    }
+
+    .map-box iframe {
+      width: 100%;
+      height: 100%;
+      border: none
+    }
+
+    /* ========== FOOTER ========== */
+    .footer {
+      background: var(--teal-900);
+      color: rgba(255, 255, 255, .65);
+      padding: 70px 0 0
+    }
+
+    .footer-g {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr 1fr 1fr;
+      gap: 44px;
+      padding-bottom: 52px
+    }
+
+    .fbrand p {
+      font-size: .88rem;
+      line-height: 1.85;
+      max-width: 265px;
+      margin-top: 13px
+    }
+
+    /* ↑ bumped */
+    .fsocs {
+      display: flex;
+      gap: 10px;
+      margin-top: 17px
+    }
+
+    .fso {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .08);
+      color: rgba(255, 255, 255, .6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .82rem;
+      text-decoration: none;
+      transition: .28s
+    }
+
+    .fso:hover {
+      background: var(--teal-500);
+      color: #fff;
+      transform: translateY(-2px)
+    }
+
+    .fc h4 {
+      font-size: .92rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 17px;
+      letter-spacing: .03em
+    }
+
+    /* ↑ bumped */
+    .fc ul {
+      display: flex;
+      flex-direction: column;
+      gap: 9px
+    }
+
+    .fc ul a {
+      color: rgba(255, 255, 255, .58);
+      font-size: .84rem;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: .22s
+    }
+
+    /* ↑ bumped */
+    .fc ul a:hover {
+      color: var(--teal-400);
+      padding-left: 4px
+    }
+
+    .fc ul a i {
+      font-size: .6rem;
+      color: var(--teal-400)
+    }
+
+    .fbot {
+      border-top: 1px solid rgba(255, 255, 255, .08);
+      padding: 17px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 9px
+    }
+
+    .fbot p {
+      font-size: .82rem;
+      color: rgba(255, 255, 255, .4)
+    }
+
+    /* ↑ bumped */
+    .fbot a {
+      color: rgba(255, 255, 255, .5);
+      transition: .22s
+    }
+
+    .fbot a:hover {
+      color: var(--teal-400)
+    }
+
+    /* BACK TO TOP */
+    #btt {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      z-index: 400;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal-700), var(--teal-500));
+      color: #fff;
+      font-size: .95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(0, 158, 150, .45);
+      opacity: 0;
+      transform: translateY(14px);
+      pointer-events: none;
+      transition: var(--ease)
+    }
+
+    #btt.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media(max-width:1060px) {
+      .about-g {
+        grid-template-columns: 1fr;
+        gap: 50px
+      }
+
+      .about-img-wrap {
+        max-width: 480px
+      }
+
+      .loc-g {
+        grid-template-columns: 1fr
+      }
+
+      .footer-g {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .hero-float {
+        display: none
+      }
+    }
+
+    @media(max-width:768px) {
+
+      .nav-links,
+      .nav-acts {
+        display: none
+      }
+
+      .hbg {
+        display: flex
+      }
+
+      .ribbon-in {
+        flex-wrap: wrap
+      }
+
+      .rib-stat {
+        flex: 1 1 50%;
+        min-width: 120px
+      }
+
+      .stats-g {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .stat-c {
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, .1)
+      }
+
+      .svc-g {
+        grid-template-columns: 1fr
+      }
+
+      .fac-g {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .tc {
+        min-width: 285px
+      }
+
+      .footer-g {
+        grid-template-columns: 1fr;
+        gap: 26px
+      }
+    }
+
+    @media(max-width:480px) {
+      .fac-g {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .docs-g {
+        grid-template-columns: 1fr
+      }
+
+      .rib-stat {
+        flex: 1 1 100%
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- EMERGENCY BANNER -->
+  <div class="emg">
+    <div class="container">
+      <div class="emg-in">
+        <p>🚨 <strong>Medical Emergency?</strong> Our response team is on standby 24 hours a day, 7 days a week.</p>
+        <a href="tel:18002273911" class="emg-btn">
+          <i class="fas fa-phone-volume"></i> Emergency: 1800-MED-911
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="nav" id="mainNav">
+    <div class="container">
+      <div class="nav-in">
+        <a href="#home" class="logo">
+          <div class="logo-mark"><i class="fas fa-heartbeat"></i></div>
+          <div class="logo-txt">MediVita<small>Hospital &amp; Medical Centre</small></div>
+        </a>
+        <ul class="nav-links">
+          <li><a href="#home" class="nl">Home</a></li>
+          <li><a href="#about" class="nl">About</a></li>
+          <li><a href="#doctors" class="nl">Doctors</a></li>
+          <li><a href="#services" class="nl">Services</a></li>
+          <li><a href="#facilities" class="nl">Facilities</a></li>
+          <li><a href="#testimonials" class="nl">Reviews</a></li>
+          <li><a href="#location" class="nl">Location</a></li>
+        </ul>
+        <div class="nav-acts">
+          <!-- Login button now redirects to login.html -->
+          <a href="/medivita/frontend/auth/login.html" class="btn-login">Login</a>
+        </div>
+        <button class="hbg" id="hbg" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mob-menu" id="mobMenu">
+    <button class="mob-x" id="mobClose"><i class="fas fa-times"></i></button>
+    <a href="#home">Home</a>
+    <a href="#about">About Hospital</a>
+    <a href="#doctors">Our Doctors</a>
+    <a href="#services">Services</a>
+    <a href="#facilities">Facilities</a>
+    <a href="#testimonials">Testimonials</a>
+    <a href="#location">Location</a>
+    <div class="mob-ctas">
+      <a href="/medivita/frontend/auth/login.html" class="btn btn-ghost"><i class="fas fa-right-to-bracket"></i>
+        Login</a>
+    </div>
+  </div>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="home">
+    <div class="hero-bg"></div>
+    <div class="hero-ov1"></div>
+    <div class="hero-ov2"></div>
+
+    <div class="hero-content">
+      <div class="container">
+        <div class="hero-pill">
+          <span class="dot"></span> JCI Accredited · ISO 9001:2015 Certified
+        </div>
+        <h1>Advanced Healthcare<br />for a <em>Healthier Tomorrow</em></h1>
+        <div class="hero-sub">
+          Experience compassionate, precision medicine delivered by internationally trained specialists. From routine
+          check-ups to complex surgery — MediVita is your lifelong health partner.
+        </div>
+        <div class="hero-acts">
+          <a href="#about" class="btn btn-teal">
+            <i class="fas fa-play-circle"></i> Learn More
+          </a>
+          <a href="/medivita/frontend/auth/login.html" class="btn btn-ghost">
+            <i class="fas fa-right-to-bracket"></i> Patient Portal
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating info cards (desktop) -->
+    <div class="hero-float">
+      <div class="hf-card">
+        <div class="hf-icon" style="background:rgba(0,191,182,.2)"><i class="fas fa-shield-heart"
+            style="color:#00bfb6"></i></div>
+        <div>
+          <p>50+ Insurance Plans</p><small>Cashless treatment</small>
+        </div>
+      </div>
+      <div class="hf-card">
+        <div class="hf-icon" style="background:rgba(240,201,107,.18)"><i class="fas fa-star" style="color:#f0c96b"></i>
+        </div>
+        <div>
+          <p>4.9 / 5 Rating</p><small>9,400+ verified reviews</small>
+        </div>
+      </div>
+      <div class="hf-card">
+        <div class="hf-icon" style="background:rgba(255,255,255,.1)"><i class="fas fa-video" style="color:#7dd3fc"></i>
+        </div>
+        <div>
+          <p>Telemedicine</p><small>Consult from anywhere</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats ribbon -->
+    <div class="hero-ribbon">
+      <div class="container">
+        <div class="ribbon-in">
+          <div class="rib-stat">
+            <div class="rib-num" data-target="20">0+</div>
+            <div class="rib-lbl">Expert Doctors</div>
+          </div>
+          <div class="rib-stat">
+            <div class="rib-num" data-target="10000">0</div>
+            <div class="rib-lbl">Happy Patients</div>
+          </div>
+          <div class="rib-stat">
+            <div class="rib-num">24/7</div>
+            <div class="rib-lbl">Emergency Care</div>
+          </div>
+          <div class="rib-stat">
+            <div class="rib-num" data-target="15">0</div>
+            <div class="rib-lbl">Specialties</div>
+          </div>
+          <div class="rib-stat">
+            <div class="rib-num" data-target="25">0+</div>
+            <div class="rib-lbl">Years of Service</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT ===== -->
+  <section class="about" id="about">
+    <div class="container">
+      <div class="about-g">
+        <div class="about-img-wrap rev">
+          <div class="about-img">
+            <img src="https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=800&q=85" alt="MediVita Hospital" />
+            <div class="about-img-ov"></div>
+            <div class="about-caption">
+              <p>State-of-the-art Surgical Wing</p>
+              <small>Inaugurated 2019 · Block B, Level 4</small>
+            </div>
+          </div>
+          <div class="about-badge-tl">
+            <div class="n">25+</div><small>Years of<br />Excellence</small>
+          </div>
+          <div class="about-badge-bl">
+            <div class="ico"><i class="fas fa-award"></i></div>
+            <div>
+              <p>JCI Certified</p><small>International Standards</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev d2">
+          <div class="eyebrow"><i class="fas fa-hospital"></i> About MediVita</div>
+          <h2 class="stitle">Where Compassion Meets <em>Clinical Excellence</em></h2>
+          <p class="sdesc">MediVita has been the region's most trusted healthcare destination since 1999 — blending
+            advanced technology with genuinely human, patient-first care at every step.</p>
+          <div class="afeats">
+            <div class="afeat">
+              <div class="fi" style="background:#e6faf9;color:#006b66"><i class="fas fa-bullseye"></i></div>
+              <div>
+                <h4>Our Mission</h4>
+                <p>Accessible, high-quality care for every patient.</p>
+              </div>
+            </div>
+            <div class="afeat">
+              <div class="fi" style="background:#fffbeb;color:#b45309"><i class="fas fa-eye"></i></div>
+              <div>
+                <h4>Our Vision</h4>
+                <p>Leading health innovation in the region by 2030.</p>
+              </div>
+            </div>
+            <div class="afeat">
+              <div class="fi" style="background:#fdf2f8;color:#9d174d"><i class="fas fa-heart"></i></div>
+              <div>
+                <h4>Patient-First</h4>
+                <p>Every decision starts with patient wellbeing.</p>
+              </div>
+            </div>
+            <div class="afeat">
+              <div class="fi" style="background:#eff6ff;color:#1d4ed8"><i class="fas fa-flask"></i></div>
+              <div>
+                <h4>Innovation</h4>
+                <p>Adopting the latest medical breakthroughs continuously.</p>
+              </div>
+            </div>
+          </div>
+          <a href="#services" class="btn btn-teal">Explore Services <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS BAR -->
+  <section class="stats-bar">
+    <div class="container">
+      <div class="stats-g">
+        <div class="stat-c rev">
+          <div class="stat-ico"><i class="fas fa-user-md"></i></div>
+          <div class="stat-n" data-target="20">0+</div>
+          <div class="stat-l">Expert Doctors</div>
+        </div>
+        <div class="stat-c rev d1">
+          <div class="stat-ico"><i class="fas fa-users"></i></div>
+          <div class="stat-n" data-target="10000">0</div>
+          <div class="stat-l">Happy Patients</div>
+        </div>
+        <div class="stat-c rev d2">
+          <div class="stat-ico"><i class="fas fa-clock"></i></div>
+          <div class="stat-n">24/7</div>
+          <div class="stat-l">Emergency Care</div>
+        </div>
+        <div class="stat-c rev d3">
+          <div class="stat-ico"><i class="fas fa-microscope"></i></div>
+          <div class="stat-n" data-target="60">0+</div>
+          <div class="stat-l">Medical Equipment</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DOCTORS ===== -->
+  <section class="doctors" id="doctors">
+    <div class="container">
+      <div class="sh c rev">
+        <div class="eyebrow"><i class="fas fa-user-md"></i> Our Specialists</div>
+        <h2 class="stitle">Meet Our <em>Expert Doctors</em></h2>
+        <p class="sdesc">Board-certified specialists committed to the highest standard of patient care across every
+          medical discipline.</p>
+      </div>
+      <div class="docs-g">
+        <div class="doc rev">
+          <div class="doc-img"><img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&q=80"
+              alt="Dr. Arjun Sharma" /><span class="doc-sp">Cardiology</span></div>
+          <div class="doc-body">
+            <h3>Dr. Arjun Sharma</h3>
+            <div class="doc-xp"><i class="fas fa-briefcase"></i> 18 Yrs Experience</div>
+            <p class="doc-desc">Interventional cardiologist specialising in complex coronary procedures, heart failure,
+              and advanced cardiac imaging.</p>
+            <div class="doc-socs"><a href="#" class="ds"><i class="fab fa-linkedin-in"></i></a><a href="#" class="ds"><i
+                  class="fas fa-envelope"></i></a></div>
+            <!-- <a href="/medivita/frontend/auth/login.html" class="btn btn-sm btn-oteal">View Profile</a> -->
+          </div>
+        </div>
+        <div class="doc rev d1">
+          <div class="doc-img"><img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&q=80"
+              alt="Dr. Priya Nair" /><span class="doc-sp">Neurology</span></div>
+          <div class="doc-body">
+            <h3>Dr. Priya Nair</h3>
+            <div class="doc-xp"><i class="fas fa-briefcase"></i> 14 Yrs Experience</div>
+            <p class="doc-desc">Expert neurologist treating stroke, epilepsy, and neurodegenerative diseases with
+              precision neuro-imaging.</p>
+            <div class="doc-socs"><a href="#" class="ds"><i class="fab fa-linkedin-in"></i></a><a href="#" class="ds"><i
+                  class="fas fa-envelope"></i></a></div>
+            <!-- <a href="/medivita/frontend/auth/login.html" class="btn btn-sm btn-oteal">View Profile</a> -->
+          </div>
+        </div>
+        <div class="doc rev d2">
+          <div class="doc-img"><img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80"
+              alt="Dr. Rahul Mehta" /><span class="doc-sp">Pediatrics</span></div>
+          <div class="doc-body">
+            <h3>Dr. Rahul Mehta</h3>
+            <div class="doc-xp"><i class="fas fa-briefcase"></i> 11 Yrs Experience</div>
+            <p class="doc-desc">Child health specialist in neonatal care, developmental paediatrics, and childhood
+              infectious diseases.</p>
+            <div class="doc-socs"><a href="#" class="ds"><i class="fab fa-linkedin-in"></i></a><a href="#" class="ds"><i
+                  class="fas fa-envelope"></i></a></div>
+            <!-- <a href="/medivita/frontend/auth/login.html" class="btn btn-sm btn-oteal">View Profile</a> -->
+          </div>
+        </div>
+        <div class="doc rev d3">
+          <div class="doc-img"><img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&q=80"
+              alt="Dr. Sunita Verma" /><span class="doc-sp">Oncology</span></div>
+          <div class="doc-body">
+            <h3>Dr. Sunita Verma</h3>
+            <div class="doc-xp"><i class="fas fa-briefcase"></i> 16 Yrs Experience</div>
+            <p class="doc-desc">Oncologist specialising in precision cancer treatments, immunotherapy, and survivorship
+              programmes.</p>
+            <div class="doc-socs"><a href="#" class="ds"><i class="fab fa-linkedin-in"></i></a><a href="#" class="ds"><i
+                  class="fas fa-envelope"></i></a></div>
+            <!-- <a href="/medivita/frontend/auth/login.html" class="btn btn-sm btn-oteal">View Profile</a> -->
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:42px" class="rev">
+        <a href="/medivita/frontend/auth/login.html" class="btn btn-teal">Access Patient Portal <i
+            class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SERVICES ===== -->
+  <section class="services" id="services">
+    <div class="container">
+      <div class="sh c rev">
+        <div class="eyebrow"><i class="fas fa-stethoscope"></i> What We Offer</div>
+        <h2 class="stitle">Comprehensive <em>Medical Services</em></h2>
+        <p class="sdesc">A full spectrum of specialised care under one roof, driven by the latest evidence-based
+          protocols and compassionate delivery.</p>
+      </div>
+      <div class="svc-g">
+        <div class="svc rev">
+          <div class="svc-ico" style="background:#e6faf9;color:#006b66"><i class="fas fa-stethoscope"></i></div>
+          <h3>General Consultation</h3>
+          <p>Comprehensive evaluations, preventive check-ups, and expert guidance for general and chronic health
+            concerns at every life stage.</p><a href="/medivita/frontend/auth/login.html" class="svc-lnk">Book Now <i
+              class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="svc rev d1">
+          <div class="svc-ico" style="background:#fef2f2;color:#b91c1c"><i class="fas fa-heart-pulse"></i></div>
+          <h3>Cardiology</h3>
+          <p>Advanced cardiac diagnostics, catheter-based interventions, and long-term heart management by expert
+            interventional cardiologists.</p><a href="/medivita/frontend/auth/login.html" class="svc-lnk">Book Now <i
+              class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="svc rev d2">
+          <div class="svc-ico" style="background:#f5f3ff;color:#6d28d9"><i class="fas fa-brain"></i></div>
+          <h3>Neurology</h3>
+          <p>Specialised treatment for stroke, epilepsy, Parkinson's, and MS using cutting-edge neuro-imaging and
+            precision medicine.</p><a href="/medivita/frontend/auth/login.html" class="svc-lnk">Book Now <i
+              class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="svc rev">
+          <div class="svc-ico" style="background:#f0fdf4;color:#15803d"><i class="fas fa-baby"></i></div>
+          <h3>Pediatrics</h3>
+          <p>Compassionate care for children from newborns to adolescents — routine wellness visits to complex
+            paediatric conditions.</p><a href="/medivita/frontend/auth/login.html" class="svc-lnk">Book Now <i
+              class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="svc rev d1">
+          <div class="svc-ico" style="background:#fff7ed;color:#c2410c"><i class="fas fa-truck-medical"></i></div>
+          <h3>Emergency Care</h3>
+          <p>24/7 emergency services with trauma specialists, advanced life support, and rapid-response protocols
+            on-site at all times.
+            <!-- </p><a href="tel:18002273911" class="svc-lnk">Call Now <i -->
+            <!-- class="fas fa-arrow-right"></i></a> -->
+        </div>
+        <div class="svc rev d2">
+          <div class="svc-ico" style="background:#ecfeff;color:#0e7490"><i class="fas fa-flask-vial"></i></div>
+          <h3>Diagnostic Lab</h3>
+          <p>NABL-accredited laboratory offering 400+ panels with same-day results, advanced imaging, and molecular
+            diagnostics.</p><a href="/medivita/frontend/auth/login.html" class="svc-lnk">Book Test <i
+              class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FACILITIES ===== -->
+  <section class="facilities" id="facilities">
+    <div class="container">
+      <div class="sh c rev">
+        <div class="eyebrow"><i class="fas fa-building-columns"></i> Infrastructure</div>
+        <h2 class="stitle">World-Class <em>Facilities</em></h2>
+        <p class="sdesc">Every corner of MediVita is built around your comfort, safety, and the fastest possible path to
+          recovery.</p>
+      </div>
+      <div class="fac-g">
+        <div class="fac rev">
+          <div class="fac-ico" style="color:#b91c1c"><i class="fas fa-truck-medical"></i></div>
+          <h4>24/7 Emergency</h4>
+          <p>Immediate trauma care, advanced life support, and dedicated emergency staff always on standby.</p>
+        </div>
+        <div class="fac rev d1">
+          <div class="fac-ico" style="color:#1d4ed8"><i class="fas fa-kit-medical"></i></div>
+          <h4>Operation Theatres</h4>
+          <p>8 robotics-ready, fully-equipped operation theatres for complex surgical procedures.</p>
+        </div>
+        <div class="fac rev d2">
+          <div class="fac-ico" style="color:#15803d"><i class="fas fa-pills"></i></div>
+          <h4>24/7 Pharmacy</h4>
+          <p>On-site pharmacy with 5,000+ medications, open around the clock with expert guidance.</p>
+        </div>
+        <div class="fac rev d3">
+          <div class="fac-ico" style="color:#6d28d9"><i class="fas fa-microscope"></i></div>
+          <h4>Diagnostic Lab</h4>
+          <p>Rapid turnaround on 400+ tests with NABL accreditation and advanced imaging support.</p>
+        </div>
+        <div class="fac rev">
+          <div class="fac-ico" style="color:#b45309"><i class="fas fa-ambulance"></i></div>
+          <h4>Ambulance Services</h4>
+          <p>Fleet of 12 ALS ambulances with city-wide coverage, available 24 hours a day.</p>
+        </div>
+        <div class="fac rev d1">
+          <div class="fac-ico" style="color:#0e7490"><i class="fas fa-bed-pulse"></i></div>
+          <h4>ICU &amp; CCU</h4>
+          <p>Fully monitored intensive care units with 1:1 nurse-to-patient ratios and real-time telemetry.</p>
+        </div>
+        <div class="fac rev d2">
+          <div class="fac-ico" style="color:#9d174d"><i class="fas fa-radiation"></i></div>
+          <h4>Radiology &amp; Imaging</h4>
+          <p>3T MRI, 128-slice CT, PET-CT, digital X-ray, and 3D ultrasound services on site.</p>
+        </div>
+        <div class="fac rev d3">
+          <div class="fac-ico" style="color:#166534"><i class="fas fa-dumbbell"></i></div>
+          <h4>Rehabilitation</h4>
+          <p>Physiotherapy, occupational therapy, and post-surgical recovery programmes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section class="testi" id="testimonials">
+    <div class="container" style="position:relative;z-index:1">
+      <div class="sh c rev">
+        <div class="eyebrow"><i class="fas fa-quote-left"></i> Patient Stories</div>
+        <h2 class="stitle">What Our <em>Patients Say</em></h2>
+        <p class="sdesc">Thousands trust MediVita for their most important health journeys. Here are a few of their
+          stories.</p>
+      </div>
+      <div class="tt-wrap rev">
+        <div class="tt-track" id="ttTrack">
+          <div class="tc">
+            <div class="tc-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                class="fas fa-star"></i><i class="fas fa-star"></i></div>
+            <p class="tc-txt">"After my cardiac procedure, the post-operative care at MediVita was extraordinary. Dr.
+              Sharma and the nursing team were attentive and deeply compassionate. I felt completely safe throughout."
+            </p>
+            <div class="tc-auth">
+              <div class="tc-ph"><img src="https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?w=100&q=80"
+                  alt="" /></div>
+              <div>
+                <div class="tc-name">Ramesh Kumar</div>
+                <div class="tc-role">Cardiac Patient · 62 yrs</div>
+              </div>
+            </div>
+          </div>
+          <div class="tc">
+            <div class="tc-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                class="fas fa-star"></i><i class="fas fa-star"></i></div>
+            <p class="tc-txt">"Dr. Mehta made my daughter's surgery so much less frightening. The team took time to
+              explain everything, the facilities were spotless, and the nursing staff showed genuine kindness and
+              patience."</p>
+            <div class="tc-auth">
+              <div class="tc-ph"><img src="https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=100&q=80"
+                  alt="" /></div>
+              <div>
+                <div class="tc-name">Anjali Sinha</div>
+                <div class="tc-role">Parent · Pediatric Patient</div>
+              </div>
+            </div>
+          </div>
+          <div class="tc">
+            <div class="tc-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
+            <p class="tc-txt">"My mother's cancer treatment under Dr. Verma has been world-class. The transparency about
+              the plan and the personal attention gave our whole family genuine confidence and peace of mind."</p>
+            <div class="tc-auth">
+              <div class="tc-ph"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80"
+                  alt="" /></div>
+              <div>
+                <div class="tc-name">Vikram Pillai</div>
+                <div class="tc-role">Caregiver · Oncology</div>
+              </div>
+            </div>
+          </div>
+          <div class="tc">
+            <div class="tc-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                class="fas fa-star"></i><i class="fas fa-star"></i></div>
+            <p class="tc-txt">"The telemedicine service has changed everything for me. I consult my neurologist from
+              home without losing work hours. Digital follow-up care is seamless and the team always has time for my
+              questions."</p>
+            <div class="tc-auth">
+              <div class="tc-ph"><img src="https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=100&q=80"
+                  alt="" /></div>
+              <div>
+                <div class="tc-name">Meera Trivedi</div>
+                <div class="tc-role">Neurology Patient · 34 yrs</div>
+              </div>
+            </div>
+          </div>
+          <div class="tc">
+            <div class="tc-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                class="fas fa-star"></i><i class="fas fa-star"></i></div>
+            <p class="tc-txt">"I arrived at MediVita's emergency at 2am with chest pain. The response was immediate —
+              within minutes a cardiologist was assessing me. That rapid action and calm professionalism saved my life."
+            </p>
+            <div class="tc-auth">
+              <div class="tc-ph"><img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&q=80"
+                  alt="" /></div>
+              <div>
+                <div class="tc-name">Suresh Mishra</div>
+                <div class="tc-role">Emergency Patient · 57 yrs</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tctl">
+        <button class="tbtn" id="tPrev"><i class="fas fa-arrow-left"></i></button>
+        <button class="tbtn" id="tNext"><i class="fas fa-arrow-right"></i></button>
+      </div>
+      <div class="tdots" id="tDots"></div>
+    </div>
+  </section>
+
+  <!-- ===== LOCATION ===== -->
+  <!-- Note: The "Book an Appointment" contact section has been completely removed.
+     Location now follows directly after Testimonials for clean flow. -->
+  <section class="loc" id="location">
+    <div class="container">
+      <div class="loc-g">
+        <div class="rev">
+          <div class="eyebrow"><i class="fas fa-map-pin"></i> Find Us</div>
+          <h2 class="stitle">Visit <em>MediVita</em></h2>
+          <p class="sdesc">Centrally located with ample parking and excellent public transport connections.</p>
+          <div class="loc-addr">
+            <p>
+              <strong>MediVita Hospital &amp; Medical Centre</strong><br />
+              Plot 14, HealthCity Boulevard, Sector 62<br />
+              Noida — 201301, Uttar Pradesh, India<br /><br />
+              <strong>Working Hours:</strong><br />
+              Mon–Sat: 8:00 AM – 9:00 PM<br />
+              Sunday: 9:00 AM – 5:00 PM<br />
+              Emergency: 24 × 7 × 365
+            </p>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
+            <a href="https://maps.google.com" target="_blank" class="btn btn-teal"><i class="fas fa-directions"></i> Get
+              Directions</a>
+            <!-- <a href="tel:+919876543210" class="btn btn-oteal"><i class="fas fa-phone"></i> Call Us</a> -->
+          </div>
+        </div>
+        <div class="map-box rev d2">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3503.7286726744764!2d77.36506921508282!3d28.58127298244039!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce5560d795c75%3A0x9ded5a748bbf2ee5!2sSector%2062%2C%20Noida%2C%20Uttar%20Pradesh!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin"
+            allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-g">
+        <div class="fbrand">
+          <a href="#home" class="logo" style="display:inline-flex">
+            <div class="logo-mark"><i class="fas fa-heartbeat"></i></div>
+            <div class="logo-txt">MediVita<small>Hospital &amp; Medical Centre</small></div>
+          </a>
+          <p>Trusted by thousands since 1999. We are committed to advancing health, extending life, and improving
+            quality of care in our community.</p>
+          <div class="fsocs">
+            <a href="#" class="fso"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="fso"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="fso"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="fso"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="fso"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        <div class="fc">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#home"><i class="fas fa-chevron-right"></i> Home</a></li>
+            <li><a href="#about"><i class="fas fa-chevron-right"></i> About Us</a></li>
+            <li><a href="#doctors"><i class="fas fa-chevron-right"></i> Our Doctors</a></li>
+            <li><a href="#services"><i class="fas fa-chevron-right"></i> Services</a></li>
+            <li><a href="#facilities"><i class="fas fa-chevron-right"></i> Facilities</a></li>
+            <li><a href="#location"><i class="fas fa-chevron-right"></i> Location</a></li>
+            <li><a href="/medivita/frontend/auth/login.html"><i class="fas fa-chevron-right"></i> Patient Portal</a>
+            </li>
+          </ul>
+        </div>
+        <div class="fc">
+          <h4>Departments</h4>
+          <ul>
+            <li><a href="#services"><i class="fas fa-chevron-right"></i> Cardiology</a></li>
+            <li><a href="#services"><i class="fas fa-chevron-right"></i> Neurology</a></li>
+            <li><a href="#services"><i class="fas fa-chevron-right"></i> Pediatrics</a></li>
+            <li><a href="#services"><i class="fas fa-chevron-right"></i> Oncology</a></li>
+            <li><a href="#services"><i class="fas fa-chevron-right"></i> Emergency</a></li>
+            <li><a href="#services"><i class="fas fa-chevron-right"></i> Diagnostic Lab</a></li>
+          </ul>
+        </div>
+        <div class="fc">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="#location"><i class="fas fa-map-pin"></i> Sector 62, Noida — 201301</a></li>
+            <li><a href="tel:+919876543210"><i class="fas fa-phone"></i> +91 98765 43210</a></li>
+            <li><a href="mailto:info@medivita.com"><i class="fas fa-envelope"></i> info@medivita.com</a></li>
+            <li><a href="tel:18002273911"><i class="fas fa-triangle-exclamation" style="color:#f87171"></i>
+                1800-MED-911</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="fbot">
+        <p>&copy; 2026 MediVita Hospital. All Rights Reserved.</p>
+        <p><a href="#">Privacy Policy</a> &nbsp;·&nbsp; <a href="#">Terms of Use</a> &nbsp;·&nbsp; <a
+            href="#">Accessibility</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <button id="btt" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+
+  <script>
+    /* ── NAVBAR scroll effect ── */
+    const nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 50);
+      document.getElementById('btt').classList.toggle('show', window.scrollY > 500);
+    });
+    document.getElementById('btt').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    /* ── MOBILE MENU ── */
+    function closeMob() { document.getElementById('mobMenu').classList.remove('open'); document.body.style.overflow = ''; }
+    document.getElementById('hbg').addEventListener('click', () => { document.getElementById('mobMenu').classList.add('open'); document.body.style.overflow = 'hidden'; });
+    document.getElementById('mobClose').addEventListener('click', closeMob);
+    document.querySelectorAll('.mob-menu a').forEach(a => a.addEventListener('click', closeMob));
+
+    /* ── SCROLL REVEAL ── */
+    const ro = new IntersectionObserver(es => { es.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); }); }, { threshold: .1 });
+    document.querySelectorAll('.rev').forEach(el => ro.observe(el));
+
+    /* ── ANIMATED COUNTERS ── */
+    function runCnt(el, target) {
+      const dur = 1800, start = performance.now();
+      const large = target >= 1000, plus = el.textContent.includes('+');
+      (function step(now) {
+        const p = Math.min((now - start) / dur, 1), ease = 1 - Math.pow(1 - p, 3), cur = Math.floor(ease * target);
+        el.textContent = (large ? cur.toLocaleString() : cur) + (plus ? '+' : '');
+        if (p < 1) requestAnimationFrame(step);
+        else el.textContent = (large ? target.toLocaleString() : target) + (plus ? '+' : '');
+      })(start);
+    }
+    const co = new IntersectionObserver(es => {
+      es.forEach(e => {
+        if (!e.isIntersecting) return;
+        const el = e.target, t = parseInt(el.dataset.target);
+        if (!isNaN(t)) { runCnt(el, t); co.unobserve(el); }
+      });
+    }, { threshold: .4 });
+    document.querySelectorAll('[data-target]').forEach(el => co.observe(el));
+
+    /* ── TESTIMONIALS CAROUSEL ── */
+    const track = document.getElementById('ttTrack');
+    const cards = Array.from(track.querySelectorAll('.tc'));
+    const dotsW = document.getElementById('tDots');
+    let cur = 0, aut;
+    cards.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'tdot' + (i === 0 ? ' active' : '');
+      d.addEventListener('click', () => goTo(i, true));
+      dotsW.appendChild(d);
+    });
+    function cw() { return cards[0].offsetWidth + 20; }
+    function goTo(idx, man = false) {
+      cur = ((idx % cards.length) + cards.length) % cards.length;
+      track.style.transform = `translateX(-${cur * cw()}px)`;
+      document.querySelectorAll('.tdot').forEach((d, i) => d.classList.toggle('active', i === cur));
+      if (man) { clearInterval(aut); startA(); }
+    }
+    function startA() { aut = setInterval(() => goTo(cur + 1), 4200); }
+    document.getElementById('tNext').addEventListener('click', () => goTo(cur + 1, true));
+    document.getElementById('tPrev').addEventListener('click', () => goTo(cur - 1, true));
+    startA();
+  </script>
+</body>
+
+</html>
