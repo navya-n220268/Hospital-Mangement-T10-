@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Appointment Analytics — MediVita Admin</title>
+  <link rel="stylesheet" href="/medivita/assets/css/medivita.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    .chart-card {
+      background: white;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chart-card .card-header {
+      padding: 20px 24px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chart-card .chart-body {
+      padding: 20px 24px;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .metric-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .metric-chip {
+      flex: 1;
+      min-width: 140px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .metric-chip-icon {
+      font-size: 24px;
+    }
+
+    .metric-chip-val {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+
+    .metric-chip-lab {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .rank-table {
+      width: 100%;
+    }
+
+    .rank-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .rank-row:last-child {
+      border-bottom: none;
+    }
+
+    .rank-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: var(--bg);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .rank-bar-wrap {
+      flex: 1;
+    }
+
+    .rank-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 5px;
+    }
+
+    .rank-sub {
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    .rank-bar {
+      height: 7px;
+      background: var(--bg);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .rank-fill {
+      height: 100%;
+      border-radius: 10px;
+    }
+
+    .rank-count {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    .period-btn {
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: white;
+      color: var(--text-muted);
+      font-family: var(--font);
+      transition: all 0.2s;
+    }
+
+    .period-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .period-btn:hover:not(.active) {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+  </style>
+  <script>
+    // Prevent flash of unauthenticated content
+    (async function () {
+      const res = await fetch('/medivita/backend/patient/get_user.php');
+      const data = await res.json();
+      if (!data.success || data.user.role !== 'admin') {
+        window.location.href = '/medivita/frontend/auth/login.html';
+      }
+    })();
+  </script>
+</head>
+
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <a href="/medivita/frontend/admin/admin-dashboard.html" class="brand-logo">
+        <div class="brand-icon"><i class="fas fa-heartbeat"></i></div>
+        <div class="brand-text">
+          <div class="brand-name">MediVita</div>
+          <div class="brand-sub">Admin Panel</div>
+        </div>
+      </a>
+    </div>
+    <div class="sidebar-section-label">Main Menu</div>
+    <nav class="sidebar-nav">
+      <a href="/medivita/frontend/admin/admin-dashboard.html" class="nav-item">
+        <span class="nav-icon">📊</span> Dashboard
+      </a>
+      <a href="/medivita/frontend/admin/manage-doctors.html" class="nav-item">
+        <span class="nav-icon">👨‍⚕️</span> Manage Doctors
+      </a>
+      <a href="/medivita/frontend/admin/manage-patients.html" class="nav-item">
+        <span class="nav-icon">🧑‍🤝‍🧑</span> Manage Patients
+      </a>
+      <a href="/medivita/frontend/admin/appointment-analytics.html" class="nav-item active">
+        <span class="nav-icon">📈</span> Appointment Analytics
+      </a>
+      <div class="sidebar-section-label" style="padding-top:12px;">System</div>
+      <a href="/medivita/frontend/admin/settings.html" class="nav-item">
+        <span class="nav-icon">⚙️</span> Settings
+      </a>
+      <a href="/medivita/backend/auth/logout.php" class="nav-item">
+        <span class="nav-icon">🚪</span> Logout
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="admin-profile">
+        <div class="admin-avatar">SA</div>
+        <div>
+          <div class="admin-name">Super Admin</div>
+          <div class="admin-role">Hospital Director</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="page-title">Appointment Analytics</div>
+        <div class="page-breadcrumb">Home / Analytics</div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-date" id="topbar-date-display">...</div>
+        <script>
+          document.getElementById('topbar-date-display').textContent = '📅 ' + new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        </script>
+        <!-- <div style="display:flex;gap:6px;">
+        <button class="period-btn active" onclick="setPeriod(this,'week')">Week</button>
+        <button class="period-btn" onclick="setPeriod(this,'month')">Month</button>
+        <button class="period-btn" onclick="setPeriod(this,'year')">Year</button>
+      </div>
+      <button class="topbar-btn">🔔 <span class="notif-dot"></span></button> -->
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- KEY METRICS -->
+      <div class="metric-row">
+        <div class="metric-chip animate-in">
+          <div class="metric-chip-icon">📅</div>
+          <div>
+            <div class="metric-chip-val" id="metric-total">0</div>
+            <div class="metric-chip-lab">Total Appointments</div>
+          </div>
+        </div>
+        <div class="metric-chip animate-in delay-1">
+          <div class="metric-chip-icon">✅</div>
+          <div>
+            <div class="metric-chip-val" style="color:var(--accent);" id="metric-completed">0</div>
+            <div class="metric-chip-lab">Completed</div>
+          </div>
+        </div>
+        <div class="metric-chip animate-in delay-2">
+          <div class="metric-chip-icon">⏳</div>
+          <div>
+            <div class="metric-chip-val" style="color:var(--warning);" id="metric-pending">0</div>
+            <div class="metric-chip-lab">Pending</div>
+          </div>
+        </div>
+        <div class="metric-chip animate-in delay-3">
+          <div class="metric-chip-icon">❌</div>
+          <div>
+            <div class="metric-chip-val" style="color:var(--danger);" id="metric-cancelled">0</div>
+            <div class="metric-chip-lab">Cancelled</div>
+          </div>
+        </div>
+        <div class="metric-chip animate-in delay-4">
+          <div class="metric-chip-icon">📆</div>
+          <div>
+            <div class="metric-chip-val" id="metric-month">0</div>
+            <div class="metric-chip-lab">This Month</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 1: LINE CHART + PIE CHART -->
+      <div class="grid-cols-6040" style="margin-bottom:22px;">
+
+        <div class="chart-card animate-in">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Appointment Status Overview</div>
+              <div class="card-subtitle">Status distribution of all appointments</div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <div class="legend-dot" style="background:var(--primary)"></div>Completed
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:var(--danger)"></div>Cancelled
+              </div>
+            </div>
+          </div>
+          <div class="chart-body">
+            <canvas id="weeklyChart" height="220"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card animate-in delay-2">
+          <div class="card-header">
+            <div>
+              <div class="card-title">By Department</div>
+              <div class="card-subtitle">Patient visits this month</div>
+            </div>
+          </div>
+          <div class="chart-body">
+            <canvas id="deptPieChart" height="220"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 2: BAR CHART + DOCTOR RANKING -->
+      <div class="grid-2" style="margin-bottom:22px;">
+
+        <div class="chart-card animate-in">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Monthly Appointment Trend</div>
+              <div class="card-subtitle">Last 12 months</div>
+            </div>
+          </div>
+          <div class="chart-body">
+            <canvas id="monthlyChart" height="200"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card animate-in delay-2">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Most Active Doctors</div>
+              <div class="card-subtitle">By appointment count this month</div>
+            </div>
+          </div>
+          <div class="chart-body" style="padding-top:10px;" id="doctorRankingContainer">
+            <div class="empty-state">Loading...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 3: HOURLY + STATUS BREAKDOWN -->
+      <div class="grid-2">
+
+        <div class="chart-card animate-in">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Department-wise Appointments</div>
+              <div class="card-subtitle">Appointments by department</div>
+            </div>
+          </div>
+          <div class="chart-body">
+            <canvas id="hourlyChart" height="200"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card animate-in delay-2">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Appointment Status Breakdown</div>
+              <div class="card-subtitle">This week's status distribution</div>
+            </div>
+          </div>
+          <div class="chart-body">
+            <canvas id="statusChart" height="200"></canvas>
+            <div style="display:flex;gap:16px;justify-content:center;margin-top:14px;flex-wrap:wrap;" id="statusLegend">
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const chartDefaults = {
+      responsive: true,
+      plugins: { legend: { display: false } },
+    };
+    const fontOpts = { family: 'Plus Jakarta Sans', size: 13 };
+    const chartColors = ['#1a6fbf', '#00b894', '#6c5ce7', '#f39c12', '#e74c3c', '#b2bec3', '#fd79a8', '#636e72', '#0984e3', '#fdcb6e'];
+    const gradients = [
+      'linear-gradient(90deg,var(--primary),#4dabf7)',
+      'linear-gradient(90deg,var(--accent),#55efc4)',
+      'linear-gradient(90deg,#6c5ce7,#a29bfe)',
+      'linear-gradient(90deg,var(--warning),#fdcb6e)',
+      'linear-gradient(90deg,var(--danger),#fd79a8)',
+    ];
+
+    let weeklyChart, deptChart, monthlyChart, hourlyChart, statusChart;
+
+    document.addEventListener('DOMContentLoaded', loadAnalytics);
+
+    async function loadAnalytics() {
+      try {
+        const res = await fetch('/medivita/backend/admin/get_appointment_analytics.php');
+        const data = await res.json();
+        console.log('Analytics API:', data);
+
+        // === METRIC CHIPS ===
+        document.getElementById('metric-total').textContent = data.totalAppointments;
+        document.getElementById('metric-completed').textContent = data.completed;
+        document.getElementById('metric-pending').textContent = data.pending;
+        document.getElementById('metric-cancelled').textContent = data.cancelled;
+        document.getElementById('metric-month').textContent = data.monthlyAppointments;
+
+        // === DEPARTMENT PIE CHART ===
+        const deptLabels = data.departmentBreakdown.map(d => d.department);
+        const deptValues = data.departmentBreakdown.map(d => d.count);
+        deptChart = new Chart(document.getElementById('deptPieChart'), {
+          type: 'doughnut',
+          data: {
+            labels: deptLabels,
+            datasets: [{
+              data: deptValues,
+              backgroundColor: chartColors.slice(0, deptLabels.length),
+              borderWidth: 0,
+              hoverOffset: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: true, position: 'bottom', labels: { font: fontOpts, padding: 14, usePointStyle: true } }
+            },
+            cutout: '65%'
+          }
+        });
+
+        // === MONTHLY BAR CHART ===
+        const monthLabels = data.monthlyTrend.map(m => m.month.split(' ')[0]);
+        const monthValues = data.monthlyTrend.map(m => m.count);
+        monthlyChart = new Chart(document.getElementById('monthlyChart'), {
+          type: 'bar',
+          data: {
+            labels: monthLabels,
+            datasets: [{
+              label: 'Appointments',
+              data: monthValues,
+              backgroundColor: (ctx) => {
+                return ctx.dataIndex === monthLabels.length - 1 ? '#1a6fbf' : 'rgba(26,111,191,0.18)';
+              },
+              borderRadius: 7,
+              borderSkipped: false
+            }]
+          },
+          options: {
+            ...chartDefaults,
+            scales: {
+              y: { beginAtZero: true, grid: { color: '#f0f4fb' }, ticks: { font: fontOpts } },
+              x: { grid: { display: false }, ticks: { font: fontOpts } }
+            }
+          }
+        });
+
+        // === DOCTOR RANKING ===
+        const container = document.getElementById('doctorRankingContainer');
+        container.innerHTML = '';
+        const maxCount = data.doctorRanking.length > 0 ? data.doctorRanking[0].count : 1;
+        data.doctorRanking.forEach((doc, i) => {
+          const pct = Math.round((doc.count / maxCount) * 100);
+          const grad = gradients[i % gradients.length];
+          const numStyle = i === 0 ? 'background:#fff3cd;color:#b08800;' : '';
+          container.innerHTML += `
+        <div class="rank-row">
+          <div class="rank-num" style="${numStyle}">${i + 1}</div>
+          <div class="rank-bar-wrap">
+            <div class="rank-label">${doc.name}</div>
+            <div class="rank-sub">${doc.department}</div>
+            <div class="rank-bar" style="margin-top:6px;"><div class="rank-fill" style="width:${pct}%;background:${grad}"></div></div>
+          </div>
+          <div class="rank-count">${doc.count}</div>
+        </div>
+      `;
+        });
+        if (data.doctorRanking.length === 0) {
+          container.innerHTML = '<div class="empty-state">No appointment data available</div>';
+        }
+
+        // === STATUS DONUT ===
+        const statusLabels = Object.keys(data.statusBreakdown).map(s => s.charAt(0).toUpperCase() + s.slice(1));
+        const statusValues = Object.values(data.statusBreakdown);
+        const statusColors = statusLabels.map(s => {
+          if (s === 'Completed') return '#00b894';
+          if (s === 'Pending') return '#f39c12';
+          if (s === 'Cancelled') return '#e74c3c';
+          if (s === 'Approved') return '#1a6fbf';
+          return '#b2bec3';
+        });
+
+        statusChart = new Chart(document.getElementById('statusChart'), {
+          type: 'doughnut',
+          data: {
+            labels: statusLabels,
+            datasets: [{
+              data: statusValues,
+              backgroundColor: statusColors,
+              borderWidth: 0,
+              hoverOffset: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            cutout: '68%'
+          }
+        });
+
+        // Status legend
+        const legendEl = document.getElementById('statusLegend');
+        const total = statusValues.reduce((a, b) => a + b, 0);
+        statusLabels.forEach((label, i) => {
+          const pct = total > 0 ? ((statusValues[i] / total) * 100).toFixed(1) : 0;
+          legendEl.innerHTML += `<div class="legend-item"><div class="legend-dot" style="background:${statusColors[i]}"></div>${label} (${pct}%)</div>`;
+        });
+
+        // === WEEKLY LINE CHART (status-based from all data) ===
+        weeklyChart = new Chart(document.getElementById('weeklyChart'), {
+          type: 'line',
+          data: {
+            labels: ['Completed', 'Pending', 'Approved', 'Cancelled'],
+            datasets: [{
+              label: 'Count',
+              data: [data.completed, data.pending, data.approved, data.cancelled],
+              borderColor: '#1a6fbf',
+              backgroundColor: 'rgba(26,111,191,0.08)',
+              fill: true,
+              tension: 0.4,
+              pointBackgroundColor: '#1a6fbf',
+              pointRadius: 6,
+              pointHoverRadius: 8,
+              borderWidth: 2.5
+            }]
+          },
+          options: {
+            ...chartDefaults,
+            plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+            scales: {
+              y: { beginAtZero: true, grid: { color: '#f0f4fb' }, ticks: { font: fontOpts, stepSize: 1 } },
+              x: { grid: { display: false }, ticks: { font: fontOpts } }
+            }
+          }
+        });
+
+        // === HOURLY CHART (departments as categories) ===
+        hourlyChart = new Chart(document.getElementById('hourlyChart'), {
+          type: 'bar',
+          data: {
+            labels: deptLabels,
+            datasets: [{
+              label: 'Appointments',
+              data: deptValues,
+              backgroundColor: 'rgba(0,184,148,0.2)',
+              borderColor: '#00b894',
+              borderWidth: 2,
+              borderRadius: 7,
+              borderSkipped: false
+            }]
+          },
+          options: {
+            ...chartDefaults,
+            scales: {
+              y: { beginAtZero: true, grid: { color: '#f0f4fb' }, ticks: { font: fontOpts, stepSize: 1 } },
+              x: { grid: { display: false }, ticks: { font: fontOpts } }
+            }
+          }
+        });
+
+      } catch (e) {
+        console.error('Analytics load error:', e);
+      }
+    }
+
+    function setPeriod(btn, period) {
+      document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  </script>
+</body>
+
+</html>
