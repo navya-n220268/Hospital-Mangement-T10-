@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — MediVita Admin</title>
+  <link rel="stylesheet" href="/medivita/assets/css/medivita.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    .emergency-card {
+      background: linear-gradient(135deg, #ff5252, #d32f2f);
+      color: white;
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      box-shadow: 0 4px 20px rgba(211, 47, 47, 0.35);
+    }
+
+    .emergency-card .em-text {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .emergency-card .em-sub {
+      font-size: 13.5px;
+      opacity: 0.85;
+    }
+
+    .emergency-card .em-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1.5px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    .emergency-card .em-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      background: white;
+      border-radius: 50%;
+      margin-right: 9px;
+      display: inline-block;
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
+      }
+
+      70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+      }
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-dot {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .activity-text {
+      font-size: 14.5px;
+      color: var(--text-primary);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .activity-time {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .doctor-approval-item {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .doctor-approval-item:last-child {
+      border-bottom: none;
+    }
+
+    .appr-btns {
+      margin-left: auto;
+      display: flex;
+      gap: 7px;
+    }
+
+    .perf-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .perf-row:last-child {
+      border-bottom: none;
+    }
+
+    .perf-rank {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .perf-rank.gold {
+      background: #fff3cd;
+      color: #b08800;
+    }
+
+    .perf-info {
+      flex: 1;
+    }
+
+    .perf-name {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .perf-dept {
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    .perf-count {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+  </style>
+  <script>
+    // Prevent flash of unauthenticated content
+    (async function () {
+      const res = await fetch('/medivita/backend/patient/get_user.php');
+      const data = await res.json();
+      if (!data.success || data.user.role !== 'admin') {
+        window.location.href = '/medivita/frontend/auth/login.html';
+      }
+    })();
+  </script>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <a href="/medivita/frontend/admin/admin-dashboard.html" class="brand-logo">
+        <div class="brand-icon"><i class="fas fa-heartbeat"></i></div>
+        <div class="brand-text">
+          <div class="brand-name">MediVita</div>
+          <div class="brand-sub">Admin Panel</div>
+        </div>
+      </a>
+    </div>
+    <div class="sidebar-section-label">Main Menu</div>
+    <nav class="sidebar-nav">
+      <a href="/medivita/frontend/admin/admin-dashboard.html" class="nav-item active">
+        <span class="nav-icon">📊</span> Dashboard
+      </a>
+      <a href="/medivita/frontend/admin/manage-doctors.html" class="nav-item">
+        <span class="nav-icon">👨‍⚕️</span> Manage Doctors
+      </a>
+      <a href="/medivita/frontend/admin/manage-patients.html" class="nav-item">
+        <span class="nav-icon">🧑‍🤝‍🧑</span> Manage Patients
+      </a>
+      <a href="/medivita/frontend/admin/appointment-analytics.html" class="nav-item">
+        <span class="nav-icon">📈</span> Appointment Analytics
+      </a>
+      <div class="sidebar-section-label" style="padding-top:12px;">System</div>
+      <a href="/medivita/frontend/admin/settings.html" class="nav-item">
+        <span class="nav-icon">⚙️</span> Settings
+      </a>
+      <a href="/medivita/backend/auth/logout.php" class="nav-item">
+        <span class="nav-icon">🚪</span> Logout
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="admin-profile">
+        <div class="admin-avatar">SA</div>
+        <div>
+          <div class="admin-name">Super Admin</div>
+          <div class="admin-role">Hospital Director</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="page-title">Admin Dashboard</div>
+        <div class="page-breadcrumb">Home / Dashboard</div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-date" id="topbar-date-display">...</div>
+        <script>
+          document.getElementById('topbar-date-display').textContent = '📅 ' + new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        </script>
+        <!-- <button class="topbar-btn">🔔 <span class="notif-dot"></span></button>
+      <button class="topbar-btn">✉️</button> -->
+      </div>
+    </header>
+
+    <div class="content">
+
+
+
+      <!-- STAT CARDS -->
+      <div class="stats-grid">
+        <div class="stat-card blue animate-in delay-1">
+          <div class="stat-header">
+            <div class="stat-icon blue">🧑‍🤝‍🧑</div>
+            <span class="stat-change up">Total</span>
+          </div>
+          <div class="stat-value" id="stat-patients">...</div>
+          <div class="stat-label">Total Patients</div>
+          <div class="stat-sub">🔵 Updated Live</div>
+        </div>
+        <div class="stat-card green animate-in delay-2">
+          <div class="stat-header">
+            <div class="stat-icon green">👨‍⚕️</div>
+            <span class="stat-change up">Total</span>
+          </div>
+          <div class="stat-value" id="stat-doctors">...</div>
+          <div class="stat-label">Total Doctors</div>
+          <div class="stat-sub">🟢 Updated Live</div>
+        </div>
+        <div class="stat-card orange animate-in delay-3">
+          <div class="stat-header">
+            <div class="stat-icon orange">📅</div>
+            <span class="stat-change up">Total</span>
+          </div>
+          <div class="stat-value" id="stat-appointments">...</div>
+          <div class="stat-label">Total Appointments</div>
+          <div class="stat-sub">🟡 Updated Live</div>
+        </div>
+        <div class="stat-card red animate-in delay-4">
+          <div class="stat-header">
+            <div class="stat-icon red">💊</div>
+            <span class="stat-change up">Total</span>
+          </div>
+          <div class="stat-value" id="stat-prescriptions">...</div>
+          <div class="stat-label">Total Prescriptions</div>
+          <div class="stat-sub">🔴 Updated Live</div>
+        </div>
+      </div>
+
+      <!-- ROW 2 -->
+      <div class="grid-cols-7030" style="margin-bottom:22px;">
+
+        <!-- RECENT APPOINTMENTS TABLE -->
+        <div class="card animate-in">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Recent Appointments</div>
+              <div class="card-subtitle">Latest 6 scheduled appointments</div>
+            </div>
+            <a href="/medivita/frontend/admin/appointment-analytics.html" class="btn btn-outline btn-sm">View All</a>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Patient</th>
+                  <th>Doctor</th>
+                  <th>Department</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="recent-appointments-body">
+                <tr>
+                  <td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted)">Loading recent
+                    appointments...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- DOCTOR APPROVALS MOVED OUT/REMOVED -->
+
+        <!-- TOP PERFORMING DOCTORS MOVED HERE -->
+        <div class="card animate-in delay-2">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Top Doctors</div>
+              <div class="card-subtitle">By appointment count</div>
+            </div>
+          </div>
+          <div class="card-body" id="top-doctors-container" style="padding-top:4px;">
+            <div style="text-align:center;padding:20px;color:var(--text-muted)">Loading top doctors...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 3 -->
+      <div style="margin-bottom:22px;">
+
+        <!-- NEW PATIENTS CARD -->
+        <div class="card animate-in">
+          <div class="card-header">
+            <div>
+              <div class="card-title">New Patient Registrations</div>
+              <div class="card-subtitle">Latest registered patients</div>
+            </div>
+            <a href="/medivita/frontend/admin/manage-patients.html" class="btn btn-ghost btn-sm">See All</a>
+          </div>
+          <div class="card-body" style="padding-top:10px;">
+            <div id="recent-patients-container">
+              <div style="text-align:center;padding:20px;color:var(--text-muted)">Loading registrations...</div>
+            </div>
+            <canvas id="patientChart" height="160" style="display:none;"></canvas>
+          </div>
+        </div>
+
+        <!-- HOSPITAL PERFORMANCE REMOVED -->
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+
+  <script>
+    // Patient registrations chart
+    const ctx = document.getElementById('patientChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          label: 'New Patients',
+          data: [14, 22, 18, 31, 27, 19, 24],
+          backgroundColor: 'rgba(26,111,191,0.15)',
+          borderColor: '#1a6fbf',
+          borderWidth: 2,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#f0f4fb' }, ticks: { font: { family: 'Plus Jakarta Sans', size: 13 } } },
+          x: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', size: 13 } } }
+        }
+      }
+    });
+
+    // ---- DYNAMIC DATA FETCHING ----
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchDashboardStats();
+      fetchRecentAppointments();
+      fetchTopDoctors();
+      fetchRecentPatients();
+    });
+
+    async function fetchDashboardStats() {
+      try {
+        const res = await fetch('/medivita/backend/admin/getDashboardStats.php');
+        if (!res.ok) throw new Error('Network response was not ok');
+        const data = await res.json();
+        document.getElementById('stat-doctors').textContent = data.doctors || 0;
+        document.getElementById('stat-patients').textContent = data.patients || 0;
+        document.getElementById('stat-appointments').textContent = data.appointments || 0;
+        document.getElementById('stat-prescriptions').textContent = data.prescriptions || 0;
+      } catch (e) {
+        console.error('Error fetching dashboard stats', e);
+      }
+    }
+
+    async function fetchRecentAppointments() {
+      try {
+        const res = await fetch('/medivita/backend/admin/getRecentAppointments.php');
+        if (!res.ok) throw new Error('Network response was not ok');
+        const data = await res.json();
+
+        const tbody = document.getElementById('recent-appointments-body');
+        if (!data || data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted)">No recent appointments found.</td></tr>';
+          return;
+        }
+
+        const colors = ['blue', 'green', 'orange', 'purple', 'red'];
+
+        tbody.innerHTML = data.map((appt, idx) => {
+          const color = colors[idx % colors.length];
+          const nameParts = appt.patientName.split(' ');
+          const initials = (nameParts[0][0] + (nameParts[1] ? nameParts[1][0] : '')).toUpperCase();
+
+          const st = (appt.status || '').toLowerCase();
+          let badge = 'badge-active';
+          if (st === 'pending') badge = 'badge-pending';
+          else if (st === 'cancelled') badge = 'badge-inactive';
+          else if (st === 'emergency') badge = 'badge-emergency';
+          else if (st === 'confirmed') badge = 'badge-active';
+          else badge = 'badge-active';
+
+          return `
+        <tr>
+          <td>
+            <div class="avatar-info">
+              <div class="avatar avatar-${color}">${initials}</div>
+              <div>
+                <div class="name">${appt.patientName}</div>
+                <div class="sub">Patient #${appt.patientId || 'P-1000'}</div>
+              </div>
+            </div>
+          </td>
+          <td class="td-bold">${appt.doctorName}</td>
+          <td>${appt.department}</td>
+          <td class="td-muted">${appt.time}</td>
+          <td><span class="badge ${badge}">${appt.status}</span></td>
+        </tr>
+      `;
+        }).join('');
+      } catch (e) {
+        console.error('Error fetching recent appointments', e);
+      }
+    }
+
+    async function fetchTopDoctors() {
+      try {
+        const res = await fetch('/medivita/backend/admin/getTopDoctors.php');
+        const data = await res.json();
+        const container = document.getElementById('top-doctors-container');
+
+        if (!data || data.length === 0) {
+          container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted)">No data available</div>';
+          return;
+        }
+
+        container.innerHTML = data.map((doc, idx) => `
+      <div class="perf-row">
+        <div class="perf-rank ${idx === 0 ? 'gold' : ''}">${idx + 1}</div>
+        <div class="perf-info">
+          <div class="perf-name">${doc.doctorName}</div>
+          <div class="perf-dept">${doc.department}</div>
+        </div>
+        <div class="perf-count">${doc.appointments} appts</div>
+      </div>
+    `).join('');
+      } catch (e) {
+        console.error('Error fetching top doctors', e);
+      }
+    }
+
+    async function fetchRecentPatients() {
+      try {
+        const res = await fetch('/medivita/backend/admin/getRecentPatients.php');
+        const data = await res.json();
+        const container = document.getElementById('recent-patients-container');
+
+        if (!data || data.length === 0) {
+          container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted)">No recent registrations</div>';
+          return;
+        }
+
+        container.innerHTML = data.map(pat => `
+      <div class="activity-item">
+        <div class="activity-dot" style="background:var(--primary-light);">👤</div>
+        <div style="flex:1">
+          <div class="activity-text">${pat.name}</div>
+          <div class="activity-time">${pat.email} · ${pat.phone}</div>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted)">${pat.date}</div>
+      </div>
+    `).join('');
+      } catch (e) {
+        console.error('Error fetching recent patients', e);
+      }
+    }
+  </script>
+</body>
+
+</html>
