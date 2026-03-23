@@ -1,0 +1,28 @@
+# ── Secrets & Environment ────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Composer dependencies (install via: composer install) ────────────────────
+/vendor/
+
+# ── Temporary / debug / test files ──────────────────────────────────────────
+cookies.txt
+cookies2.txt
+*.log
+/I
+tmp_sess.php
+tmp_sess2.php
+test_db.php
+inspect_atlas.php
+populate_db.php
+seed_atlas.php
+_placeholder.txt
+
+# ── OS & IDE files ───────────────────────────────────────────────────────────
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo

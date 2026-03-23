@@ -1,0 +1,19 @@
+{
+    "name": "user/medivita",
+    "autoload": {
+        "psr-4": {
+            "User\\Medivita\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Chennakesava-N220287",
+            "email": "n220287@rguktn.ac.in"
+        }
+    ],
+    "require": {
+        "google/apiclient": "^2.19",
+        "mongodb/mongodb": "^2.2",
+        "vlucas/phpdotenv": "^5.6"
+    }
+}

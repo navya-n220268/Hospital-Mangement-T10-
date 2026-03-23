@@ -2,13 +2,28 @@
 /**
  * MediVita Hospital Management System
  * Database Connection Configuration
+ *
+ * All credentials are loaded from the .env file.
+ * Copy .env.example to .env and fill in your values.
  */
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// MongoDB Atlas Connection URI
-define('DB_URI', 'mongodb+srv://medivita:Dhoni%249977@medivita.hqmudoe.mongodb.net/?appName=medivita');
-define('DB_NAME', 'hospital_management');
+// Load environment variables from .env
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->safeLoad();
+
+// MongoDB connection details — set these in your .env file
+$mongoUri = $_ENV['MONGO_URI'] ?? null;
+$mongoDb  = $_ENV['MONGO_DB']  ?? 'hospital_management';
+
+if (!$mongoUri) {
+    http_response_code(500);
+    die(json_encode(['success' => false, 'message' => 'MONGO_URI is not set. Please configure your .env file.']));
+}
+
+define('DB_URI',  $mongoUri);
+define('DB_NAME', $mongoDb);
 
 /**
  * Returns a MongoDB\Database instance

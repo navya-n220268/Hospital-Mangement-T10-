@@ -20,10 +20,16 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
-// ── MongoDB connection details (Fetch from .env) ──────────────────────────
-// Default to the Atlas cluster provided originally, but allow override in .env
-$defaultUri = 'mongodb+srv://medivita:Dhoni%249977@medivita.hqmudoe.mongodb.net/?appName=medivita';
-define('MONGO_URI', $_ENV['MONGO_URI'] ?? $defaultUri);
+// ── MongoDB connection details (loaded from .env) ─────────────────────────
+// Set MONGO_URI and MONGO_DB in your .env file (see .env.example).
+$mongoUri = $_ENV['MONGO_URI'] ?? null;
+if (!$mongoUri) {
+    http_response_code(500);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['success' => false, 'message' => 'MONGO_URI is not configured. Please set up your .env file.']);
+    exit;
+}
+define('MONGO_URI', $mongoUri);
 define('MONGO_DB',  $_ENV['MONGO_DB']  ?? 'hospital_management');
 
 /**
