@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Dashboard — MediVita Patient Portal</title>
-<link rel="stylesheet" href="/medivita/assets/css/portal.css"/>
+<title>Dashboard — Sanjeevani Patient Portal</title>
+<link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/portal.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 <style>
 /* ---- DASHBOARD SPECIFIC ---- */
@@ -112,7 +112,7 @@ tbody tr:hover { background: var(--blue-50); }
       <div class="welcome-bar section-gap anim-fade-up">
         <div class="welcome-text">
           <h2 id="greetMsg">Good morning 👋</h2>
-          <p>Welcome back to your MediVita patient portal. Here's a summary of your health activity.</p>
+          <p>Welcome back to your Sanjeevani patient portal. Here's a summary of your health activity.</p>
           <div class="welcome-meta">
             <div class="welcome-meta-item"><i class="fas fa-id-card"></i> <span id="patientIdLabel">Patient Portal</span></div>
           </div>
@@ -158,7 +158,7 @@ tbody tr:hover { background: var(--blue-50); }
         <div class="card anim-fade-up d3">
           <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
             <h3><i class="fas fa-prescription-bottle" style="color:var(--blue-600)"></i> Recent Prescriptions</h3>
-            <a href="/medivita/frontend/patient/medical-records.html" class="btn btn-xs btn-secondary">View All</a>
+            <a href="/Hospital-Mangement-T10-/frontend/patient/medical-records.html" class="btn btn-xs btn-secondary">View All</a>
           </div>
           <div class="card-body" style="padding:0">
             <div class="table-responsive">
@@ -182,7 +182,7 @@ tbody tr:hover { background: var(--blue-50); }
         <div class="card anim-fade-up d2">
           <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
             <h3><i class="fas fa-calendar-alt" style="color:var(--teal-600)"></i> Upcoming Appointments</h3>
-            <a href="/medivita/frontend/patient/my-appointments.html" class="btn btn-xs btn-secondary">View All</a>
+            <a href="/Hospital-Mangement-T10-/frontend/patient/my-appointments.html" class="btn btn-xs btn-secondary">View All</a>
           </div>
           <div class="card-body" style="padding:0">
             <div class="table-responsive">
@@ -200,7 +200,7 @@ tbody tr:hover { background: var(--blue-50); }
               </table>
             </div>
             <div style="padding:16px; border-top:1px solid var(--gray-200)">
-              <a href="/medivita/frontend/patient/book-appointment.html" class="btn btn-primary" style="width:100%;justify-content:center">
+              <a href="/Hospital-Mangement-T10-/frontend/patient/book-appointment.html" class="btn btn-primary" style="width:100%;justify-content:center">
                 <i class="fas fa-plus"></i> Book New Appointment
               </a>
             </div>
@@ -214,15 +214,15 @@ tbody tr:hover { background: var(--blue-50); }
         <div class="card-header"><h3><i class="fas fa-bolt" style="color:#f59e0b"></i> Quick Actions</h3></div>
         <div class="card-body">
           <div class="grid-3" style="gap:12px">
-            <div class="quick-action" onclick="window.location.href = '/medivita/frontend/patient/book-appointment.html'">
+            <div class="quick-action" onclick="window.location.href = '/Hospital-Mangement-T10-/frontend/patient/book-appointment.html'">
               <div class="qa-icon" style="background:#eff6ff;color:#3b82f6"><i class="fas fa-plus"></i></div>
               <p>Book Appointment</p>
             </div>
-            <div class="quick-action" onclick="window.location.href = '/medivita/frontend/patient/my-appointments.html'">
+            <div class="quick-action" onclick="window.location.href = '/Hospital-Mangement-T10-/frontend/patient/my-appointments.html'">
               <div class="qa-icon" style="background:#f0fdf4;color:#10b981"><i class="fas fa-calendar-alt"></i></div>
               <p>My Appointments</p>
             </div>
-            <div class="quick-action" onclick="window.location.href = '/medivita/frontend/patient/medical-records.html'">
+            <div class="quick-action" onclick="window.location.href = '/Hospital-Mangement-T10-/frontend/patient/medical-records.html'">
               <div class="qa-icon" style="background:#fef2f2;color:#ef4444"><i class="fas fa-file-medical"></i></div>
               <p>Medical Records</p>
             </div>
@@ -234,7 +234,7 @@ tbody tr:hover { background: var(--blue-50); }
   </div>
 </div>
 
-<script src="/medivita/assets/js/portal.js"></script>
+<script src="/Hospital-Mangement-T10-/assets/js/portal.js"></script>
 <script>
 // Format Date function
 function formatDate(dateStr) {
@@ -246,7 +246,7 @@ function formatDate(dateStr) {
 
 async function loadDashboardData() {
   try {
-    const res = await fetch('/medivita/backend/patient/get_patient_dashboard_data.php');
+    const res = await fetch('/Hospital-Mangement-T10-/backend/patient/get_patient_dashboard_data.php');
     const data = await res.json();
     if (!data.success) throw new Error(data.message || 'Fetch failed');
 
@@ -257,12 +257,25 @@ async function loadDashboardData() {
 
     // Upcoming appts table
     const apptsBody = document.getElementById('upcomingApptsTable');
+    let unavailBanner = '';
     if (data.upcomingList.length === 0) {
       apptsBody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--gray-500);padding:20px">No upcoming appointments</td></tr>';
     } else {
       let html = '';
       data.upcomingList.forEach(appt => {
         let statusBadge = appt.status === 'confirmed' ? '<span class="badge badge-green">Confirmed</span>' : '<span class="badge badge-amber">Pending</span>';
+        
+        if (appt.is_doctor_available === false) {
+          statusBadge = '<span class="badge badge-red">Dr. Unavailable</span>';
+          unavailBanner += `
+            <div style="background:#fee2e2; border:1px solid #fecaca; padding:12px 16px; border-radius:12px; margin-bottom:16px; display:flex; align-items:center; gap:12px; animation:shake 0.5s ease;">
+              <i class="fas fa-exclamation-triangle" style="color:#dc2626; font-size:1.2rem;"></i>
+              <div style="font-size:13.5px; color:#991b1b; line-height:1.4;">
+                <strong>IMPORTANT:</strong> Dr. ${appt.doctor_name.replace('Dr. ', '')} is currently unavailable due to <strong>${appt.doctor_unavail_reason || 'Emergency'}</strong>. Your appointment on <strong>${formatDate(appt.appointment_date)}</strong> may be rescheduled.
+              </div>
+            </div>`;
+        }
+        
         html += `
           <tr>
             <td>
@@ -278,6 +291,13 @@ async function loadDashboardData() {
         `;
       });
       apptsBody.innerHTML = html;
+      
+      if (unavailBanner) {
+        const welcomeBar = document.querySelector('.welcome-bar');
+        const bannerDiv = document.createElement('div');
+        bannerDiv.innerHTML = unavailBanner;
+        welcomeBar.parentNode.insertBefore(bannerDiv, welcomeBar.nextSibling);
+      }
     }
 
     // Recent prescriptions table

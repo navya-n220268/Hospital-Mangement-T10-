@@ -1,5 +1,5 @@
 /* =============================================
-   MEDIVITA PATIENT PORTAL — SHARED STYLES
+   Sanjeevani PATIENT PORTAL — SHARED STYLES
    ============================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap');
@@ -88,8 +88,8 @@ input, select, textarea { font-family: var(--font); }
 
 /* ===== LAYOUT ===== */
 .portal-wrap {
-  display: flex;
   min-height: 100vh;
+  position: relative;
 }
 
 /* ===== SIDEBAR ===== */

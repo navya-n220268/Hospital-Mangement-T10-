@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Profile Settings — MediVita</title>
-  <link rel="stylesheet" href="/medivita/assets/css/doctor.css" />
+  <title>Profile Settings — Sanjeevani</title>
+  <link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/doctor.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
     /* Profile hero */
@@ -299,7 +299,7 @@
           </div>
           <div class="ph-info">
             <h2 class="dyn-doc-name">Doctor Name</h2>
-            <p>MBBS, MD (Cardiology) · Senior Cardiologist · MediVita Hospital</p>
+            <p>MBBS, MD (Cardiology) · Senior Cardiologist · Sanjeevani Hospital</p>
             <div class="ph-badges">
               <span class="ph-badge"><i class="fas fa-id-badge"></i> MV-DOC-1042</span>
               <span class="ph-badge"><i class="fas fa-award"></i> 18 yrs experience</span>
@@ -371,12 +371,12 @@
                 </div>
                 <div class="form-group">
                   <label class="form-label">Email Address</label>
-                  <input type="email" class="form-control" id="docEmail" value="doctor@medivita.in" />
+                  <input type="email" class="form-control" id="docEmail" value="doctor@Sanjeevani.in" />
                 </div>
                 <div class="form-group">
                   <label class="form-label">Office Address</label>
                   <textarea class="form-control"
-                    rows="2">Room 301, Block A, Cardiology OPD, MediVita Hospital, Sector 62, Noida - 201301</textarea>
+                    rows="2">Room 301, Block A, Cardiology OPD, Sanjeevani Hospital, Sector 62, Noida - 201301</textarea>
                 </div>
                 <!-- <button class="btn btn-primary" onclick="saveProfile()"><i class="fas fa-save"></i> Update Profile</button> -->
               </div>
@@ -390,7 +390,7 @@
                 </div>
                 <div class="card-body">
                   <div class="form-group"><label class="form-label">Hospital Name</label><input type="text"
-                      class="form-control" value="MediVita Hospital" /></div>
+                      class="form-control" value="Sanjeevani Hospital" /></div>
                   <div class="form-group"><label class="form-label">Department</label><input type="text"
                       class="form-control" value="Cardiology Department" /></div>
                   <div class="form-group"><label class="form-label">Employee ID</label><input type="text"
@@ -425,7 +425,7 @@
       </div>
     </div>
   </div>
-  <script src="/medivita/assets/js/doctor.js?v=3"></script>
+  <script src="/Hospital-Mangement-T10-/assets/js/doctor.js?v=3"></script>
   <script>
     buildPortal('profile', 'Profile Settings', 'Manage your professional information').then(user => {
       if (user && user.role === 'doctor') {
@@ -435,7 +435,7 @@
 
     async function fetchDoctorProfile() {
       try {
-        const res = await fetch('/medivita/backend/doctor/get_logged_doctor.php');
+        const res = await fetch('/Hospital-Mangement-T10-/backend/doctor/get_logged_doctor.php');
         const data = await res.json();
         if (data.success && data.doctor) {
           const doc = data.doctor;
@@ -493,7 +493,7 @@
       const fee = document.getElementById('docFee')?.value || '';
 
       try {
-        const res = await fetch('/medivita/backend/doctor/update_doctor_profile.php', {
+        const res = await fetch('/Hospital-Mangement-T10-/backend/doctor/update_doctor_profile.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, email, phone, specialization: spec, department: spec, experience: exp, consultation_fee: fee })

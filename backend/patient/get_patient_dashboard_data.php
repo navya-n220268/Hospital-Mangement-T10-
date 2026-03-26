@@ -1,6 +1,6 @@
 <?php
 /**
- * MediVita — backend/get_patient_dashboard_data.php
+ * Sanjeevani — backend/get_patient_dashboard_data.php
  *
  * Fetches summary statistics and recent records for the patient dashboard.
  */
@@ -54,13 +54,18 @@ try {
 
     $upcomingList = [];
     foreach ($cursorUpcoming as $appt) {
+        $docId = $appt['doctor_id'] ?? '';
+        $docInfo = $db->doctors->findOne(['_id' => new MongoDB\BSON\ObjectId($docId)], ['projection' => ['is_available' => 1, 'unavailability_reason' => 1]]);
+        
         $upcomingList[] = [
             '_id'              => (string)$appt['_id'],
             'doctor_name'      => $appt['doctor_name'] ?? 'Doctor',
             'department'       => $appt['department'] ?? 'General',
             'appointment_date' => $appt['appointment_date'] ?? '',
             'appointment_time' => $appt['appointment_time'] ?? '',
-            'status'           => $appt['status'] ?? 'pending'
+            'status'           => $appt['status'] ?? 'pending',
+            'is_doctor_available' => $docInfo['is_available'] ?? true,
+            'doctor_unavail_reason' => $docInfo['unavailability_reason'] ?? ''
         ];
     }
 

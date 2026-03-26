@@ -1,6 +1,6 @@
 <?php
 /**
- * MediVita Hospital Management System
+ * Sanjeevani Hospital Management System
  * Database Connection Configuration
  *
  * All credentials are loaded from the .env file.

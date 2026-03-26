@@ -1,6 +1,6 @@
 <?php
 /**
- * MediVita Hospital Management System
+ * Sanjeevani Hospital Management System
  * ─────────────────────────────────────
  * backend/get_doctors_by_department.php
  *
@@ -51,6 +51,8 @@ try {
                 'rating'         => 1,
                 'email'          => 1,
                 'phone'          => 1,
+                'is_available'   => 1,
+                'unavailability_reason' => 1,
             ]
         ]
     );
@@ -68,6 +70,8 @@ try {
             'department' => $dept,
             'experience' => $exp,
             'rating'     => $rating,
+            'is_available' => $doc['is_available'] ?? true,
+            'unavailability_reason' => $doc['unavailability_reason'] ?? ''
         ];
     }
 

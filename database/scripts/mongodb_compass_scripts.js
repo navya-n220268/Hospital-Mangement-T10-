@@ -1,5 +1,5 @@
 // ============================================================
-// MediVita — MongoDB Compass Insert Scripts
+// Sanjeevani — MongoDB Compass Insert Scripts
 // ============================================================
 // Use these scripts in MongoDB Compass:
 //   Database: hospital_management

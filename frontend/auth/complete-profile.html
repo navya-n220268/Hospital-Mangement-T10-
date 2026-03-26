@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Complete Your Profile — MediVita Hospital Portal</title>
-<meta name="description" content="Complete your MediVita profile to start using the hospital portal."/>
+<title>Complete Your Profile — Sanjeevani Hospital Portal</title>
+<meta name="description" content="Complete your Sanjeevani profile to start using the hospital portal."/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-<link rel="stylesheet" href="/medivita/assets/css/styles.css"/>
+<link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/styles.css"/>
 <style>
   /* ── Extra styles specific to complete-profile page ── */
   .google-info-bar {
@@ -98,7 +98,7 @@
 <!-- Mobile brand header -->
 <div class="mobile-brand">
   <div class="mb-mark"><i class="fas fa-heartbeat"></i></div>
-  <div class="mb-name">MediVita<small>Hospital Portal</small></div>
+  <div class="mb-name">Sanjeevani<small>Hospital Portal</small></div>
 </div>
 
 <!-- Two-column auth layout -->
@@ -108,9 +108,9 @@
   <div class="auth-panel">
     <div class="ap-deco"></div>
 
-    <a href="/medivita/index.html" class="ap-logo" style="text-decoration:none;">
+    <a href="/Hospital-Mangement-T10-/index.html" class="ap-logo" style="text-decoration:none;">
       <div class="ap-logo-mark"><i class="fas fa-heartbeat"></i></div>
-      <div class="ap-logo-txt">MediVita<small>Hospital &amp; Medical Centre</small></div>
+      <div class="ap-logo-txt">Sanjeevani<small>Hospital &amp; Medical Centre</small></div>
     </a>
 
     <div class="ap-body">
@@ -118,7 +118,7 @@
 
       <div class="ap-quote">
         <p>"Providing a few more details helps us personalise your care experience and connect you with the right medical team."</p>
-        <cite>— MediVita Care Team</cite>
+        <cite>— Sanjeevani Care Team</cite>
       </div>
 
       <div class="ap-badges">
@@ -130,9 +130,9 @@
     </div>
 
     <div class="ap-foot">
-      &copy; 2026 MediVita Hospital. All rights reserved.
+      &copy; 2026 Sanjeevani Hospital. All rights reserved.
       &nbsp;&middot;&nbsp;
-      <a href="/medivita/index.html">Back to Website</a>
+      <a href="/Hospital-Mangement-T10-/index.html">Back to Website</a>
     </div>
   </div><!-- /auth-panel -->
 
@@ -221,10 +221,10 @@
       <div class="auth-divider"><span>Signed in with Google</span></div>
 
       <div class="auth-foot">
-        Not you? &nbsp;<a href="/medivita/frontend/auth/login.html" id="wrongAccountLink">Use a different account &rarr;</a>
+        Not you? &nbsp;<a href="/Hospital-Mangement-T10-/frontend/auth/login.html" id="wrongAccountLink">Use a different account &rarr;</a>
       </div>
 
-      <a href="/medivita/frontend/auth/login.html" class="back-link">
+      <a href="/Hospital-Mangement-T10-/frontend/auth/login.html" class="back-link">
         <i class="fas fa-arrow-left"></i> Back to Login
       </a>
 
@@ -239,19 +239,19 @@
 
   // ── Populate Google info strip via session data injected by PHP ──
   // We fetch session data from a lightweight endpoint
-  fetch('/medivita/backend/patient/get-session-info.php')
+  fetch('/Hospital-Mangement-T10-/backend/patient/get-session-info.php')
     .then(r => r.json())
     .then(data => {
       if (!data.google_name && !data.google_email) {
         // No session — user landed here without OAuth flow
-        window.location.href = '/medivita/frontend/auth/login.html';
+        window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
         return;
       }
       document.getElementById('g-display-name').textContent  = data.google_name  || '—';
       document.getElementById('g-display-email').textContent = data.google_email || '—';
     })
     .catch(() => {
-      window.location.href = '/medivita/frontend/auth/login.html';
+      window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
     });
 
 
@@ -311,7 +311,7 @@
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
 
-    fetch('/medivita/backend/auth/save-profile.php', {
+    fetch('/Hospital-Mangement-T10-/backend/auth/save-profile.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({ phone, role })

@@ -1,7 +1,7 @@
 <?php
 /**
- * MediVita — Seed Data Script
- * Visit: http://localhost/medivita/seed_data.php
+ * Sanjeevani — Seed Data Script
+ * Visit: http://localhost/Hospital-Mangement-T10-/seed_data.php
  *
  * Inserts 20 sample patients and 15 sample doctors into MongoDB Atlas.
  * Run once to populate the database. Duplicate emails are skipped.
@@ -14,45 +14,45 @@ $now = new MongoDB\BSON\UTCDateTime(strtotime('2024-01-15') * 1000);
 
 // ── PATIENTS ──────────────────────────────────────────────────────────────────
 $patients = [
-    ['name'=>'Ravi Kumar',      'email'=>'ravi1@medivita.com',   'phone'=>'9876543201','age'=>28,'gender'=>'Male',  'blood_group'=>'O+'],
-    ['name'=>'Priya Sharma',    'email'=>'priya2@medivita.com',  'phone'=>'9876543202','age'=>34,'gender'=>'Female','blood_group'=>'A+'],
-    ['name'=>'Arjun Singh',     'email'=>'arjun3@medivita.com',  'phone'=>'9876543203','age'=>45,'gender'=>'Male',  'blood_group'=>'B+'],
-    ['name'=>'Sunita Patel',    'email'=>'sunita4@medivita.com', 'phone'=>'9876543204','age'=>52,'gender'=>'Female','blood_group'=>'AB+'],
-    ['name'=>'Mohan Das',       'email'=>'mohan5@medivita.com',  'phone'=>'9876543205','age'=>61,'gender'=>'Male',  'blood_group'=>'O-'],
-    ['name'=>'Kavita Rao',      'email'=>'kavita6@medivita.com', 'phone'=>'9876543206','age'=>29,'gender'=>'Female','blood_group'=>'B-'],
-    ['name'=>'Deepak Nair',     'email'=>'deepak7@medivita.com', 'phone'=>'9876543207','age'=>38,'gender'=>'Male',  'blood_group'=>'A-'],
-    ['name'=>'Ananya Iyer',     'email'=>'ananya8@medivita.com', 'phone'=>'9876543208','age'=>23,'gender'=>'Female','blood_group'=>'AB-'],
-    ['name'=>'Suresh Verma',    'email'=>'suresh9@medivita.com', 'phone'=>'9876543209','age'=>55,'gender'=>'Male',  'blood_group'=>'O+'],
-    ['name'=>'Meera Joshi',     'email'=>'meera10@medivita.com', 'phone'=>'9876543210','age'=>41,'gender'=>'Female','blood_group'=>'A+'],
-    ['name'=>'Rajesh Gupta',    'email'=>'rajesh11@medivita.com','phone'=>'9876543211','age'=>67,'gender'=>'Male',  'blood_group'=>'B+'],
-    ['name'=>'Lakshmi Reddy',   'email'=>'laxmi12@medivita.com', 'phone'=>'9876543212','age'=>31,'gender'=>'Female','blood_group'=>'O-'],
-    ['name'=>'Vikram Bose',     'email'=>'vikram13@medivita.com','phone'=>'9876543213','age'=>49,'gender'=>'Male',  'blood_group'=>'AB+'],
-    ['name'=>'Nisha Chauhan',   'email'=>'nisha14@medivita.com', 'phone'=>'9876543214','age'=>37,'gender'=>'Female','blood_group'=>'A-'],
-    ['name'=>'Arun Saxena',     'email'=>'arun15@medivita.com',  'phone'=>'9876543215','age'=>58,'gender'=>'Male',  'blood_group'=>'B-'],
-    ['name'=>'Pooja Menon',     'email'=>'pooja16@medivita.com', 'phone'=>'9876543216','age'=>26,'gender'=>'Female','blood_group'=>'O+'],
-    ['name'=>'Sandeep Khanna',  'email'=>'sandeep17@medivita.com','phone'=>'9876543217','age'=>43,'gender'=>'Male', 'blood_group'=>'A+'],
-    ['name'=>'Divya Pillai',    'email'=>'divya18@medivita.com', 'phone'=>'9876543218','age'=>32,'gender'=>'Female','blood_group'=>'AB+'],
-    ['name'=>'Rahul Aggarwal',  'email'=>'rahul19@medivita.com', 'phone'=>'9876543219','age'=>22,'gender'=>'Male',  'blood_group'=>'O-'],
-    ['name'=>'Sushma Tiwari',   'email'=>'sushma20@medivita.com','phone'=>'9876543220','age'=>48,'gender'=>'Female','blood_group'=>'B+'],
+    ['name'=>'Ravi Kumar',      'email'=>'ravi1@Sanjeevani.com',   'phone'=>'9876543201','age'=>28,'gender'=>'Male',  'blood_group'=>'O+'],
+    ['name'=>'Priya Sharma',    'email'=>'priya2@Sanjeevani.com',  'phone'=>'9876543202','age'=>34,'gender'=>'Female','blood_group'=>'A+'],
+    ['name'=>'Arjun Singh',     'email'=>'arjun3@Sanjeevani.com',  'phone'=>'9876543203','age'=>45,'gender'=>'Male',  'blood_group'=>'B+'],
+    ['name'=>'Sunita Patel',    'email'=>'sunita4@Sanjeevani.com', 'phone'=>'9876543204','age'=>52,'gender'=>'Female','blood_group'=>'AB+'],
+    ['name'=>'Mohan Das',       'email'=>'mohan5@Sanjeevani.com',  'phone'=>'9876543205','age'=>61,'gender'=>'Male',  'blood_group'=>'O-'],
+    ['name'=>'Kavita Rao',      'email'=>'kavita6@Sanjeevani.com', 'phone'=>'9876543206','age'=>29,'gender'=>'Female','blood_group'=>'B-'],
+    ['name'=>'Deepak Nair',     'email'=>'deepak7@Sanjeevani.com', 'phone'=>'9876543207','age'=>38,'gender'=>'Male',  'blood_group'=>'A-'],
+    ['name'=>'Ananya Iyer',     'email'=>'ananya8@Sanjeevani.com', 'phone'=>'9876543208','age'=>23,'gender'=>'Female','blood_group'=>'AB-'],
+    ['name'=>'Suresh Verma',    'email'=>'suresh9@Sanjeevani.com', 'phone'=>'9876543209','age'=>55,'gender'=>'Male',  'blood_group'=>'O+'],
+    ['name'=>'Meera Joshi',     'email'=>'meera10@Sanjeevani.com', 'phone'=>'9876543210','age'=>41,'gender'=>'Female','blood_group'=>'A+'],
+    ['name'=>'Rajesh Gupta',    'email'=>'rajesh11@Sanjeevani.com','phone'=>'9876543211','age'=>67,'gender'=>'Male',  'blood_group'=>'B+'],
+    ['name'=>'Lakshmi Reddy',   'email'=>'laxmi12@Sanjeevani.com', 'phone'=>'9876543212','age'=>31,'gender'=>'Female','blood_group'=>'O-'],
+    ['name'=>'Vikram Bose',     'email'=>'vikram13@Sanjeevani.com','phone'=>'9876543213','age'=>49,'gender'=>'Male',  'blood_group'=>'AB+'],
+    ['name'=>'Nisha Chauhan',   'email'=>'nisha14@Sanjeevani.com', 'phone'=>'9876543214','age'=>37,'gender'=>'Female','blood_group'=>'A-'],
+    ['name'=>'Arun Saxena',     'email'=>'arun15@Sanjeevani.com',  'phone'=>'9876543215','age'=>58,'gender'=>'Male',  'blood_group'=>'B-'],
+    ['name'=>'Pooja Menon',     'email'=>'pooja16@Sanjeevani.com', 'phone'=>'9876543216','age'=>26,'gender'=>'Female','blood_group'=>'O+'],
+    ['name'=>'Sandeep Khanna',  'email'=>'sandeep17@Sanjeevani.com','phone'=>'9876543217','age'=>43,'gender'=>'Male', 'blood_group'=>'A+'],
+    ['name'=>'Divya Pillai',    'email'=>'divya18@Sanjeevani.com', 'phone'=>'9876543218','age'=>32,'gender'=>'Female','blood_group'=>'AB+'],
+    ['name'=>'Rahul Aggarwal',  'email'=>'rahul19@Sanjeevani.com', 'phone'=>'9876543219','age'=>22,'gender'=>'Male',  'blood_group'=>'O-'],
+    ['name'=>'Sushma Tiwari',   'email'=>'sushma20@Sanjeevani.com','phone'=>'9876543220','age'=>48,'gender'=>'Female','blood_group'=>'B+'],
 ];
 
 // ── DOCTORS ───────────────────────────────────────────────────────────────────
 $doctors = [
-    ['name'=>'Dr. Meena Sharma',     'email'=>'doctor1@medivita.com',  'phone'=>'9123456701','specialization'=>'General Physician',   'experience'=>'6 years' ],
-    ['name'=>'Dr. Arjun Kapoor',     'email'=>'doctor2@medivita.com',  'phone'=>'9123456702','specialization'=>'Cardiologist',         'experience'=>'12 years'],
-    ['name'=>'Dr. Priya Nair',       'email'=>'doctor3@medivita.com',  'phone'=>'9123456703','specialization'=>'Neurologist',          'experience'=>'9 years' ],
-    ['name'=>'Dr. Suresh Rajan',     'email'=>'doctor4@medivita.com',  'phone'=>'9123456704','specialization'=>'Orthopedic',           'experience'=>'15 years'],
-    ['name'=>'Dr. Anita Desai',      'email'=>'doctor5@medivita.com',  'phone'=>'9123456705','specialization'=>'Dermatologist',        'experience'=>'7 years' ],
-    ['name'=>'Dr. Vikram Pillai',    'email'=>'doctor6@medivita.com',  'phone'=>'9123456706','specialization'=>'Pediatrician',         'experience'=>'11 years'],
-    ['name'=>'Dr. Kavita Iyer',      'email'=>'doctor7@medivita.com',  'phone'=>'9123456707','specialization'=>'ENT Specialist',       'experience'=>'8 years' ],
-    ['name'=>'Dr. Rohit Mehta',      'email'=>'doctor8@medivita.com',  'phone'=>'9123456708','specialization'=>'Gynecologist',         'experience'=>'14 years'],
-    ['name'=>'Dr. Shalini Rao',      'email'=>'doctor9@medivita.com',  'phone'=>'9123456709','specialization'=>'Psychiatrist',         'experience'=>'10 years'],
-    ['name'=>'Dr. Amar Joshi',       'email'=>'doctor10@medivita.com', 'phone'=>'9123456710','specialization'=>'Radiologist',          'experience'=>'5 years' ],
-    ['name'=>'Dr. Pooja Saxena',     'email'=>'doctor11@medivita.com', 'phone'=>'9123456711','specialization'=>'Ophthalmologist',      'experience'=>'13 years'],
-    ['name'=>'Dr. Deepak Verma',     'email'=>'doctor12@medivita.com', 'phone'=>'9123456712','specialization'=>'Endocrinologist',      'experience'=>'8 years' ],
-    ['name'=>'Dr. Sunita Khanna',    'email'=>'doctor13@medivita.com', 'phone'=>'9123456713','specialization'=>'Pulmonologist',        'experience'=>'11 years'],
-    ['name'=>'Dr. Ajay Bose',        'email'=>'doctor14@medivita.com', 'phone'=>'9123456714','specialization'=>'Nephrologist',         'experience'=>'16 years'],
-    ['name'=>'Dr. Lakshmi Reddy',    'email'=>'doctor15@medivita.com', 'phone'=>'9123456715','specialization'=>'Gastroenterologist',   'experience'=>'9 years' ],
+    ['name'=>'Dr. Meena Sharma',     'email'=>'doctor1@Sanjeevani.com',  'phone'=>'9123456701','specialization'=>'General Physician',   'experience'=>'6 years' ],
+    ['name'=>'Dr. Arjun Kapoor',     'email'=>'doctor2@Sanjeevani.com',  'phone'=>'9123456702','specialization'=>'Cardiologist',         'experience'=>'12 years'],
+    ['name'=>'Dr. Priya Nair',       'email'=>'doctor3@Sanjeevani.com',  'phone'=>'9123456703','specialization'=>'Neurologist',          'experience'=>'9 years' ],
+    ['name'=>'Dr. Suresh Rajan',     'email'=>'doctor4@Sanjeevani.com',  'phone'=>'9123456704','specialization'=>'Orthopedic',           'experience'=>'15 years'],
+    ['name'=>'Dr. Anita Desai',      'email'=>'doctor5@Sanjeevani.com',  'phone'=>'9123456705','specialization'=>'Dermatologist',        'experience'=>'7 years' ],
+    ['name'=>'Dr. Vikram Pillai',    'email'=>'doctor6@Sanjeevani.com',  'phone'=>'9123456706','specialization'=>'Pediatrician',         'experience'=>'11 years'],
+    ['name'=>'Dr. Kavita Iyer',      'email'=>'doctor7@Sanjeevani.com',  'phone'=>'9123456707','specialization'=>'ENT Specialist',       'experience'=>'8 years' ],
+    ['name'=>'Dr. Rohit Mehta',      'email'=>'doctor8@Sanjeevani.com',  'phone'=>'9123456708','specialization'=>'Gynecologist',         'experience'=>'14 years'],
+    ['name'=>'Dr. Shalini Rao',      'email'=>'doctor9@Sanjeevani.com',  'phone'=>'9123456709','specialization'=>'Psychiatrist',         'experience'=>'10 years'],
+    ['name'=>'Dr. Amar Joshi',       'email'=>'doctor10@Sanjeevani.com', 'phone'=>'9123456710','specialization'=>'Radiologist',          'experience'=>'5 years' ],
+    ['name'=>'Dr. Pooja Saxena',     'email'=>'doctor11@Sanjeevani.com', 'phone'=>'9123456711','specialization'=>'Ophthalmologist',      'experience'=>'13 years'],
+    ['name'=>'Dr. Deepak Verma',     'email'=>'doctor12@Sanjeevani.com', 'phone'=>'9123456712','specialization'=>'Endocrinologist',      'experience'=>'8 years' ],
+    ['name'=>'Dr. Sunita Khanna',    'email'=>'doctor13@Sanjeevani.com', 'phone'=>'9123456713','specialization'=>'Pulmonologist',        'experience'=>'11 years'],
+    ['name'=>'Dr. Ajay Bose',        'email'=>'doctor14@Sanjeevani.com', 'phone'=>'9123456714','specialization'=>'Nephrologist',         'experience'=>'16 years'],
+    ['name'=>'Dr. Lakshmi Reddy',    'email'=>'doctor15@Sanjeevani.com', 'phone'=>'9123456715','specialization'=>'Gastroenterologist',   'experience'=>'9 years' ],
 ];
 
 $password_hash = password_hash('123456', PASSWORD_BCRYPT);
@@ -86,7 +86,7 @@ header('Content-Type: text/html; charset=utf-8');
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<title>MediVita — Seed Data</title>
+<title>Sanjeevani — Seed Data</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"/>
 <style>
   body{font-family:'Plus Jakarta Sans',sans-serif;background:#0f172a;color:#e2e8f0;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
@@ -112,10 +112,10 @@ header('Content-Type: text/html; charset=utf-8');
 <div class="card">
   <div class="logo">
     <div class="logo-mark">🏥</div>
-    <div class="logo-text">MediVita<small>Seed Tool</small></div>
+    <div class="logo-text">Sanjeevani<small>Seed Tool</small></div>
   </div>
   <h1>Database Seeded Successfully</h1>
-  <p class="sub">Sample data has been inserted into MongoDB Atlas — medivita_hospital</p>
+  <p class="sub">Sample data has been inserted into MongoDB Atlas — Sanjeevani_hospital</p>
 
   <div class="stat">
     <div>
@@ -146,8 +146,8 @@ header('Content-Type: text/html; charset=utf-8');
 
   <p class="note">
     Default test password for all seeded accounts: <strong style="color:#e2e8f0">123456</strong><br/>
-    Example patient: ravi1@medivita.com / 123456<br/>
-    Example doctor: doctor1@medivita.com / 123456
+    Example patient: ravi1@Sanjeevani.com / 123456<br/>
+    Example doctor: doctor1@Sanjeevani.com / 123456
   </p>
 </div>
 </body>

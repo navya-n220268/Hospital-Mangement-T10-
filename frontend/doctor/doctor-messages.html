@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Messages — MediVita Doctor Portal</title>
-<link rel="stylesheet" href="/medivita/assets/css/doctor.css"/>
-<link rel="stylesheet" href="/medivita/assets/css/messages.css"/>
+<title>Messages — Sanjeevani Doctor Portal</title>
+<link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/doctor.css"/>
+<link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/messages.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 <style>
 .page-content { padding: 0 !important; overflow: hidden; }
@@ -227,8 +227,8 @@
   </div>
 </div>
 
-<script src="/medivita/assets/js/doctor.js?v=2"></script>
-<script src="/medivita/assets/js/messages.js"></script>
+<script src="/Hospital-Mangement-T10-/assets/js/doctor.js?v=2"></script>
+<script src="/Hospital-Mangement-T10-/assets/js/messages.js"></script>
 <script>
 // ── Init portal chrome ──────────────────────────────────
 let ME_DOC = null;
@@ -260,7 +260,7 @@ initMessaging();
 
 async function fetchServerMessages() {
   try {
-    const res = await fetch(`/medivita/backend/doctor/get_doctor_messages.php?doctorId=${ME_DOC.id}`);
+    const res = await fetch(`/Hospital-Mangement-T10-/backend/doctor/get_doctor_messages.php?doctorId=${ME_DOC.id}`);
     serverMsgs = await res.json();
   } catch(e) { console.error('Error fetching messages', e); }
 }
@@ -357,7 +357,7 @@ function openThread(patientId, patientName, dept) {
     </div>
     <div class="chat-header-right">
       <div class="patient-info-pill"><i class="fas fa-id-card"></i> Patient</div>
-      <button class="chat-action-btn" title="View patient history" onclick="window.location.href = '/medivita/frontend/doctor/patient-history.html'">
+      <button class="chat-action-btn" title="View patient history" onclick="window.location.href = '/Hospital-Mangement-T10-/frontend/doctor/patient-history.html'">
         <i class="fas fa-notes-medical"></i>
       </button>
     </div>`;
@@ -434,7 +434,7 @@ function sendReply() {
   renderDoctorChat(activePatientId, patInitials, '135deg,#0ea5e9,#14b8a6');
   showToast('Reply sent to ' + activeThread.patientName);
 
-  fetch('/medivita/backend/doctor/reply_message.php', {
+  fetch('/Hospital-Mangement-T10-/backend/doctor/reply_message.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

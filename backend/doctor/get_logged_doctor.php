@@ -1,6 +1,6 @@
 <?php
 /**
- * MediVita — backend/get_logged_doctor.php
+ * Sanjeevani — backend/get_logged_doctor.php
  * Returns the logged-in doctor's full details.
  * Session → enriched with DB record (specialization, department, etc.)
  */

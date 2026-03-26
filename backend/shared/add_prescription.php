@@ -1,6 +1,6 @@
 <?php
 /**
- * MediVita — backend/add_prescription.php
+ * Sanjeevani — backend/add_prescription.php
  *
  * Saves a doctor's prescription to the 'prescriptions' collection.
  *
@@ -120,6 +120,19 @@ try {
     }
 
     $prescriptionId = (string)$result->getInsertedId();
+
+    // ── Notify patient about new prescription ─────────────────────────────────
+    try {
+        $db->notifications->insertOne([
+            'type'         => 'prescription',
+            'message'      => "Dr. {$doctorName} has added a new prescription for you. Diagnosis: {$diagnosis}. Visit your prescriptions page to view and download it.",
+            'receiverType' => 'patient',
+            'receiverId'   => $patientId,
+            'relatedId'    => $prescriptionId,
+            'status'       => 'unread',
+            'createdAt'    => $now,
+        ]);
+    } catch (Exception $notifEx) { /* non-fatal */ }
 
     // ── Optionally update appointment status to 'completed' ───────────────────
     if (!empty($appointmentId)) {

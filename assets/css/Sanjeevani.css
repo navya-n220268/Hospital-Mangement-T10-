@@ -691,6 +691,30 @@ tbody tr:hover { background: var(--bg); }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .grid-cols-6040, .grid-cols-7030 { grid-template-columns: 1fr; }
 }
+/* Sidebar Overlay */
+.sb-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 22, 40, 0.6);
+  z-index: 90;
+  backdrop-filter: blur(4px);
+}
+.sb-overlay.active {
+  display: block;
+}
+
+/* Mobile Toggle Button */
+.mob-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--text-primary);
+  cursor: pointer;
+  margin-right: 16px;
+}
+
 @media (max-width: 900px) {
   :root { --sidebar-width: 200px; }
   .content { padding: 20px 15px; }
@@ -698,8 +722,10 @@ tbody tr:hover { background: var(--bg); }
   .main { width: calc(100% - var(--sidebar-width)); }
 }
 @media (max-width: 768px) {
-  .sidebar { transform: translateX(-100%); }
-  .main { margin-left: 0; width: 100%; }
+  .mob-toggle { display: block; }
+  .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+  .sidebar.active { transform: translateX(0); box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
+  .main { margin-left: 0; width: 100%; transition: none; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 500px) {

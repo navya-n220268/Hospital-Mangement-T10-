@@ -1,6 +1,6 @@
 <?php
 /**
- * MediVita Hospital Management System
+ * Sanjeevani Hospital Management System
  * ─────────────────────────────────────
  * backend/patient/get_appointments.php
  *

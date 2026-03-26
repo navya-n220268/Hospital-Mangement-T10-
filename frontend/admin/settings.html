@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Settings — MediVita Admin</title>
-  <link rel="stylesheet" href="/medivita/assets/css/medivita.css">
+  <title>Settings — Sanjeevani Admin</title>
+  <link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/Sanjeevani.css?v=1774423805">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
     .settings-card {
@@ -83,10 +83,10 @@
   <script>
     // Prevent flash of unauthenticated content
     (async function () {
-      const res = await fetch('/medivita/backend/patient/get_user.php');
+      const res = await fetch('/Hospital-Mangement-T10-/backend/patient/get_user.php');
       const data = await res.json();
       if (!data.success || data.user.role !== 'admin') {
-        window.location.href = '/medivita/frontend/auth/login.html';
+        window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
       } else {
         window.adminData = data.user;
       }
@@ -97,63 +97,12 @@
 <body>
 
   <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <a href="/medivita/frontend/admin/admin-dashboard.html" class="brand-logo">
-        <div class="brand-icon"><i class="fas fa-heartbeat"></i></div>
-        <div class="brand-text">
-          <div class="brand-name">MediVita</div>
-          <div class="brand-sub">Admin Panel</div>
-        </div>
-      </a>
-    </div>
-    <div class="sidebar-section-label">Main Menu</div>
-    <nav class="sidebar-nav">
-      <a href="/medivita/frontend/admin/admin-dashboard.html" class="nav-item">
-        <span class="nav-icon">📊</span> Dashboard
-      </a>
-      <a href="/medivita/frontend/admin/manage-doctors.html" class="nav-item">
-        <span class="nav-icon">👨‍⚕️</span> Manage Doctors
-      </a>
-      <a href="/medivita/frontend/admin/manage-patients.html" class="nav-item">
-        <span class="nav-icon">🧑‍🤝‍🧑</span> Manage Patients
-      </a>
-      <a href="/medivita/frontend/admin/appointment-analytics.html" class="nav-item">
-        <span class="nav-icon">📈</span> Appointment Analytics
-      </a>
-      <div class="sidebar-section-label" style="padding-top:12px;">System</div>
-      <a href="/medivita/frontend/admin/settings.html" class="nav-item active">
-        <span class="nav-icon">⚙️</span> Settings
-      </a>
-      <a href="/medivita/backend/auth/logout.php" class="nav-item">
-        <span class="nav-icon">🚪</span> Logout
-      </a>
-    </nav>
-    <div class="sidebar-footer">
-      <div class="admin-profile">
-        <div class="admin-avatar">SA</div>
-        <div>
-          <div class="admin-name">Super Admin</div>
-          <div class="admin-role">Hospital Director</div>
-        </div>
-      </div>
-    </div>
-  </aside>
+  <aside class="sidebar"></aside>
+  <div class="sb-overlay"></div>
 
   <!-- MAIN -->
   <div class="main">
-    <header class="topbar">
-      <div class="topbar-left">
-        <div class="page-title">Admin Settings</div>
-        <div class="page-breadcrumb">Home / Settings</div>
-      </div>
-      <div class="topbar-right">
-        <div class="topbar-date" id="topbar-date-display">...</div>
-
-        <!-- <button class="topbar-btn">🔔</button>
-      <button class="topbar-btn">✉️</button> -->
-      </div>
-    </header>
+    <header class="topbar"></header>
 
     <div class="content">
       <div class="grid-cols-7030" style="gap:24px;">
@@ -217,28 +166,16 @@
     </div>
   </div>
 
+  <script src="/Hospital-Mangement-T10-/assets/js/admin.js?v=1774423805"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Set Date
-      const d = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-      const topBarDate = document.getElementById('topbar-date-display');
-      if (topBarDate) topBarDate.textContent = '📅 ' + d;
-
-      // Wait until adminData is populated from inline script
-      let checks = 0;
-      let iv = setInterval(() => {
-        if (window.adminData) {
-          clearInterval(iv);
-          document.getElementById('st-name').value = window.adminData.name || 'Admin';
-          document.getElementById('st-email').value = window.adminData.email || 'admin@medivita.com';
-
-          // Side bar
-          document.querySelector('.admin-name').textContent = window.adminData.name || 'Super Admin';
-          const initials = (window.adminData.name || 'SA').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-          document.querySelector('.admin-avatar').textContent = initials;
-        }
-        if (++checks > 50) clearInterval(iv);
-      }, 50);
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = await buildAdminPortal('profile-settings', 'Admin Settings', 'Manage your profile and system preferences');
+      loadAdminNotifBadge();
+      
+      if (user) {
+        document.getElementById('st-name').value = user.name || 'Admin';
+        document.getElementById('st-email').value = user.email || 'admin@Sanjeevani.com';
+      }
     });
   </script>
 </body>

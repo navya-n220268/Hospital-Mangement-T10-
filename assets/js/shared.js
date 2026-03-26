@@ -1,4 +1,4 @@
-// MediVita Shared Navigation
+// Sanjeevani Shared Navigation
 function getCurrentPage() {
   const path = window.location.pathname;
   const file = path.split('/').pop() || 'admin-dashboard.html';
@@ -22,7 +22,7 @@ function renderSidebar() {
     const isActive = item.href === current;
     const badgeHtml = item.badge ? `<span class="nav-badge">${item.badge}</span>` : '';
     const itemHtml = `
-      <a href="${item.href}" class="nav-item ${isActive ? 'active' : ''}" ${item.logout ? 'onclick="return confirm(\'Logout from MediVita?\')"' : ''}>
+      <a href="${item.href}" class="nav-item ${isActive ? 'active' : ''}" ${item.logout ? 'onclick="return confirm(\'Logout from Sanjeevani?\')"' : ''}>
         <span class="nav-icon">${item.icon}</span>
         ${item.label}
         ${badgeHtml}
@@ -41,7 +41,7 @@ function renderSidebar() {
             </svg>
           </div>
           <div class="brand-text">
-            <span class="brand-name">MediVita</span>
+            <span class="brand-name">Sanjeevani</span>
             <span class="brand-sub">Hospital Admin</span>
           </div>
         </div>
@@ -60,7 +60,7 @@ function renderSidebar() {
         ${systemItems}
       </nav>
       <div class="sidebar-footer">
-        <div class="sidebar-version">MediVita v2.4.1 &bull; 2025</div>
+        <div class="sidebar-version">Sanjeevani v2.4.1 &bull; 2025</div>
       </div>
     </aside>`;
 }

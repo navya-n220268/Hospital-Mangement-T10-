@@ -1,6 +1,6 @@
 <?php
 /**
- * MediVita — backend/get_doctor_patients.php
+ * Sanjeevani — backend/get_doctor_patients.php
  *
  * Returns a deduplicated list of patients who booked appointments
  * with the currently logged-in doctor. Each entry is enriched with

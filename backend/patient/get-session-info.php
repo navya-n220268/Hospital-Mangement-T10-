@@ -1,6 +1,6 @@
 <?php
 /**
- * MediVita Hospital Management System
+ * Sanjeevani Hospital Management System
  * get-session-info.php — Returns Google OAuth session data as JSON.
  * Used by complete-profile.html to populate the user info strip.
  */

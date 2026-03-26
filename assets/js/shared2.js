@@ -1,4 +1,4 @@
-// MediVita Shared Navigation
+// Sanjeevani Shared Navigation
 function getCurrentPage() {
   const path = window.location.pathname;
   const file = path.split('/').pop() || 'admin-dashboard.html';
@@ -8,19 +8,19 @@ function getCurrentPage() {
 // ---- AUTH CHECK ----
 async function checkAuth(requiredRole = 'admin') {
   try {
-    const resp = await fetch('/medivita/backend/patient/get_user.php');
+    const resp = await fetch('/Hospital-Mangement-T10-/backend/patient/get_user.php');
     if (!resp.ok) {
-      window.location.href = '/medivita/frontend/auth/login.html';
+      window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
       return null;
     }
     const data = await resp.json();
     if (!data.success || data.user.role !== requiredRole) {
-      window.location.href = '/medivita/frontend/auth/login.html';
+      window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
       return null;
     }
     return data.user;
   } catch (err) {
-    window.location.href = '/medivita/frontend/auth/login.html';
+    window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
     return null;
   }
 }
@@ -42,7 +42,7 @@ function renderSidebar(user) {
     const isActive = item.href === current;
     const badgeHtml = item.badge ? `<span class="nav-badge">${item.badge}</span>` : '';
     const itemHtml = `
-      <a href="${item.href}" class="nav-item ${isActive ? 'active' : ''}" ${item.logout ? 'onclick="return confirm(\'Logout from MediVita?\')"' : ''}>
+      <a href="${item.href}" class="nav-item ${isActive ? 'active' : ''}" ${item.logout ? 'onclick="return confirm(\'Logout from Sanjeevani?\')"' : ''}>
         <span class="nav-icon">${item.icon}</span>
         ${item.label}
         ${badgeHtml}
@@ -64,7 +64,7 @@ function renderSidebar(user) {
             </svg>
           </div>
           <div class="brand-text">
-            <span class="brand-name">MediVita</span>
+            <span class="brand-name">Sanjeevani</span>
             <span class="brand-sub">Hospital Admin</span>
           </div>
         </div>
@@ -83,7 +83,7 @@ function renderSidebar(user) {
         ${systemItems}
       </nav>
       <div class="sidebar-footer">
-        <div class="sidebar-version">MediVita v2.4.1 &bull; 2025</div>
+        <div class="sidebar-version">Sanjeevani v2.4.1 &bull; 2025</div>
       </div>
     </aside>`;
 }

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leave Management — Sanjeevani Doctor</title>
+  <link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/doctor.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="portal-wrap">
+    <aside class="sidebar"></aside>
+    <div class="sb-overlay"></div>
+    <div class="main-area">
+      <div class="topbar"></div>
+      <div class="page-content" style="padding:28px 32px;">
+
+      <div class="grid-2" style="gap:24px;margin-bottom:28px;">
+        <!-- Apply Leave Form -->
+        <div class="card animate-in">
+          <div class="card-header" style="padding:20px 24px 14px;border-bottom:1px solid var(--border);">
+            <div>
+              <div style="font-size:17px;font-weight:700;color:var(--text-1)">Apply for Leave</div>
+              <div style="font-size:13px;color:var(--text-3);margin-top:2px;">Submit a leave request for admin approval</div>
+            </div>
+            <div style="width:42px;height:42px;background:var(--blue-dim);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:1.1rem;">
+              <i class="fas fa-calendar-plus"></i>
+            </div>
+          </div>
+          <div style="padding:24px;">
+            <div id="formMsg" style="display:none;margin-bottom:16px;"></div>
+            <form id="leaveForm" onsubmit="submitLeave(event)">
+              <div class="form-group">
+                <label class="form-label">From Date <span style="color:var(--red)">*</span></label>
+                <input type="date" class="form-control" id="fromDate" required
+                  min="" style="padding:12px 15px;border:1.5px solid var(--border-light);border-radius:10px;width:100%;font-family:inherit;font-size:15px;">
+              </div>
+              <div class="form-group" style="margin-top:16px;">
+                <label class="form-label">To Date <span style="color:var(--red)">*</span></label>
+                <input type="date" class="form-control" id="toDate" required
+                  min="" style="padding:12px 15px;border:1.5px solid var(--border-light);border-radius:10px;width:100%;font-family:inherit;font-size:15px;">
+              </div>
+              <div class="form-group" style="margin-top:16px;">
+                <label class="form-label">Reason</label>
+                <textarea class="form-control" id="reason" rows="4" placeholder="Briefly describe the reason for leave..."
+                  style="padding:12px 15px;border:1.5px solid var(--border-light);border-radius:10px;width:100%;font-family:inherit;font-size:15px;resize:vertical;"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary" style="margin-top:20px;width:100%;">
+                <i class="fas fa-paper-plane"></i> Submit Leave Request
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- My Leave Requests -->
+        <div class="card animate-in delay-1">
+          <div class="card-header" style="padding:20px 24px 14px;border-bottom:1px solid var(--border);">
+            <div>
+              <div style="font-size:17px;font-weight:700;color:var(--text-1)">My Leave History</div>
+              <div style="font-size:13px;color:var(--text-3);margin-top:2px;">All your past and pending leave applications</div>
+            </div>
+            <button onclick="loadLeaves()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 14px;cursor:pointer;font-size:13px;color:var(--text-2)">
+              <i class="fas fa-sync"></i>
+            </button>
+          </div>
+          <div id="leaveList" style="padding:20px 24px;">
+            <div style="text-align:center;padding:32px;color:var(--text-3)"><i class="fas fa-spinner fa-spin fa-lg"></i></div>
+          </div>
+        </div>
+      </div>
+
+      </div>
+    </div><!-- end main-area -->
+  </div><!-- end portal-wrap -->
+
+  <script src="/Hospital-Mangement-T10-/assets/js/doctor.js"></script>
+  <script>
+    // Set min dates to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('fromDate').min = today;
+    document.getElementById('toDate').min   = today;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await buildPortal('leave-management', 'Leave Management', 'Apply for and manage your leave requests');
+      loadLeaves();
+    });
+
+    async function loadLeaves() {
+      const el = document.getElementById('leaveList');
+      el.innerHTML = `<div style="text-align:center;padding:32px;color:var(--text-3)"><i class="fas fa-spinner fa-spin fa-lg"></i></div>`;
+      try {
+        const res  = await fetch('/Hospital-Mangement-T10-/backend/doctor/get_my_leaves.php');
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message);
+        const leaves = data.leaves || [];
+        if (!leaves.length) {
+          el.innerHTML = `<div style="text-align:center;padding:32px;color:var(--text-3)"><i class="fas fa-calendar-times fa-2x" style="margin-bottom:10px;display:block;"></i>No leave requests yet</div>`;
+          return;
+        }
+        el.innerHTML = leaves.map(l => {
+          const colors = { pending:'var(--orange)', approved:'var(--green)', rejected:'var(--red)' };
+          const icons  = { pending:'fa-clock', approved:'fa-check-circle', rejected:'fa-times-circle' };
+          const color  = colors[l.status] || 'var(--text-3)';
+          return `
+            <div style="padding:14px 0;border-bottom:1px solid var(--border);">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <div style="font-weight:600;font-size:14.5px;">${l.fromDate} → ${l.toDate}</div>
+                <span style="font-size:12px;font-weight:700;color:${color};background:${color}1a;padding:3px 10px;border-radius:20px;">
+                  <i class="fas ${icons[l.status]||'fa-circle'}"></i> ${l.status.charAt(0).toUpperCase()+l.status.slice(1)}
+                </span>
+              </div>
+              ${l.reason ? `<div style="font-size:13px;color:var(--text-3);">${l.reason}</div>` : ''}
+              <div style="font-size:12px;color:var(--text-4);margin-top:4px;">Applied: ${l.createdAt}</div>
+            </div>`;
+        }).join('');
+      } catch(e) {
+        el.innerHTML = `<div style="text-align:center;padding:32px;color:var(--red)">⚠️ ${e.message}</div>`;
+      }
+    }
+
+    async function submitLeave(e) {
+      e.preventDefault();
+      const fromDate = document.getElementById('fromDate').value;
+      const toDate   = document.getElementById('toDate').value;
+      const reason   = document.getElementById('reason').value;
+      const msgEl    = document.getElementById('formMsg');
+
+      if (toDate < fromDate) {
+        showMsg('To date must be on or after from date.', 'error'); return;
+      }
+
+      const btn = e.target.querySelector('button[type=submit]');
+      btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+      try {
+        const fd = new FormData();
+        fd.append('fromDate', fromDate);
+        fd.append('toDate',   toDate);
+        fd.append('reason',   reason);
+        const res  = await fetch('/Hospital-Mangement-T10-/backend/doctor/apply_leave.php', {method:'POST', body:fd});
+        const data = await res.json();
+        if (data.success) {
+          showMsg(data.message, 'success');
+          document.getElementById('leaveForm').reset();
+          document.getElementById('fromDate').min = today;
+          document.getElementById('toDate').min   = today;
+          loadLeaves();
+        } else {
+          showMsg(data.message, 'error');
+        }
+      } catch(err) {
+        showMsg('Network error: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Leave Request';
+      }
+    }
+
+    function showMsg(msg, type) {
+      const el = document.getElementById('formMsg');
+      el.style.display = 'flex';
+      el.style.cssText = `display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;font-size:14px;font-weight:500;
+        ${type==='success' ? 'background:#e0f7f2;color:#00845c;border:1px solid #b2dfdb;' : 'background:#fdecea;color:#c0392b;border:1px solid #f5c6cb;'}`;
+      el.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}"></i> ${msg}`;
+      setTimeout(() => { el.style.display='none'; }, 5000);
+    }
+  </script>
+</body>
+</html>

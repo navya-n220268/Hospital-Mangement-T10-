@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard — MediVita Admin</title>
-  <link rel="stylesheet" href="/medivita/assets/css/medivita.css">
+  <title>Dashboard — Sanjeevani Admin</title>
+  <link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/Sanjeevani.css?v=1774423805">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     .emergency-card {
@@ -184,10 +184,10 @@
   <script>
     // Prevent flash of unauthenticated content
     (async function () {
-      const res = await fetch('/medivita/backend/patient/get_user.php');
+      const res = await fetch('/Hospital-Mangement-T10-/backend/patient/get_user.php');
       const data = await res.json();
       if (!data.success || data.user.role !== 'admin') {
-        window.location.href = '/medivita/frontend/auth/login.html';
+        window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
       }
     })();
   </script>
@@ -195,66 +195,11 @@
 
 <body>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <a href="/medivita/frontend/admin/admin-dashboard.html" class="brand-logo">
-        <div class="brand-icon"><i class="fas fa-heartbeat"></i></div>
-        <div class="brand-text">
-          <div class="brand-name">MediVita</div>
-          <div class="brand-sub">Admin Panel</div>
-        </div>
-      </a>
-    </div>
-    <div class="sidebar-section-label">Main Menu</div>
-    <nav class="sidebar-nav">
-      <a href="/medivita/frontend/admin/admin-dashboard.html" class="nav-item active">
-        <span class="nav-icon">📊</span> Dashboard
-      </a>
-      <a href="/medivita/frontend/admin/manage-doctors.html" class="nav-item">
-        <span class="nav-icon">👨‍⚕️</span> Manage Doctors
-      </a>
-      <a href="/medivita/frontend/admin/manage-patients.html" class="nav-item">
-        <span class="nav-icon">🧑‍🤝‍🧑</span> Manage Patients
-      </a>
-      <a href="/medivita/frontend/admin/appointment-analytics.html" class="nav-item">
-        <span class="nav-icon">📈</span> Appointment Analytics
-      </a>
-      <div class="sidebar-section-label" style="padding-top:12px;">System</div>
-      <a href="/medivita/frontend/admin/settings.html" class="nav-item">
-        <span class="nav-icon">⚙️</span> Settings
-      </a>
-      <a href="/medivita/backend/auth/logout.php" class="nav-item">
-        <span class="nav-icon">🚪</span> Logout
-      </a>
-    </nav>
-    <div class="sidebar-footer">
-      <div class="admin-profile">
-        <div class="admin-avatar">SA</div>
-        <div>
-          <div class="admin-name">Super Admin</div>
-          <div class="admin-role">Hospital Director</div>
-        </div>
-      </div>
-    </div>
-  </aside>
+  <aside class="sidebar"></aside>
 
   <!-- MAIN -->
   <div class="main">
-    <header class="topbar">
-      <div class="topbar-left">
-        <div class="page-title">Admin Dashboard</div>
-        <div class="page-breadcrumb">Home / Dashboard</div>
-      </div>
-      <div class="topbar-right">
-        <div class="topbar-date" id="topbar-date-display">...</div>
-        <script>
-          document.getElementById('topbar-date-display').textContent = '📅 ' + new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-        </script>
-        <!-- <button class="topbar-btn">🔔 <span class="notif-dot"></span></button>
-      <button class="topbar-btn">✉️</button> -->
-      </div>
-    </header>
+    <div class="sb-overlay"></div>
 
     <div class="content">
 
@@ -310,7 +255,7 @@
               <div class="card-title">Recent Appointments</div>
               <div class="card-subtitle">Latest 6 scheduled appointments</div>
             </div>
-            <a href="/medivita/frontend/admin/appointment-analytics.html" class="btn btn-outline btn-sm">View All</a>
+            <a href="/Hospital-Mangement-T10-/frontend/admin/appointment-analytics.html" class="btn btn-outline btn-sm">View All</a>
           </div>
           <div class="table-wrap">
             <table>
@@ -359,7 +304,7 @@
               <div class="card-title">New Patient Registrations</div>
               <div class="card-subtitle">Latest registered patients</div>
             </div>
-            <a href="/medivita/frontend/admin/manage-patients.html" class="btn btn-ghost btn-sm">See All</a>
+            <a href="/Hospital-Mangement-T10-/frontend/admin/manage-patients.html" class="btn btn-ghost btn-sm">See All</a>
           </div>
           <div class="card-body" style="padding-top:10px;">
             <div id="recent-patients-container">
@@ -401,9 +346,13 @@
         }
       }
     });
-
+  </script>
+  <script src="/Hospital-Mangement-T10-/assets/js/admin.js?v=1774423805"></script>
+  <script>
     // ---- DYNAMIC DATA FETCHING ----
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
+      await buildAdminPortal('admin-dashboard', 'Admin Dashboard', 'Hospital oversight and metrics');
+      loadAdminNotifBadge();
       fetchDashboardStats();
       fetchRecentAppointments();
       fetchTopDoctors();
@@ -412,7 +361,7 @@
 
     async function fetchDashboardStats() {
       try {
-        const res = await fetch('/medivita/backend/admin/getDashboardStats.php');
+        const res = await fetch('/Hospital-Mangement-T10-/backend/admin/getDashboardStats.php');
         if (!res.ok) throw new Error('Network response was not ok');
         const data = await res.json();
         document.getElementById('stat-doctors').textContent = data.doctors || 0;
@@ -426,7 +375,7 @@
 
     async function fetchRecentAppointments() {
       try {
-        const res = await fetch('/medivita/backend/admin/getRecentAppointments.php');
+        const res = await fetch('/Hospital-Mangement-T10-/backend/admin/getRecentAppointments.php');
         if (!res.ok) throw new Error('Network response was not ok');
         const data = await res.json();
 
@@ -476,7 +425,7 @@
 
     async function fetchTopDoctors() {
       try {
-        const res = await fetch('/medivita/backend/admin/getTopDoctors.php');
+        const res = await fetch('/Hospital-Mangement-T10-/backend/admin/getTopDoctors.php');
         const data = await res.json();
         const container = document.getElementById('top-doctors-container');
 
@@ -502,7 +451,7 @@
 
     async function fetchRecentPatients() {
       try {
-        const res = await fetch('/medivita/backend/admin/getRecentPatients.php');
+        const res = await fetch('/Hospital-Mangement-T10-/backend/admin/getRecentPatients.php');
         const data = await res.json();
         const container = document.getElementById('recent-patients-container');
 

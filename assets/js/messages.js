@@ -1,5 +1,5 @@
 /* =====================================================
-   MEDIVITA — MESSAGES SHARED JAVASCRIPT
+   Sanjeevani — MESSAGES SHARED JAVASCRIPT
    Shared by: patient-messages.html & doctor-messages.html
    Storage: localStorage key "mv_messages"
    ===================================================== */

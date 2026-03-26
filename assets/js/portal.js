@@ -1,23 +1,23 @@
 /* =============================================
-   MEDIVITA PORTAL — SHARED JAVASCRIPT
+   Sanjeevani PORTAL — SHARED JAVASCRIPT
    ============================================= */
 
 // ---- AUTH CHECK ----
 async function checkAuth(requiredRole = 'patient') {
   try {
-    const resp = await fetch('/medivita/backend/patient/get_user.php');
+    const resp = await fetch('/Hospital-Mangement-T10-/backend/patient/get_user.php');
     if (!resp.ok) {
-      window.location.href = '/medivita/frontend/auth/login.html';
+      window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
       return null;
     }
     const data = await resp.json();
     if (!data.success || data.user.role !== requiredRole) {
-      window.location.href = '/medivita/frontend/auth/login.html';
+      window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
       return null;
     }
     return data.user;
   } catch (err) {
-    window.location.href = '/medivita/frontend/auth/login.html';
+    window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
     return null;
   }
 }
@@ -31,6 +31,8 @@ function buildSidebar(activePage, user) {
     { id: 'my-appointments',   href: 'my-appointments.html',   icon: 'fas fa-calendar-check',     label: 'My Appointments',    section: 'APPOINTMENTS' },
     { id: 'message-to-doctor', href: 'message-to-doctor.html', icon: 'fas fa-comment-medical',    label: 'Message to Doctor',  section: 'APPOINTMENTS' },
     { id: 'medical-records',   href: 'medical-records.html',   icon: 'fas fa-file-medical',       label: 'Medical Records',    section: 'HEALTH' },
+    { id: 'my-prescriptions',  href: 'my-prescriptions.html',  icon: 'fas fa-pills',              label: 'My Prescriptions',   section: 'HEALTH' },
+    { id: 'notifications',     href: 'notifications.html',     icon: 'fas fa-bell',               label: 'Notifications',      section: 'ACCOUNT', badgeId: 'patNotifBadge' },
     { id: 'profile',           href: 'patient-profile.html',   icon: 'fas fa-user-circle',        label: 'Profile Settings',   section: 'ACCOUNT' },
   ];
 
@@ -45,7 +47,7 @@ function buildSidebar(activePage, user) {
       <a href="${item.href}" class="nav-item ${activePage === item.id ? 'active' : ''}">
         <i class="${item.icon}"></i>
         <span>${item.label}</span>
-        ${item.badge ? `<span class="nav-badge">${item.badge}</span>` : ''}
+        ${item.badgeId ? `<span class="nav-badge" id="${item.badgeId}" style="display:none">0</span>` : ''}
       </a>`;
   });
 
@@ -56,7 +58,7 @@ function buildSidebar(activePage, user) {
   sidebar.innerHTML = `
     <div class="sidebar-top">
       <div class="sidebar-logo"><i class="fas fa-heartbeat"></i></div>
-      <div class="sidebar-brand">MediVita<small>Patient Portal</small></div>
+      <div class="sidebar-brand">Sanjeevani<small>Patient Portal</small></div>
     </div>
     <div class="sidebar-patient">
       <div class="patient-avatar">${initials}</div>
@@ -70,7 +72,7 @@ function buildSidebar(activePage, user) {
     </div>
     <nav class="sidebar-nav">${navHTML}</nav>
     <div class="sidebar-footer">
-      <a href="/medivita/backend/auth/logout.php" class="nav-item danger">
+      <a href="/Hospital-Mangement-T10-/backend/auth/logout.php" class="nav-item danger">
         <i class="fas fa-sign-out-alt"></i>
         <span>Logout</span>
       </a>
@@ -192,9 +194,26 @@ async function initPortal(pageId, title, subtitle) {
   buildTopbar(title, subtitle || `Welcome back, ${user.name}`);
   initMobileSidebar();
 
-  // Update specific elements if they exist
-  const greetMsg = document.getElementById('greetMsg');
-  if (greetMsg) greetMsg.textContent = `${getGreeting()}, ${user.name.split(' ')[0]} 👋`;
+  loadPatientNotifBadge();
 
   return user;
 }
+
+// Load unread patient notification badge count
+async function loadPatientNotifBadge() {
+  try {
+    const resp = await fetch('/Hospital-Mangement-T10-/backend/patient/get_notifications.php');
+    const data = await resp.json();
+    if (data.success) {
+      const count = (data.notifications || []).filter(n => n.status === 'unread').length;
+      const badge = document.getElementById('patNotifBadge');
+      if (badge) {
+        if (count > 0) { badge.textContent = count; badge.style.display = ''; }
+        else badge.style.display = 'none';
+      }
+    }
+  } catch (e) { /* silent fail */ }
+}
+
+// Auto-refresh notifications every 30s
+setInterval(loadPatientNotifBadge, 30000);

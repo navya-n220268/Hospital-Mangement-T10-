@@ -1,31 +1,32 @@
 /* =====================================================
-   MEDIVITA ADMIN PORTAL — SHARED JAVASCRIPT
+   Sanjeevani ADMIN PORTAL — SHARED JAVASCRIPT
    ===================================================== */
 
 const NAV_ITEMS = [
-  { id: 'admin-dashboard',   href: 'admin-dashboard.html',  icon: 'fas fa-th-large',       label: 'Dashboard',        section: 'OVERVIEW' },
-  { id: 'manage-doctors',    href: 'manage-doctors.html',   icon: 'fas fa-user-md',        label: 'Manage Doctors',   section: 'MANAGEMENT' },
-  { id: 'manage-patients',   href: 'manage-patients.html',  icon: 'fas fa-users',          label: 'Manage Patients',  section: 'MANAGEMENT' },
-  { id: 'manage-appointments',href: 'appointment-analytics.html', icon: 'fas fa-calendar-alt',label: 'Appointments',    section: 'MANAGEMENT' },
-  { id: 'manage-departments',href: '#',                     icon: 'fas fa-hospital',       label: 'Departments',      section: 'MANAGEMENT' },
-  { id: 'profile-settings',  href: 'settings.html',         icon: 'fas fa-cog',            label: 'Settings',         section: 'ACCOUNT' },
+  { id: 'admin-dashboard',    href: 'admin-dashboard.html',      icon: 'fas fa-th-large',       label: 'Dashboard',          section: 'OVERVIEW' },
+  { id: 'manage-doctors',     href: 'manage-doctors.html',       icon: 'fas fa-user-md',        label: 'Manage Doctors',     section: 'MANAGEMENT' },
+  { id: 'manage-patients',    href: 'manage-patients.html',      icon: 'fas fa-users',          label: 'Manage Patients',    section: 'MANAGEMENT' },
+  { id: 'manage-appointments',href: 'appointment-analytics.html',icon: 'fas fa-calendar-alt',   label: 'Appointments',       section: 'MANAGEMENT' },
+  { id: 'leave-management',   href: 'leave-management.html',     icon: 'fas fa-calendar-minus', label: 'Leave Management',   section: 'MANAGEMENT' },
+  { id: 'notifications',      href: 'notifications.html',        icon: 'fas fa-bell',           label: 'Notifications',      section: 'MANAGEMENT', badgeId: 'adminNotifBadge' },
+  { id: 'profile-settings',   href: 'settings.html',             icon: 'fas fa-cog',            label: 'Settings',           section: 'ACCOUNT' },
 ];
 
 async function checkAuthAdmin() {
   try {
-    const resp = await fetch('/medivita/backend/patient/get_user.php');
+    const resp = await fetch('/Hospital-Mangement-T10-/backend/patient/get_user.php');
     if (!resp.ok) {
-      window.location.href = '/medivita/frontend/auth/login.html';
+      window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
       return null;
     }
     const data = await resp.json();
     if (!data.success || data.user.role !== 'admin') {
-      window.location.href = '/medivita/frontend/auth/login.html';
+      window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
       return null;
     }
     return data.user;
   } catch (err) {
-    window.location.href = '/medivita/frontend/auth/login.html';
+    window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
     return null;
   }
 }
@@ -41,43 +42,40 @@ async function buildAdminPortal(pageId, pageTitle, pageSubtitle) {
     let navHTML = '';
     NAV_ITEMS.forEach(item => {
       if (item.section !== lastSec) {
-        navHTML += `<div class="sb-sec">${item.section}</div>`;
+        navHTML += `<div class="sidebar-section-label">${item.section}</div>`;
         lastSec = item.section;
       }
       navHTML += `
-        <a href="${item.href}" class="sb-link ${pageId === item.id ? 'active' : ''}">
-          <i class="${item.icon}"></i>
+        <a href="${item.href}" class="nav-item ${pageId === item.id ? 'active' : ''}" id="nav-${item.id}">
+          <i class="nav-icon ${item.icon}"></i>
           <span>${item.label}</span>
-          ${item.badge ? `<span class="sb-num">${item.badge}</span>` : ''}
+          ${item.badgeId ? `<span class="nav-badge" id="${item.badgeId}" style="display:none">0</span>` : ''}
         </a>`;
     });
 
     const initials = (user.name || 'Admin').split(' ').map(n=>n[0]).join('').toUpperCase().substring(0,2);
 
     sb.innerHTML = `
-      <div class="sb-top">
-        <div class="sb-logo">
-          <div class="sb-logo-mark"><i class="fas fa-heartbeat"></i></div>
+      <div class="sidebar-brand">
+        <div class="brand-logo">
+          <div class="brand-icon"><i class="fas fa-heartbeat"></i></div>
           <div>
-            <span class="sb-brand-name">MediVita</span>
-            <span class="sb-brand-sub">Admin Portal</span>
+            <div class="brand-name">Sanjeevani</div>
+            <div class="brand-sub">Admin Portal</div>
           </div>
         </div>
       </div>
-      <div class="sb-doctor">
-        <div class="sb-avatar" style="background:linear-gradient(135deg,var(--blue-900),var(--blue))">${initials}</div>
-        <div style="min-width:0">
-          <div class="sb-doc-name">${user.name}</div>
-          <div class="sb-doc-status">
-            <span class="sb-dot" style="background:var(--green)"></span>
-            <span>Administrator</span>
+      <nav class="sidebar-nav">${navHTML}</nav>
+      <div class="sidebar-footer">
+        <div class="admin-profile" style="margin-bottom: 12px;">
+          <div class="admin-avatar">${initials}</div>
+          <div>
+            <div class="admin-name">${user.name}</div>
+            <div class="admin-role">Administrator</div>
           </div>
         </div>
-      </div>
-      <nav class="sb-nav">${navHTML}</nav>
-      <div class="sb-footer">
-        <a href="/medivita/backend/auth/logout.php" class="sb-link sb-danger">
-          <i class="fas fa-sign-out-alt"></i>
+        <a href="/Hospital-Mangement-T10-/backend/auth/logout.php" class="nav-item" style="color: var(--danger);">
+          <i class="nav-icon fas fa-sign-out-alt"></i>
           <span>Logout</span>
         </a>
       </div>`;
@@ -95,10 +93,12 @@ async function buildAdminPortal(pageId, pageTitle, pageSubtitle) {
     else if (hr < 17) greet = "Good afternoon";
 
     tb.innerHTML = `
-      <button class="mob-toggle" id="mobToggle"><i class="fas fa-bars"></i></button>
-      <div class="tb-title">
-        <h1>${pageTitle}</h1>
-        ${pageSubtitle ? `<p>${pageSubtitle}</p>` : `<p>${greet}, ${user.name.split(' ')[0]} 👋</p>`}
+      <div class="topbar-left" style="display: flex; align-items: center;">
+        <button class="mob-toggle" id="mobToggle"><i class="fas fa-bars"></i></button>
+        <div class="tb-title">
+          <h1>${pageTitle}</h1>
+          ${pageSubtitle ? `<p>${pageSubtitle}</p>` : `<p>${greet}, ${user.name.split(' ')[0]} 👋</p>`}
+        </div>
       </div>
       <div class="tb-right">
         <div style="background:white;border:1px solid var(--border);padding:8px 16px;border-radius:99px;font-size:.8rem;font-weight:600;color:var(--text-2);box-shadow:var(--sh-xs); display:flex; align-items:center; gap:8px">
@@ -124,3 +124,22 @@ async function buildAdminPortal(pageId, pageTitle, pageSubtitle) {
 
   return user;
 }
+
+// Load unread admin notification count and show badge
+async function loadAdminNotifBadge() {
+  try {
+    const resp = await fetch('/Hospital-Mangement-T10-/backend/admin/get_notifications.php');
+    const data = await resp.json();
+    if (data.success) {
+      const count = (data.notifications || []).filter(n => n.status === 'unread').length;
+      const badge = document.getElementById('adminNotifBadge');
+      if (badge) {
+        if (count > 0) { badge.textContent = count; badge.style.display = ''; }
+        else badge.style.display = 'none';
+      }
+    }
+  } catch (e) { /* silent fail */ }
+}
+
+// Auto-refresh badge every 30s
+setInterval(loadAdminNotifBadge, 30000);

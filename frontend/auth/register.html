@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Create Account — MediVita Hospital Portal</title>
-<meta name="description" content="Create your MediVita Hospital patient or doctor account and manage your healthcare in one place."/>
+<title>Create Account — Sanjeevani Hospital Portal</title>
+<meta name="description" content="Create your Sanjeevani Hospital patient or doctor account and manage your healthcare in one place."/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-<link rel="stylesheet" href="/medivita/assets/css/styles.css"/>
+<link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/styles.css"/>
 <style>
   /* ── Register page extras ── */
 
@@ -72,6 +72,60 @@
     height: 1px;
     background: var(--g200);
   }
+
+  /* ── Google OAuth Button ─────────────────────────────────────── */
+  .btn-google {
+    width: 100%;
+    padding: 12px 24px;
+    border-radius: var(--r99);
+    border: 1.5px solid var(--g300);
+    background: var(--white);
+    color: var(--g700);
+    font-family: var(--fb);
+    font-size: .97rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: var(--sh-sm);
+    transition: transform var(--ease), box-shadow var(--ease), border-color var(--ease), background var(--ease);
+    text-decoration: none;
+    margin-top: 4px;
+  }
+  .btn-google:hover {
+    border-color: #4285F4;
+    background: #f0f4ff;
+    box-shadow: 0 4px 16px rgba(66, 133, 244, .18);
+    transform: translateY(-2px);
+  }
+  .btn-google:active {
+    transform: translateY(0);
+  }
+  .btn-google .g-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+  .or-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 18px 0;
+  }
+  .or-divider::before,
+  .or-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--g200);
+  }
+  .or-divider span {
+    font-size: .78rem;
+    color: var(--g400);
+    white-space: nowrap;
+  }
 </style>
 </head>
 <body>
@@ -79,7 +133,7 @@
 <!-- Mobile brand header -->
 <div class="mobile-brand">
   <div class="mb-mark"><i class="fas fa-heartbeat"></i></div>
-  <div class="mb-name">MediVita<small>Create Account</small></div>
+  <div class="mb-name">Sanjeevani<small>Create Account</small></div>
 </div>
 
 <div class="auth-page">
@@ -89,9 +143,9 @@
     <div class="ap-deco"></div>
 
     <!-- Brand -->
-    <a href="/medivita/index.html" class="ap-logo" style="text-decoration:none;">
+    <a href="/Hospital-Mangement-T10-/index.html" class="ap-logo" style="text-decoration:none;">
       <div class="ap-logo-mark"><i class="fas fa-heartbeat"></i></div>
-      <div class="ap-logo-txt">MediVita<small>Hospital &amp; Medical Centre</small></div>
+      <div class="ap-logo-txt">Sanjeevani<small>Hospital &amp; Medical Centre</small></div>
     </a>
 
     <!-- Tagline -->
@@ -141,9 +195,9 @@
 
     <!-- Panel footer -->
     <div class="ap-foot">
-      &copy; 2026 MediVita Hospital. All rights reserved.
+      &copy; 2026 Sanjeevani Hospital. All rights reserved.
       &nbsp;&middot;&nbsp;
-      <a href="/medivita/index.html">Back to Website</a>
+      <a href="/Hospital-Mangement-T10-/index.html">Back to Website</a>
     </div>
   </div><!-- /auth-panel -->
 
@@ -156,7 +210,7 @@
       <div class="ac-header">
         <div class="ac-icon"><i class="fas fa-user-plus"></i></div>
         <h1 class="ac-title">Create Account</h1>
-        <p class="ac-sub">Join MediVita and manage your healthcare in one place</p>
+        <p class="ac-sub">Join Sanjeevani and manage your healthcare in one place</p>
       </div>
 
       <!-- Mobile quote strip -->
@@ -419,6 +473,53 @@
           <span class="field-err" aria-live="polite"></span>
         </div>
 
+        <!-- ── Security Questions ── -->
+        <div style="margin-top:20px">
+          <div class="section-label" style="font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-700);margin-bottom:14px;display:flex;align-items:center;gap:7px;">
+            <i class="fas fa-shield-alt"></i> Security Questions
+            <span style="flex:1;height:1px;background:var(--g200);display:block"></span>
+          </div>
+          <p style="font-size:.78rem;color:var(--g500);margin-bottom:14px;line-height:1.6;">
+            Answer all 5 questions below — these will be used to verify your identity if you forget your password.
+          </p>
+
+          <div class="form-group">
+            <label class="form-label">What is your mother's maiden name? <span class="req">*</span></label>
+            <div class="input-wrap">
+              <i class="fi fas fa-user-shield"></i>
+              <input type="text" name="sq_1" class="form-input" placeholder="Your answer" required autocomplete="off"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">What was the name of your first pet? <span class="req">*</span></label>
+            <div class="input-wrap">
+              <i class="fi fas fa-paw"></i>
+              <input type="text" name="sq_2" class="form-input" placeholder="Your answer" required autocomplete="off"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">What city were you born in? <span class="req">*</span></label>
+            <div class="input-wrap">
+              <i class="fi fas fa-city"></i>
+              <input type="text" name="sq_3" class="form-input" placeholder="Your answer" required autocomplete="off"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">What is the name of your primary school? <span class="req">*</span></label>
+            <div class="input-wrap">
+              <i class="fi fas fa-school"></i>
+              <input type="text" name="sq_4" class="form-input" placeholder="Your answer" required autocomplete="off"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">What was your childhood nickname? <span class="req">*</span></label>
+            <div class="input-wrap">
+              <i class="fi fas fa-child"></i>
+              <input type="text" name="sq_5" class="form-input" placeholder="Your answer" required autocomplete="off"/>
+            </div>
+          </div>
+        </div>
+
         <!-- Submit -->
         <button type="submit" id="regSubmitBtn" class="btn-submit">
           <i class="fas fa-user-plus"></i> Create My Account
@@ -426,13 +527,30 @@
 
       </form>
 
-      <div class="auth-divider"><span>Already have an account?</span></div>
+      <!-- OTP Verification Section removed -->
 
-      <div class="auth-foot">
-        <a href="/medivita/frontend/auth/login.html">&larr; Sign in instead</a>
+      <div class="auth-divider" id="reg-auth-divider"><span>Already have an account?</span></div>
+
+      <!-- ── OR divider ── -->
+      <div class="or-divider" id="reg-or-divider"><span>or register with</span></div>
+
+      <!-- ── Google OAuth Button ── -->
+      <a href="/Hospital-Mangement-T10-/backend/auth/google_login.php?action=register" id="googleRegBtn" class="btn-google" role="button">
+        <svg class="g-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+          <path fill="none" d="M0 0h48v48H0z" />
+        </svg>
+        Continue with Google
+      </a>
+
+      <div class="auth-foot" style="margin-top: 20px;">
+        <a href="/Hospital-Mangement-T10-/frontend/auth/login.html">&larr; Sign in instead</a>
       </div>
 
-      <a href="/medivita/index.html" class="back-link">
+      <a href="/Hospital-Mangement-T10-/index.html" class="back-link">
         <i class="fas fa-arrow-left"></i> Back to main website
       </a>
 
@@ -441,7 +559,7 @@
 
 </div><!-- /auth-page -->
 
-<script src="/medivita/assets/js/script.js"></script>
+<script src="/Hospital-Mangement-T10-/assets/js/script.js"></script>
 <script>
 /* ── Rotating health quotes (left panel) ── */
 (function () {

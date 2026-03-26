@@ -1,6 +1,6 @@
 <?php
 /**
- * MediVita Hospital Management System
+ * Sanjeevani Hospital Management System
  * google-login.php — Entry point for Google OAuth 2.0 login.
  * Generates CSRF state, builds the auth URL, and redirects to Google.
  */
@@ -13,7 +13,7 @@ require_once __DIR__ . '/../config.php';
 // Replace these with the values from Google Cloud Console → Credentials
 define('GOOGLE_CLIENT_ID',     $_ENV['GOOGLE_CLIENT_ID']);
 define('GOOGLE_CLIENT_SECRET', $_ENV['GOOGLE_CLIENT_SECRET']);
-define('GOOGLE_REDIRECT_URI',  'http://localhost/medivita/backend/auth/google-callback.php');
+define('GOOGLE_REDIRECT_URI',  'http://localhost/Hospital-Mangement-T10-/backend/auth/google-callback.php');
 
 $client = new Google\Client();
 $client->setClientId(GOOGLE_CLIENT_ID);
