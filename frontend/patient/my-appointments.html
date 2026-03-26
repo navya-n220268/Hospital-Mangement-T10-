@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>My Appointments — MediVita</title>
-<meta name="description" content="View and manage your scheduled appointments at MediVita Hospital."/>
-<link rel="stylesheet" href="/medivita/assets/css/portal.css"/>
+<title>My Appointments — Sanjeevani</title>
+<meta name="description" content="View and manage your scheduled appointments at Sanjeevani Hospital."/>
+<link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/portal.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 <style>
 .filter-bar {
@@ -81,7 +81,7 @@
         <div class="filter-bar-right">
           <input type="text" class="form-control" placeholder="Search doctor or dept…" id="searchInput"
             style="width:190px;padding:8px 12px;font-size:.8rem" oninput="renderTable()"/>
-          <a href="/medivita/frontend/patient/book-appointment.html" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Book New</a>
+          <a href="/Hospital-Mangement-T10-/frontend/patient/book-appointment.html" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Book New</a>
         </div>
       </div>
 
@@ -138,7 +138,7 @@
   </div>
 </div>
 
-<script src="/medivita/assets/js/portal.js"></script>
+<script src="/Hospital-Mangement-T10-/assets/js/portal.js"></script>
 <script>
 /* =============================================
    MY APPOINTMENTS — DYNAMIC BACKEND LOGIC
@@ -178,7 +178,7 @@ const gradMap = {
 // ── Load appointments from backend ─────────────────────────────────────────
 async function loadAppointments() {
   try {
-    const res  = await fetch('/medivita/backend/patient/get_patient_appointments.php');
+    const res  = await fetch('/Hospital-Mangement-T10-/backend/patient/get_patient_appointments.php');
     const data = await res.json();
 
     if (!data.success) throw new Error(data.message);
@@ -282,7 +282,7 @@ function viewDetails(id) {
 
   document.getElementById('detailActions').innerHTML = `
     ${a.status === 'approved' ? `<button class="btn btn-primary btn-sm"><i class="fas fa-video"></i> Join Teleconsult</button>` : ''}
-    ${a.status === 'completed' ? `<button class="btn btn-success btn-sm" onclick="window.location.href = '/medivita/frontend/patient/medical-records.html'"><i class="fas fa-file-medical"></i> View Prescription</button>` : ''}
+    ${a.status === 'completed' ? `<button class="btn btn-success btn-sm" onclick="window.location.href = '/Hospital-Mangement-T10-/frontend/patient/medical-records.html'"><i class="fas fa-file-medical"></i> View Prescription</button>` : ''}
     <button class="btn btn-secondary btn-sm" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
   `;
 
@@ -304,7 +304,7 @@ function cancelAppt(id, doctorName) {
     try {
       const fd = new FormData();
       fd.append('appointment_id', id);
-      const res  = await fetch('/medivita/backend/shared/cancel_appointment.php', { method: 'POST', body: fd });
+      const res  = await fetch('/Hospital-Mangement-T10-/backend/shared/cancel_appointment.php', { method: 'POST', body: fd });
       const data = await res.json();
 
       if (!data.success) throw new Error(data.message);

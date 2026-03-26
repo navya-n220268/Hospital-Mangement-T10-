@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leave Management — Sanjeevani Admin</title>
+  <link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/Sanjeevani.css?v=1774423805">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script>
+    (async function () {
+      const res = await fetch('/Hospital-Mangement-T10-/backend/patient/get_user.php');
+      const data = await res.json();
+      if (!data.success || data.user.role !== 'admin') {
+        window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
+      }
+    })();
+  </script>
+</head>
+<body>
+  <aside class="sidebar"></aside>
+  <div class="sb-overlay"></div>
+
+  <div class="main">
+    <header class="topbar"></header>
+
+    <div class="content">
+      <!-- Stats -->
+      <div class="stats-grid animate-in" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px;">
+        <div class="stat-card orange">
+          <div class="stat-header"><div class="stat-icon orange"><i class="fas fa-clock"></i></div></div>
+          <div class="stat-value" id="stat-pending">–</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-header"><div class="stat-icon green"><i class="fas fa-check"></i></div></div>
+          <div class="stat-value" id="stat-approved">–</div>
+          <div class="stat-label">Approved</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-header"><div class="stat-icon red"><i class="fas fa-times"></i></div></div>
+          <div class="stat-value" id="stat-rejected">–</div>
+          <div class="stat-label">Rejected</div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="card animate-in">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Doctor Leave Requests</div>
+            <div class="card-subtitle">Review and action pending leave applications</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="loadLeaves()"><i class="fas fa-sync"></i> Refresh</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Doctor</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Days</th>
+                <th>Reason</th>
+                <th>Applied On</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="leaveTableBody">
+              <tr><td colspan="8" class="empty-state">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/Hospital-Mangement-T10-/assets/js/admin.js?v=1774423805"></script>
+  <script>
+    document.getElementById('dateDisplay')?.remove();
+    let allLeaves = [];
+    document.addEventListener('DOMContentLoaded', async () => {
+      await buildAdminPortal('leave-management', 'Leave Management', 'Review and action doctor leave requests');
+      loadAdminNotifBadge();
+      loadLeaves();
+    });
+
+    async function loadLeaves() {
+      try {
+        const res  = await fetch('/Hospital-Mangement-T10-/backend/admin/get_leaves.php');
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message);
+        allLeaves = data.leaves || [];
+        renderLeaves(allLeaves);
+        updateStats(allLeaves);
+      } catch(e) {
+        document.getElementById('leaveTableBody').innerHTML =
+          `<tr><td colspan="8" class="empty-state">⚠️ ${e.message}</td></tr>`;
+      }
+    }
+
+    function daysBetween(a, b) {
+      return Math.round((new Date(b) - new Date(a)) / 86400000) + 1;
+    }
+
+    function renderLeaves(data) {
+      const tbody = document.getElementById('leaveTableBody');
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No leave requests found.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(l => {
+        const days = daysBetween(l.fromDate, l.toDate);
+        let badge = '';
+        if (l.status === 'pending')  badge = '<span class="badge badge-pending">Pending</span>';
+        if (l.status === 'approved') badge = '<span class="badge badge-active">Approved</span>';
+        if (l.status === 'rejected') badge = '<span class="badge badge-inactive">Rejected</span>';
+        const actions = l.status === 'pending' ? `
+          <div class="action-btns">
+            <button class="btn btn-success btn-sm" onclick="updateLeave('${l.id}','approved')"><i class="fas fa-check"></i> Approve</button>
+            <button class="btn btn-danger btn-sm" onclick="updateLeave('${l.id}','rejected')"><i class="fas fa-times"></i> Reject</button>
+          </div>` : '<span style="color:var(--text-muted);font-size:13px;">—</span>';
+        return `<tr>
+          <td class="td-bold"><i class="fas fa-user-md" style="color:var(--primary);margin-right:6px"></i>${l.doctorName}</td>
+          <td>${l.fromDate}</td>
+          <td>${l.toDate}</td>
+          <td><span class="badge badge-pending">${days} day${days !== 1 ? 's' : ''}</span></td>
+          <td style="max-width:200px;font-size:13.5px;color:var(--text-secondary)">${l.reason || '—'}</td>
+          <td class="td-muted">${l.createdAt}</td>
+          <td>${badge}</td>
+          <td>${actions}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function updateStats(data) {
+      document.getElementById('stat-pending').textContent  = data.filter(l => l.status === 'pending').length;
+      document.getElementById('stat-approved').textContent = data.filter(l => l.status === 'approved').length;
+      document.getElementById('stat-rejected').textContent = data.filter(l => l.status === 'rejected').length;
+    }
+
+    async function updateLeave(leaveId, action) {
+      try {
+        const res  = await fetch('/Hospital-Mangement-T10-/backend/admin/update_leave.php', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({leaveId, action})
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(data.message, action === 'approved' ? 'success' : 'danger');
+          loadLeaves();
+        } else {
+          alert(data.message);
+        }
+      } catch(e) { alert('Error: ' + e.message); }
+    }
+
+    function showToast(msg, type = 'success') {
+      const t = document.createElement('div');
+      t.className = `alert alert-${type}`;
+      t.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;min-width:280px;box-shadow:0 4px 20px rgba(0,0,0,.15);animation:fadeInUp .3s ease';
+      t.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':'times-circle'}"></i> ${msg}`;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3500);
+    }
+  </script>
+</body>
+</html>

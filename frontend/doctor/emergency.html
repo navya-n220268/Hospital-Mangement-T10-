@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emergency Management — Sanjeevani Doctor</title>
+  <link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/doctor.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .emg-hero {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      border-radius: 18px; padding: 28px 32px; color: white;
+      display: flex; align-items: center; gap: 24px; margin-bottom: 28px;
+      box-shadow: 0 8px 32px rgba(220,38,38,.3);
+    }
+    .emg-hero-icon { font-size: 3rem; opacity: .9; }
+    .emg-hero-text h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: 6px; }
+    .emg-hero-text p  { font-size: 14px; opacity: .85; line-height: 1.6; }
+    .result-card {
+      border-radius: 14px; padding: 24px; text-align: center;
+      animation: fadeIn .4s ease;
+    }
+    .result-card.success { background: #f0fdf4; border: 1.5px solid #86efac; }
+    .result-card.info    { background: #eff6ff; border: 1.5px solid #93c5fd; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+  </style>
+</head>
+<body>
+  <aside class="sidebar"><div class="sb-overlay"></div></aside>
+  <div class="main">
+    <div class="topbar"></div>
+    <div class="page-content" style="padding:28px 32px;">
+
+      <!-- Hero Banner -->
+      <div class="emg-hero animate-in">
+        <div class="emg-hero-icon">🚨</div>
+        <div class="emg-hero-text">
+          <h2>Declare a Doctor Emergency</h2>
+          <p>Use this form when an emergency prevents you from attending a scheduled appointment. The affected patient will be automatically notified and their appointment rescheduled to the next available day.</p>
+        </div>
+      </div>
+
+      <div class="grid-2" style="gap:24px;">
+
+        <!-- Form Card -->
+        <div class="card animate-in">
+          <div class="card-header" style="padding:20px 24px 14px;border-bottom:1px solid var(--border);">
+            <div style="font-size:17px;font-weight:700;color:var(--text-1)">Emergency Details</div>
+          </div>
+          <div style="padding:24px;">
+            <div id="resultArea" style="display:none;margin-bottom:20px;"></div>
+            <form id="emgForm" onsubmit="triggerEmergency(event)">
+              <div class="form-group">
+                <label class="form-label">Affected Date <span style="color:var(--red)">*</span></label>
+                <input type="date" id="emgDate" required
+                  style="padding:12px 15px;border:1.5px solid var(--border-light);border-radius:10px;width:100%;font-family:inherit;font-size:15px;">
+              </div>
+              <div class="form-group" style="margin-top:16px;">
+                <label class="form-label">Affected Time Slot <span style="color:var(--red)">*</span></label>
+                <select id="emgTime" required
+                  style="padding:12px 15px;border:1.5px solid var(--border-light);border-radius:10px;width:100%;font-family:inherit;font-size:15px;background:white;">
+                  <option value="">-- Select time slot --</option>
+                  <option value="09:00">09:00 AM</option>
+                  <option value="09:30">09:30 AM</option>
+                  <option value="10:00">10:00 AM</option>
+                  <option value="10:30">10:30 AM</option>
+                  <option value="11:00">11:00 AM</option>
+                  <option value="11:30">11:30 AM</option>
+                  <option value="12:00">12:00 PM</option>
+                  <option value="14:00">02:00 PM</option>
+                  <option value="14:30">02:30 PM</option>
+                  <option value="15:00">03:00 PM</option>
+                  <option value="15:30">03:30 PM</option>
+                  <option value="16:00">04:00 PM</option>
+                  <option value="16:30">04:30 PM</option>
+                  <option value="17:00">05:00 PM</option>
+                </select>
+              </div>
+              <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;padding:14px 16px;margin-top:20px;font-size:13.5px;color:#991b1b;line-height:1.6;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Important:</strong> This action will block the slot and auto-reschedule any existing appointment. This cannot be undone.
+              </div>
+              <button type="submit" id="emgBtn"
+                style="width:100%;margin-top:20px;padding:14px;background:linear-gradient(135deg,#dc2626,#b91c1c);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity 0.2s;">
+                <i class="fas fa-ambulance"></i> Declare Emergency & Reschedule
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Info Panel -->
+        <div style="display:flex;flex-direction:column;gap:18px;">
+          <div class="card animate-in delay-1" style="padding:24px;">
+            <div style="font-size:16px;font-weight:700;color:var(--text-1);margin-bottom:16px;"><i class="fas fa-info-circle" style="color:var(--blue)"></i> What Happens Next?</div>
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div style="display:flex;gap:12px;align-items:flex-start;">
+                <div style="width:28px;height:28px;background:var(--blue-dim);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--blue);flex-shrink:0;font-size:12px;">1</div>
+                <div style="font-size:14px;color:var(--text-2);line-height:1.5;">The emergency slot is <strong>blocked</strong> immediately — no new bookings can be made for that date and time.</div>
+              </div>
+              <div style="display:flex;gap:12px;align-items:flex-start;">
+                <div style="width:28px;height:28px;background:var(--blue-dim);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--blue);flex-shrink:0;font-size:12px;">2</div>
+                <div style="font-size:14px;color:var(--text-2);line-height:1.5;">If an appointment already exists for that slot, it is <strong>automatically rescheduled</strong> to the next day.</div>
+              </div>
+              <div style="display:flex;gap:12px;align-items:flex-start;">
+                <div style="width:28px;height:28px;background:var(--blue-dim);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--blue);flex-shrink:0;font-size:12px;">3</div>
+                <div style="font-size:14px;color:var(--text-2);line-height:1.5;">The patient receives an <strong>in-portal notification</strong> explaining the reschedule.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card animate-in delay-2" style="padding:24px;background:linear-gradient(135deg,#fef2f2,#fef9f9);border:1.5px solid #fca5a5;">
+            <div style="font-size:15px;font-weight:700;color:#991b1b;margin-bottom:10px;"><i class="fas fa-phone-alt"></i> Emergency Hotline</div>
+            <div style="font-size:24px;font-weight:800;color:#dc2626;">1800-MED-911</div>
+            <div style="font-size:13px;color:#991b1b;margin-top:6px;">Available 24/7 for critical support</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="/Hospital-Mangement-T10-/assets/js/doctor.js"></script>
+  <script>
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('emgDate').value = today;
+    document.getElementById('emgDate').min   = today;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      buildPortal('emergency', 'Emergency Management', 'Declare emergencies and auto-reschedule appointments');
+    });
+
+    async function triggerEmergency(e) {
+      e.preventDefault();
+      const date     = document.getElementById('emgDate').value;
+      const timeSlot = document.getElementById('emgTime').value;
+      if (!date || !timeSlot) return;
+
+      const btn = document.getElementById('emgBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+      try {
+        const fd = new FormData();
+        fd.append('date',     date);
+        fd.append('timeSlot', timeSlot);
+
+        const res  = await fetch('/Hospital-Mangement-T10-/backend/doctor/trigger_emergency.php', {method:'POST', body:fd});
+        const data = await res.json();
+
+        const area = document.getElementById('resultArea');
+        area.style.display = 'block';
+
+        if (data.success) {
+          if (data.rescheduled) {
+            area.innerHTML = `
+              <div class="result-card success">
+                <div style="font-size:2.5rem;margin-bottom:12px;">✅</div>
+                <div style="font-size:16px;font-weight:800;color:#16a34a;margin-bottom:8px;">Emergency Recorded</div>
+                <div style="font-size:14px;color:#166534;">Appointment successfully rescheduled to <strong>${data.newDate}</strong>.</div>
+                <div style="font-size:13px;color:#4ade80;margin-top:8px;">Patient has been notified via in-portal notification.</div>
+              </div>`;
+          } else {
+            area.innerHTML = `
+              <div class="result-card info">
+                <div style="font-size:2.5rem;margin-bottom:12px;">ℹ️</div>
+                <div style="font-size:16px;font-weight:800;color:#1d4ed8;margin-bottom:8px;">Emergency Recorded</div>
+                <div style="font-size:14px;color:#1e40af;">No existing appointment found for that slot. The slot has been blocked.</div>
+              </div>`;
+          }
+          document.getElementById('emgForm').reset();
+          document.getElementById('emgDate').value = today;
+        } else {
+          area.innerHTML = `
+            <div class="result-card" style="background:#fef2f2;border:1.5px solid #fca5a5;">
+              <div style="font-size:14px;color:#dc2626;"><i class="fas fa-times-circle"></i> ${data.message}</div>
+            </div>`;
+        }
+      } catch(err) {
+        document.getElementById('resultArea').style.display = 'block';
+        document.getElementById('resultArea').innerHTML =
+          `<div class="result-card" style="background:#fef2f2;border:1.5px solid #fca5a5;"><div style="font-size:14px;color:#dc2626;">Network error: ${err.message}</div></div>`;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-ambulance"></i> Declare Emergency & Reschedule';
+      }
+    }
+  </script>
+</body>
+</html>

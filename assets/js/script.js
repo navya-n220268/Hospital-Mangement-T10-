@@ -1,5 +1,5 @@
 /* ============================================================
-   MediVita Hospital — Auth Pages JavaScript
+   Sanjeevani Hospital — Auth Pages JavaScript
    Handles AJAX Login and Registration with role-based redirection.
    ============================================================ */
 
@@ -116,7 +116,7 @@ function setLoading(btn, loadingText) {
 
     try {
       const formData = new FormData(this);
-      const resp = await fetch('/medivita/backend/auth/login.php', {
+      const resp = await fetch('/Hospital-Mangement-T10-/backend/auth/login.php', {
         method: 'POST',
         body: formData,
       });
@@ -131,7 +131,11 @@ function setLoading(btn, loadingText) {
         return;
       }
 
-      if (result.success) {
+      if (result.success || result.pending) {
+        if (result.pending) {
+          window.location.href = result.redirect || '/Hospital-Mangement-T10-/frontend/auth/pending-approval.html';
+          return;
+        }
         showAlert('login-alert', result.message || 'Login successful! Redirecting...', 'success');
         // Redirect after brief delay so the user sees the success message
         setTimeout(() => {
@@ -162,7 +166,7 @@ function setLoading(btn, loadingText) {
 
     try {
       const formData = new FormData(this);
-      const resp = await fetch('/medivita/backend/auth/register.php', {
+      const resp = await fetch('/Hospital-Mangement-T10-/backend/auth/register.php', {
         method: 'POST',
         body: formData,
       });
@@ -178,10 +182,18 @@ function setLoading(btn, loadingText) {
       }
 
       if (result.success) {
-        showAlert('reg-alert', result.message || 'Account created! Redirecting...', 'success');
-        setTimeout(() => {
-          window.location.href = result.redirect;
-        }, 800);
+        // OTP flow intentionally removed
+
+        if (result.pending) {
+          // Doctor registration pending admin approval — instantly redirect to beautifully formatted UI
+          window.location.href = '/Hospital-Mangement-T10-/frontend/auth/pending-approval.html';
+        } else {
+          showAlert('reg-alert', result.message || 'Account created! Redirecting...', 'success');
+          // Patient — redirect to dashboard
+          setTimeout(() => {
+            window.location.href = result.redirect;
+          }, 1000);
+        }
       } else {
         showAlert('reg-alert', result.message || 'Registration failed. Please try again.', 'error');
         restore();
@@ -232,3 +244,5 @@ function setLoading(btn, loadingText) {
     }
   });
 })();
+
+

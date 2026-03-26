@@ -1,6 +1,6 @@
 <?php
 /**
- * MediVita — backend/get_patient_history.php
+ * Sanjeevani — backend/get_patient_history.php
  *
  * Fetches patient records for the doctor's department.
  * Joins prescriptions data with patient demographic data.

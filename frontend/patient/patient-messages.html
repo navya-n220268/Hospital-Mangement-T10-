@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Messages — MediVita Patient Portal</title>
+<title>Messages — Sanjeevani Patient Portal</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-<link rel="stylesheet" href="/medivita/assets/css/messages.css"/>
+<link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/messages.css"/>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
 :root{
@@ -82,7 +82,7 @@ input,select,textarea{font-family:var(--f-body)}
     <div class="sb-top">
       <div class="sb-logo">
         <div class="sb-logo-mark"><i class="fas fa-heartbeat"></i></div>
-        <div><span class="sb-brand-name">MediVita</span><span class="sb-brand-sub">Patient Portal</span></div>
+        <div><span class="sb-brand-name">Sanjeevani</span><span class="sb-brand-sub">Patient Portal</span></div>
       </div>
     </div>
     <div class="sb-patient">
@@ -91,20 +91,20 @@ input,select,textarea{font-family:var(--f-body)}
     </div>
     <nav class="sb-nav">
       <div class="sb-sec">OVERVIEW</div>
-      <a href="/medivita/frontend/patient/dashboard.html" class="sb-link"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <a href="/Hospital-Mangement-T10-/frontend/patient/dashboard.html" class="sb-link"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
       <div class="sb-sec">HEALTH</div>
-      <a href="/medivita/frontend/patient/my-appointments.html" class="sb-link"><i class="fas fa-calendar-check"></i><span>My Appointments</span></a>
-      <a href="/medivita/frontend/patient/medical-records.html" class="sb-link"><i class="fas fa-file-medical"></i><span>Medical Records</span></a>
+      <a href="/Hospital-Mangement-T10-/frontend/patient/my-appointments.html" class="sb-link"><i class="fas fa-calendar-check"></i><span>My Appointments</span></a>
+      <a href="/Hospital-Mangement-T10-/frontend/patient/medical-records.html" class="sb-link"><i class="fas fa-file-medical"></i><span>Medical Records</span></a>
       <a href="prescriptions.html" class="sb-link"><i class="fas fa-prescription-bottle-alt"></i><span>Prescriptions</span></a>
       <div class="sb-sec">TOOLS</div>
-      <a href="/medivita/frontend/patient/book-appointment.html" class="sb-link"><i class="fas fa-calendar-plus"></i><span>Book Appointment</span></a>
-      <a href="/medivita/frontend/patient/symptom-checker.html" class="sb-link"><i class="fas fa-robot"></i><span>Symptom Checker</span></a>
-      <a href="/medivita/frontend/patient/patient-messages.html" class="sb-link active">
+      <a href="/Hospital-Mangement-T10-/frontend/patient/book-appointment.html" class="sb-link"><i class="fas fa-calendar-plus"></i><span>Book Appointment</span></a>
+      <a href="/Hospital-Mangement-T10-/frontend/patient/symptom-checker.html" class="sb-link"><i class="fas fa-robot"></i><span>Symptom Checker</span></a>
+      <a href="/Hospital-Mangement-T10-/frontend/patient/patient-messages.html" class="sb-link active">
         <i class="fas fa-comment-medical"></i><span>Messages</span>
         <span class="sb-num" id="sbMsgBadge" style="display:none">0</span>
       </a>
       <div class="sb-sec">ACCOUNT</div>
-      <a href="/medivita/frontend/patient/profile.html" class="sb-link"><i class="fas fa-user-circle"></i><span>My Profile</span></a>
+      <a href="/Hospital-Mangement-T10-/frontend/patient/profile.html" class="sb-link"><i class="fas fa-user-circle"></i><span>My Profile</span></a>
     </nav>
     <div class="sb-footer">
       <a href="#" class="sb-link" style="color:rgba(255,100,100,.6)"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
@@ -120,7 +120,7 @@ input,select,textarea{font-family:var(--f-body)}
         <p>Secure messaging with your healthcare team</p>
       </div>
       <div class="tb-right">
-        <button class="tb-btn" onclick="window.location.href = '/medivita/frontend/patient/dashboard.html'" title="Dashboard"><i class="fas fa-th-large"></i></button>
+        <button class="tb-btn" onclick="window.location.href = '/Hospital-Mangement-T10-/frontend/patient/dashboard.html'" title="Dashboard"><i class="fas fa-th-large"></i></button>
         <button class="tb-btn" style="position:relative" title="Notifications"><i class="fas fa-bell"></i><span class="tb-dot"></span></button>
       </div>
     </div>
@@ -178,7 +178,7 @@ input,select,textarea{font-family:var(--f-body)}
 
 <div class="toast" id="globalToast"><i class="fas fa-check-circle"></i> <span id="toastMsg"></span></div>
 
-<script src="/medivita/assets/js/messages.js"></script>
+<script src="/Hospital-Mangement-T10-/assets/js/messages.js"></script>
 <script>
 // Mobile sidebar
 document.getElementById('mobToggle').addEventListener('click',()=>{

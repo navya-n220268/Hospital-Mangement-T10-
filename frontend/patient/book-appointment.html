@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Book Appointment — MediVita</title>
-<meta name="description" content="Book an appointment with a specialist doctor at MediVita Hospital."/>
-<link rel="stylesheet" href="/medivita/assets/css/portal.css"/>
+<title>Book Appointment — Sanjeevani</title>
+<meta name="description" content="Book an appointment with a specialist doctor at Sanjeevani Hospital."/>
+<link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/portal.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 <style>
 /* ── Steps bar ── */
@@ -230,7 +230,7 @@
               <div style="display:flex;flex-direction:column;gap:10px">
                 <div style="display:flex;gap:10px"><i class="fas fa-check" style="color:var(--green-500);flex-shrink:0;margin-top:3px"></i><p style="font-size:.8rem;color:var(--gray-700)">Free cancellation up to 4 hours before appointment</p></div>
                 <div style="display:flex;gap:10px"><i class="fas fa-check" style="color:var(--green-500);flex-shrink:0;margin-top:3px"></i><p style="font-size:.8rem;color:var(--gray-700)">Arrive 15 minutes before your scheduled time</p></div>
-                <div style="display:flex;gap:10px"><i class="fas fa-check" style="color:var(--green-500);flex-shrink:0;margin-top:3px"></i><p style="font-size:.8rem;color:var(--gray-700)">Bring your MediVita patient ID card and insurance documents</p></div>
+                <div style="display:flex;gap:10px"><i class="fas fa-check" style="color:var(--green-500);flex-shrink:0;margin-top:3px"></i><p style="font-size:.8rem;color:var(--gray-700)">Bring your Sanjeevani patient ID card and insurance documents</p></div>
                 <div style="display:flex;gap:10px"><i class="fas fa-bell" style="color:var(--blue-500);flex-shrink:0;margin-top:3px"></i><p style="font-size:.8rem;color:var(--gray-700)">SMS and email reminders will be sent 24 hours prior</p></div>
               </div>
             </div>
@@ -253,13 +253,13 @@
     <p style="font-size:.85rem;color:var(--gray-500);line-height:1.7;margin-bottom:6px" id="confirmMsg">Your appointment has been successfully booked.</p>
     <p style="font-size:.78rem;color:var(--gray-400);margin-bottom:24px">Status is <strong>Pending</strong> — approval notification will be sent shortly.</p>
     <div style="display:flex;gap:12px;justify-content:center">
-      <a href="/medivita/frontend/patient/my-appointments.html" class="btn btn-primary"><i class="fas fa-calendar"></i> View Appointments</a>
+      <a href="/Hospital-Mangement-T10-/frontend/patient/my-appointments.html" class="btn btn-primary"><i class="fas fa-calendar"></i> View Appointments</a>
       <button onclick="resetForm()" class="btn btn-secondary">Book Another</button>
     </div>
   </div>
 </div>
 
-<script src="/medivita/assets/js/portal.js"></script>
+<script src="/Hospital-Mangement-T10-/assets/js/portal.js"></script>
 <script>
 /* =============================================
    BOOK APPOINTMENT — DYNAMIC BACKEND LOGIC
@@ -330,7 +330,7 @@ async function loadDepartments() {
   err.style.display = 'none';
 
   try {
-    const res  = await fetch('/medivita/backend/shared/get_departments.php');
+    const res  = await fetch('/Hospital-Mangement-T10-/backend/shared/get_departments.php');
     const data = await res.json();
 
     if (!data.success || !data.departments || data.departments.length === 0) {
@@ -380,7 +380,7 @@ async function onDeptChange(dept) {
   list.innerHTML = '<p class="empty-hint"><i class="fas fa-spinner fa-spin" style="margin-right:6px"></i>Loading doctors…</p>';
 
   try {
-    const res  = await fetch(`/medivita/backend/shared/get_doctors_by_department.php?department=${encodeURIComponent(dept)}`);
+    const res  = await fetch(`/Hospital-Mangement-T10-/backend/shared/get_doctors_by_department.php?department=${encodeURIComponent(dept)}`);
     const data = await res.json();
 
     if (!data.success) throw new Error(data.message);
@@ -398,8 +398,14 @@ async function onDeptChange(dept) {
         `<i class="${j < (doc.rating || 4) ? 'fas' : 'far'} fa-star"></i>`
       ).join('');
 
+      const isAvail = doc.is_available !== false;
+      const statusLabel = isAvail ? '<i class="fas fa-circle" style="font-size:.45rem;vertical-align:middle"></i> Available' : `<span style="color:var(--red-600)"><i class="fas fa-times-circle"></i> Unavailable</span>`;
+      const statusSub   = isAvail ? 'slots open' : doc.unavailability_reason || 'Emergency';
+
       const div = document.createElement('div');
-      div.className      = 'doctor-option';
+      div.className      = 'doctor-option' + (isAvail ? '' : ' unavailable');
+      if (!isAvail) div.style.cssText = 'opacity:0.7; cursor:not-allowed; border-color:var(--gray-200); background:var(--gray-50);';
+      
       div.dataset.id     = doc._id;
       div.dataset.name   = doc.name;
       div.dataset.dept   = doc.department;
@@ -409,13 +415,19 @@ async function onDeptChange(dept) {
           <h4>${doc.name}</h4>
           <p>${doc.department} · ${doc.experience || 'Experienced'}</p>
           <div class="stars">${stars}</div>
+          ${!isAvail ? `<div style="font-size:11px;color:var(--red-600);margin-top:4px;font-weight:600">⚠ ${statusSub}</div>` : ''}
         </div>
         <div class="doc-opt-right">
-          <p><i class="fas fa-circle" style="font-size:.45rem;vertical-align:middle"></i> Available</p>
-          <span>slots open</span>
+          <p>${statusLabel}</p>
+          ${isAvail ? `<span>${statusSub}</span>` : ''}
         </div>
         <div class="doc-opt-radio"></div>`;
-      div.addEventListener('click', () => selectDoctor(div));
+      
+      if (isAvail) {
+        div.addEventListener('click', () => selectDoctor(div));
+      } else {
+        div.title = "Doctor is currently unavailable: " + statusSub;
+      }
       list.appendChild(div);
     });
 
@@ -535,7 +547,7 @@ async function confirmBooking() {
     formData.append('appointment_type', document.getElementById('apptType').value);
     formData.append('reason',           document.getElementById('apptReason').value);
 
-    const res  = await fetch('/medivita/backend/shared/book_appointment.php', { method: 'POST', body: formData });
+    const res  = await fetch('/Hospital-Mangement-T10-/backend/shared/book_appointment.php', { method: 'POST', body: formData });
     const data = await res.json();
 
     if (!data.success) {

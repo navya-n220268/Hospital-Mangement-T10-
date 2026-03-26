@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Today's Schedule — MediVita</title>
-<link rel="stylesheet" href="/medivita/assets/css/doctor.css"/>
+<title>Today's Schedule — Sanjeevani</title>
+<link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/doctor.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 <style>
 /* Timeline column */
@@ -89,7 +89,7 @@
                 <option>Completed</option>
                 <option>Pending</option>
               </select>
-              <a href="/medivita/frontend/doctor/add-prescription.html" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Add Slot</a>
+              <a href="/Hospital-Mangement-T10-/frontend/doctor/add-prescription.html" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Add Slot</a>
             </div>
           </div>
 
@@ -133,7 +133,7 @@
     </div>
   </div>
 </div>
-<script src="/medivita/assets/js/doctor.js?v=3"></script>
+<script src="/Hospital-Mangement-T10-/assets/js/doctor.js?v=3"></script>
 <script>
 buildPortal('todays-schedule', "Today's Schedule", 'Manage your patient appointments');
 
@@ -189,7 +189,7 @@ appointments.forEach((a, i) => {
         <div class="tl-actions">
           <button class="btn btn-ghost btn-xs" onclick="showToast('Opening patient record...')"><i class="fas fa-user"></i> View Patient</button>
           ${a.status !== 'completed' ? `<button class="btn btn-primary btn-xs" onclick="showToast('Starting consultation...')"><i class="fas fa-stethoscope"></i> Start Consult</button>` : ''}
-          <button class="btn btn-teal btn-xs" onclick="window.location.href = '/medivita/frontend/doctor/add-prescription.html'"><i class="fas fa-file-prescription"></i> Prescribe</button>
+          <button class="btn btn-teal btn-xs" onclick="window.location.href = '/Hospital-Mangement-T10-/frontend/doctor/add-prescription.html'"><i class="fas fa-file-prescription"></i> Prescribe</button>
 
         </div>
       </div>

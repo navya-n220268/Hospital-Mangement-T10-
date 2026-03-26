@@ -1,5 +1,5 @@
 /* =====================================================
-   MEDIVITA DOCTOR PORTAL — SHARED STYLESHEET
+   Sanjeevani DOCTOR PORTAL — SHARED STYLESHEET
    ===================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
@@ -77,7 +77,7 @@ input,select,textarea{font-family:var(--f-body)}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:99px}
 
-.portal-wrap{display:flex;min-height:100vh}
+.portal-wrap{min-height:100vh;position:relative}
 
 /* SIDEBAR */
 .sidebar{

@@ -1,33 +1,34 @@
 /* =====================================================
-   MEDIVITA DOCTOR PORTAL — SHARED JAVASCRIPT
+   Sanjeevani DOCTOR PORTAL — SHARED JAVASCRIPT
    ===================================================== */
 
 // ── SIDEBAR BUILD ───────────────────────────────────────
 const NAV_ITEMS = [
-  { id: 'doctor-dashboard', href: '/medivita/frontend/doctor/doctor-dashboard.php', icon: 'fas fa-th-large', label: 'Dashboard', section: 'OVERVIEW' },
-  { id: 'schedules', href: '/medivita/frontend/doctor/schedules.html', icon: 'fas fa-calendar-alt', label: 'Schedules', section: 'SCHEDULE' },
-  { id: 'patient-history', href: '/medivita/frontend/doctor/patient-history.html', icon: 'fas fa-users', label: 'Patient History', section: 'SCHEDULE' },
-  { id: 'add-prescription', href: '/medivita/frontend/doctor/add-prescription.html', icon: 'fas fa-file-prescription', label: 'Add Prescription', section: 'CLINICAL' },
-  { id: 'messages', href: '/medivita/frontend/doctor/doctor-messages.html', icon: 'fas fa-comment-dots', label: 'Messages', section: 'CLINICAL' },
-  { id: 'profile', href: '/medivita/frontend/doctor/doctor_profile.html', icon: 'fas fa-user-circle', label: 'Profile Settings', section: 'ACCOUNT' },
+  { id: 'doctor-dashboard',  href: '/Hospital-Mangement-T10-/frontend/doctor/doctor-dashboard.php',   icon: 'fas fa-th-large',           label: 'Dashboard',        section: 'OVERVIEW' },
+  { id: 'schedules',         href: '/Hospital-Mangement-T10-/frontend/doctor/schedules.html',          icon: 'fas fa-calendar-alt',       label: 'Schedules',        section: 'SCHEDULE' },
+  { id: 'patient-history',   href: '/Hospital-Mangement-T10-/frontend/doctor/patient-history.html',   icon: 'fas fa-users',              label: 'Patient History',  section: 'SCHEDULE' },
+  { id: 'leave-management',  href: '/Hospital-Mangement-T10-/frontend/doctor/leave-management.html',  icon: 'fas fa-calendar-minus',     label: 'Leave Management', section: 'SCHEDULE' },
+  { id: 'add-prescription',  href: '/Hospital-Mangement-T10-/frontend/doctor/add-prescription.html',  icon: 'fas fa-file-prescription',  label: 'Add Prescription', section: 'CLINICAL' },
+  { id: 'messages',          href: '/Hospital-Mangement-T10-/frontend/doctor/doctor-messages.html',   icon: 'fas fa-comment-dots',       label: 'Messages',         section: 'CLINICAL', badgeId: 'docMsgBadge' },
+  { id: 'profile',           href: '/Hospital-Mangement-T10-/frontend/doctor/doctor_profile.html',    icon: 'fas fa-user-circle',        label: 'Profile Settings', section: 'ACCOUNT' },
 ];
 
 // ── AUTH CHECK ──────────────────────────────────────────
 async function checkAuth(requiredRole = 'doctor') {
   try {
-    const resp = await fetch('/medivita/backend/patient/get_user.php');
+    const resp = await fetch('/Hospital-Mangement-T10-/backend/patient/get_user.php');
     if (!resp.ok) {
-      window.location.href = '/medivita/frontend/auth/login.html';
+      window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
       return null;
     }
     const data = await resp.json();
     if (!data.success || data.user.role !== requiredRole) {
-      window.location.href = '/medivita/frontend/auth/login.html';
+      window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
       return null;
     }
     return data.user;
   } catch (err) {
-    window.location.href = '/medivita/frontend/auth/login.html';
+    window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
     return null;
   }
 }
@@ -49,7 +50,8 @@ async function buildPortal(pageId, pageTitle, pageSubtitle) {
       <a href="${item.href}" class="sb-link ${pageId === item.id ? 'active' : ''}">
         <i class="${item.icon}"></i>
         <span>${item.label}</span>
-        ${item.badge ? `<span class="sb-num">${item.badge}</span>` : ''}
+        ${item.badgeId ? `<span class="sb-num" id="${item.badgeId}" style="display:none">0</span>` : ''}
+        ${item.badge && !item.badgeId ? `<span class="sb-num">${item.badge}</span>` : ''}
       </a>`;
   });
 
@@ -58,7 +60,7 @@ async function buildPortal(pageId, pageTitle, pageSubtitle) {
       <div class="sb-logo">
         <div class="sb-logo-mark"><i class="fas fa-heartbeat"></i></div>
         <div>
-          <span class="sb-brand-name">MediVita</span>
+          <span class="sb-brand-name">Sanjeevani</span>
           <span class="sb-brand-sub">Doctor Portal</span>
         </div>
       </div>
@@ -91,11 +93,11 @@ async function buildPortal(pageId, pageTitle, pageSubtitle) {
       ${pageSubtitle ? `<p>${pageSubtitle}</p>` : `<p>${getGreeting()}, Dr. ${user.name.split(' ').pop()} 👋</p>`}
     </div>
     <div class="tb-right">
-      <button class="tb-alert" onclick="showEmergencyAlert()">
+      <button class="tb-alert" onclick="window.location.href = '/Hospital-Mangement-T10-/frontend/doctor/doctor-dashboard.php'" title="Quick Dashboard Access">
         <i class="fas fa-exclamation-triangle"></i>
         <span>Emergency</span>
       </button>
-      <button class="tb-btn" onclick="window.location.href = '/medivita/frontend/doctor/doctor-messages.html'" title="Messages">
+      <button class="tb-btn" onclick="window.location.href = '/Hospital-Mangement-T10-/frontend/doctor/doctor-messages.html'" title="Messages">
         <i class="fas fa-comment-dots"></i>
         <span class="dot"></span>
       </button>
@@ -134,6 +136,8 @@ async function buildPortal(pageId, pageTitle, pageSubtitle) {
     if (cFirst) cFirst.value = parts[0] || '';
     if (cLast) cLast.value = parts.length > 1 ? parts.slice(1).join(' ') : '';
   }
+
+  loadDoctorNotifCounts();
 
   return user;
 }
@@ -223,10 +227,10 @@ function confirmLogout(e) {
   showModal(`
     <div style="text-align:center;padding:8px">
       <div style="font-size:2rem;margin-bottom:14px">👋</div>
-      <h3 style="font-family:var(--f-display);font-size:1rem;font-weight:700;margin-bottom:8px">Log out of MediVita?</h3>
+      <h3 style="font-family:var(--f-display);font-size:1rem;font-weight:700;margin-bottom:8px">Log out of Sanjeevani?</h3>
       <p style="font-size:.82rem;color:var(--text-3);margin-bottom:22px">Your session will be ended securely.</p>
       <div style="display:flex;gap:10px;justify-content:center">
-        <button class="btn btn-red btn-sm" onclick="window.location.href = '/medivita/backend/auth/logout.php'"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        <button class="btn btn-red btn-sm" onclick="window.location.href = '/Hospital-Mangement-T10-/backend/auth/logout.php'"><i class="fas fa-sign-out-alt"></i> Logout</button>
         <button class="btn btn-ghost btn-sm" onclick="closeModal()">Stay</button>
       </div>
     </div>`);
@@ -239,6 +243,32 @@ function getGreeting() {
   if (h < 17) return 'Good afternoon';
   return 'Good evening';
 }
+
+// ── NOTIFICATIONS / BADGES ──────────────────────────────
+async function loadDoctorNotifCounts() {
+  if (!window.currentUser) return;
+  try {
+    const docId = window.currentUser._id || window.currentUser.id;
+    const resp  = await fetch(`/Hospital-Mangement-T10-/backend/doctor/get_doctor_messages.php?doctorId=${docId}`);
+    const msgs  = await resp.json();
+    if (Array.isArray(msgs)) {
+      const unread = msgs.filter(m => m.sender === 'patient' && !m.readByDoctor).length;
+      const badge  = document.getElementById('docMsgBadge');
+      const tbDot  = document.querySelector('.tb-btn .dot');
+      
+      if (badge) {
+        if (unread > 0) { badge.textContent = unread; badge.style.display = ''; }
+        else badge.style.display = 'none';
+      }
+      if (tbDot) {
+        tbDot.style.display = unread > 0 ? 'block' : 'none';
+      }
+    }
+  } catch(e) { console.error('Error loading notif counts', e); }
+}
+
+// Auto-refresh counts every 30s
+setInterval(loadDoctorNotifCounts, 30000);
 
 // CSS for modal animation (injected once)
 const styleTag = document.createElement('style');

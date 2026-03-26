@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Prescriptions — Sanjeevani Patient Portal</title>
+  <link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/portal.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .rx-card { margin-bottom: 14px; cursor: pointer; }
+    .rx-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 22px; border-bottom: 1px solid transparent; transition: background .2s;
+    }
+    .rx-card-header:hover { background: var(--gray-50); }
+    .rx-card.expanded .rx-card-header { border-bottom-color: var(--gray-100); }
+    .rx-card-body { display: none; padding: 20px 22px 22px; }
+    .rx-card.expanded .rx-card-body { display: block; }
+    .med-table { width: 100%; border-collapse: collapse; border: 1px solid var(--gray-200); border-radius: var(--radius-sm); overflow: hidden; margin-top: 12px; font-size: 13px; }
+    .med-table th { background: var(--gray-50); padding: 9px 14px; text-align: left; font-weight: 600; color: var(--gray-500); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--gray-200); }
+    .med-table td { padding: 11px 14px; border-bottom: 1px solid var(--gray-100); color: var(--gray-800); }
+    .med-table tr:last-child td { border-bottom: none; }
+    .info-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    .info-chip { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 8px; padding: 8px 14px; font-size: 13px; }
+    .info-chip span { display: block; font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 2px; }
+    @media print {
+      .sidebar, .topbar, .sidebar-overlay, .print-btn { display: none !important; }
+      .main-area { margin-left: 0 !important; }
+      .rx-card-body { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+<div class="portal-wrap">
+  <aside class="sidebar"></aside>
+  <div class="sidebar-overlay"></div>
+  <div class="main-area">
+    <div class="topbar"></div>
+    <div class="page-content">
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div>
+          <h2 style="font-size:1.2rem;font-weight:800;color:var(--gray-900);">💊 My Prescriptions</h2>
+          <p style="font-size:13px;color:var(--gray-500);margin-top:3px;" id="rxCountText">Loading...</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <input id="searchInput" type="text" placeholder="Search diagnosis or doctor..." oninput="filterRx()"
+            style="padding:9px 14px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;outline:none;width:220px;">
+          <button class="btn btn-secondary btn-sm print-btn" onclick="window.print()"><i class="fas fa-print"></i> Print All</button>
+        </div>
+      </div>
+
+      <div id="rxList">
+        <div class="card">
+          <div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading prescriptions...</p></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/Hospital-Mangement-T10-/assets/js/portal.js"></script>
+<script>
+  let allRx = [];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initPortal('my-prescriptions', 'My Prescriptions', 'Your prescription history').then(user => {
+      if (user) loadRx();
+    });
+  });
+
+  async function loadRx() {
+    try {
+      const res  = await fetch('/Hospital-Mangement-T10-/backend/patient/get_prescriptions.php');
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      allRx = data.prescriptions || [];
+      renderRx(allRx);
+    } catch(e) {
+      document.getElementById('rxList').innerHTML = `<div class="card"><div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>${e.message}</p></div></div>`;
+    }
+  }
+
+  function filterRx() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    renderRx(allRx.filter(rx =>
+      rx.doctor_name.toLowerCase().includes(q) ||
+      rx.diagnosis.toLowerCase().includes(q) ||
+      (rx.department || '').toLowerCase().includes(q)
+    ));
+  }
+
+  function renderRx(list) {
+    const el = document.getElementById('rxList');
+    document.getElementById('rxCountText').textContent = `${list.length} prescription${list.length !== 1 ? 's' : ''} on record`;
+
+    if (!list.length) {
+      el.innerHTML = `<div class="card"><div class="empty-state"><i class="fas fa-pills" style="font-size:2.5rem;color:var(--gray-300)"></i><p>No prescriptions yet. Your doctor's prescriptions will appear here.</p></div></div>`;
+      return;
+    }
+
+    el.innerHTML = list.map((rx, i) => {
+      const meds = rx.medicines || [];
+      const medRows = meds.map(m =>
+        `<tr><td><strong>${m.name || '—'}</strong></td><td>${m.strength || '—'}</td><td>${m.frequency || '—'}</td><td>${m.duration || '—'}</td></tr>`
+      ).join('');
+      return `
+        <div class="card rx-card" id="rxCard${i}">
+          <div class="rx-card-header" onclick="toggleRx(${i})">
+            <div style="display:flex;align-items:center;gap:14px;">
+              <div style="width:44px;height:44px;background:var(--blue-50);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--blue-600);font-size:1.1rem;flex-shrink:0;">
+                <i class="fas fa-file-medical"></i>
+              </div>
+              <div>
+                <div style="font-size:15px;font-weight:700;color:var(--gray-900);">${rx.diagnosis}</div>
+                <div style="font-size:13px;color:var(--gray-500);">Dr. ${rx.doctor_name.replace(/^Dr\.?\s*/i,'')} &nbsp;·&nbsp; ${rx.prescription_date || rx.createdAt}</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span class="badge badge-blue">${meds.length} med${meds.length!==1?'s':''}</span>
+              <i class="fas fa-chevron-down" id="chev${i}" style="color:var(--gray-400);transition:transform .2s;font-size:13px;"></i>
+            </div>
+          </div>
+          <div class="rx-card-body">
+            <div class="info-chips">
+              <div class="info-chip"><span>Doctor</span>${rx.doctor_name}</div>
+              <div class="info-chip"><span>Department</span>${rx.department || '—'}</div>
+              <div class="info-chip"><span>Rx Date</span>${rx.prescription_date || rx.createdAt}</div>
+              ${rx.next_visit ? `<div class="info-chip"><span>Next Visit</span>${rx.next_visit}</div>` : ''}
+            </div>
+            ${rx.symptoms ? `<p style="margin-top:14px;font-size:13.5px;"><strong style="color:var(--gray-600)">Symptoms:</strong> ${rx.symptoms}</p>` : ''}
+            ${meds.length ? `<table class="med-table"><thead><tr><th>Medicine</th><th>Strength</th><th>Frequency</th><th>Duration</th></tr></thead><tbody>${medRows}</tbody></table>` : ''}
+            ${rx.notes ? `<div style="margin-top:14px;background:var(--gray-50);border-radius:8px;padding:12px;font-size:13px;color:var(--gray-600);">${rx.notes.replace(/\n/g,'<br>')}</div>` : ''}
+            ${rx.tests_ordered ? `<p style="margin-top:12px;font-size:13.5px;"><strong style="color:var(--gray-600)">Tests Ordered:</strong> ${rx.tests_ordered}</p>` : ''}
+            <button onclick="window.print()" class="btn btn-secondary btn-sm print-btn" style="margin-top:18px;"><i class="fas fa-print"></i> Print</button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function toggleRx(i) {
+    const card = document.getElementById('rxCard'+i);
+    const chev = document.getElementById('chev'+i);
+    const expanded = card.classList.toggle('expanded');
+    chev.style.transform = expanded ? 'rotate(180deg)' : '';
+  }
+</script>
+</body>
+</html>

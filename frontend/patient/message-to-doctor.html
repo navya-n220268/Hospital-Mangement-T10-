@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Message to Doctor — MediVita Patient Portal</title>
-  <meta name="description" content="Securely message your doctor regarding your appointments at MediVita."/>
+  <title>Message to Doctor — Sanjeevani Patient Portal</title>
+  <meta name="description" content="Securely message your doctor regarding your appointments at Sanjeevani."/>
 
   <!-- Portal shared styles -->
-  <link rel="stylesheet" href="/medivita/assets/css/portal.css"/>
+  <link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/portal.css"/>
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <!-- Google Fonts used in messaging UI -->
@@ -789,7 +789,7 @@
 
 
 <!-- Portal shared JS (handles auth + sidebar + topbar injection) -->
-<script src="/medivita/assets/js/portal.js"></script>
+<script src="/Hospital-Mangement-T10-/assets/js/portal.js"></script>
 
 <script>
 let appointmentsData = [];
@@ -803,7 +803,7 @@ async function initMessaging(user) {
   try {
     window.currentUser = user;
     const pId = window.currentUser._id || window.currentUser.id;
-    const res = await fetch(`/medivita/backend/patient/get_doctors_for_patient.php?patientId=${pId}`);
+    const res = await fetch(`/Hospital-Mangement-T10-/backend/patient/get_doctors_for_patient.php?patientId=${pId}`);
     appointmentsData = await res.json();
     populateDropdown();
     renderAppointmentList();
@@ -919,7 +919,7 @@ function showChatTopbar(doc) {
 async function loadConversation(doc) {
   const pId = window.currentUser._id || window.currentUser.id;
   try {
-    const res = await fetch(`/medivita/backend/doctor/get_patient_messages.php?patientId=${pId}&doctorId=${doc.id}`);
+    const res = await fetch(`/Hospital-Mangement-T10-/backend/doctor/get_patient_messages.php?patientId=${pId}&doctorId=${doc.id}`);
     const msgs = await res.json();
     runtimeMessages[doc.id] = msgs;
   } catch(e) { 
@@ -1000,7 +1000,7 @@ function sendMessage() {
 
   const pId = window.currentUser._id || window.currentUser.id;
   
-  fetch('/medivita/backend/doctor/send_message.php', {
+  fetch('/Hospital-Mangement-T10-/backend/doctor/send_message.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

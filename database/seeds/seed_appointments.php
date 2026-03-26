@@ -1,10 +1,10 @@
 <?php
 /**
- * MediVita Hospital Management System
+ * Sanjeevani Hospital Management System
  * ─────────────────────────────────────
  * seed_appointments.php
  *
- * Visit: http://localhost/medivita/seed_appointments.php
+ * Visit: http://localhost/Hospital-Mangement-T10-/seed_appointments.php
  *
  * 1. Adds 'department' field to existing doctors in MongoDB if missing.
  * 2. Inserts 5 sample appointments into the 'appointments' collection.
@@ -192,7 +192,7 @@ header('Content-Type: text/html; charset=utf-8');
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<title>MediVita — Seed Appointments</title>
+<title>Sanjeevani — Seed Appointments</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"/>
 <style>
   body{font-family:'Plus Jakarta Sans',sans-serif;background:#0f172a;color:#e2e8f0;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
@@ -217,7 +217,7 @@ header('Content-Type: text/html; charset=utf-8');
 <div class="card">
   <div class="logo">
     <div class="logo-mark">🏥</div>
-    <div class="logo-text">MediVita<small>Appointment Seed</small></div>
+    <div class="logo-text">Sanjeevani<small>Appointment Seed</small></div>
   </div>
   <h1>Appointment Setup Complete</h1>
   <p class="sub">MongoDB appointments collection has been seeded with sample data.</p>
@@ -238,7 +238,7 @@ header('Content-Type: text/html; charset=utf-8');
   <p class="note">
     ✅ Collections seeded: <strong style="color:#e2e8f0">appointments</strong><br/>
     Doctors have been updated with a <code>department</code> field.<br/>
-    Test patient: <strong style="color:#e2e8f0">ravi1@medivita.com / 123456</strong>
+    Test patient: <strong style="color:#e2e8f0">ravi1@Sanjeevani.com / 123456</strong>
   </p>
 </div>
 </body>

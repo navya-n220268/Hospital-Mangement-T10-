@@ -1,6 +1,6 @@
 <?php
 /**
- * MediVita Hospital Management System
+ * Sanjeevani Hospital Management System
  * ─────────────────────────────────────
  * backend/book_appointment.php
  *
@@ -67,6 +67,39 @@ try {
     $doctor = $db->doctors->findOne(['_id' => $doctorObjId]);
     if (!$doctor) {
         json_out(['success' => false, 'message' => 'Selected doctor not found.'], 404);
+    }
+
+    // ── Feature 2: Block if doctor is on approved leave ──────────────────────
+    $leave = $db->leaves->findOne([
+        'doctorId' => $doctorId,
+        'status'   => 'approved',
+        'fromDate' => ['$lte' => $appointmentDate],
+        'toDate'   => ['$gte' => $appointmentDate],
+    ]);
+    if ($leave) {
+        json_out(['success' => false, 'message' => 'The selected doctor is on approved leave on this date. Please choose another date or doctor.'], 409);
+    }
+
+    // ── Feature 3: Block if slot has an emergency declared ───────────────────
+    $emergency = $db->emergencies->findOne([
+        'doctorId' => $doctorId,
+        'date'     => $appointmentDate,
+        'timeSlot' => $appointmentTime,
+    ]);
+    if ($emergency) {
+        json_out(['success' => false, 'message' => 'This time slot is unavailable due to a doctor emergency. Please choose a different time.'], 409);
+    }
+
+    // ── Feature 3b: Block if doctor has active unavailability on this date ───
+    $unavail = $db->unavailabilities->findOne([
+        'doctorId' => $doctorId,
+        'status'   => 'active',
+        'fromDate' => ['$lte' => $appointmentDate],
+        'toDate'   => ['$gte' => $appointmentDate],
+    ]);
+    if ($unavail) {
+        $reason = $unavail['reason'] ?? 'personal reasons';
+        json_out(['success' => false, 'message' => "Dr. is currently unavailable ({$reason}). Please choose another doctor or a later date."], 409);
     }
 
     $patientId   = $sessionUser['id'];

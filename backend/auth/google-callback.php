@@ -1,6 +1,6 @@
 <?php
 /**
- * MediVita Hospital Management System
+ * Sanjeevani Hospital Management System
  * google-callback.php — OAuth 2.0 callback handler.
  *
  * Flow:
@@ -20,7 +20,7 @@ require_once __DIR__ . '/../config.php';
 // ── Google OAuth credentials (must match google-login.php) ──────
 define('GOOGLE_CLIENT_ID', $_ENV['GOOGLE_CLIENT_ID']);
 define('GOOGLE_CLIENT_SECRET', $_ENV['GOOGLE_CLIENT_SECRET']);
-define('GOOGLE_REDIRECT_URI', 'http://localhost/medivita/backend/auth/google-callback.php');
+define('GOOGLE_REDIRECT_URI', 'http://localhost/Hospital-Mangement-T10-/backend/auth/google-callback.php');
 
 // ── CSRF state validation ────────────────────────────────────────
 $returnedState = $_GET['state'] ?? '';
@@ -28,7 +28,7 @@ $savedState = $_SESSION['oauth_state'] ?? '';
 
 if (empty($returnedState) || !hash_equals($savedState, $returnedState)) {
     $_SESSION['auth_error'] = 'Security check failed. Please try signing in again.';
-    header('Location: /medivita/frontend/auth/login.html');
+    header('Location: /Hospital-Mangement-T10-/frontend/auth/login.html');
     exit;
 }
 unset($_SESSION['oauth_state']);
@@ -37,13 +37,13 @@ unset($_SESSION['oauth_state']);
 if (isset($_GET['error'])) {
     $errMsg = htmlspecialchars($_GET['error'], ENT_QUOTES, 'UTF-8');
     $_SESSION['auth_error'] = 'Google sign-in was cancelled or failed: ' . $errMsg;
-    header('Location: /medivita/frontend/auth/login.html');
+    header('Location: /Hospital-Mangement-T10-/frontend/auth/login.html');
     exit;
 }
 
 if (empty($_GET['code'])) {
     $_SESSION['auth_error'] = 'No authorisation code received from Google.';
-    header('Location: /medivita/frontend/auth/login.html');
+    header('Location: /Hospital-Mangement-T10-/frontend/auth/login.html');
     exit;
 }
 
@@ -58,13 +58,13 @@ try {
 }
 catch (Exception $e) {
     $_SESSION['auth_error'] = 'Failed to retrieve access token from Google.';
-    header('Location: /medivita/frontend/auth/login.html');
+    header('Location: /Hospital-Mangement-T10-/frontend/auth/login.html');
     exit;
 }
 
 if (isset($token['error'])) {
     $_SESSION['auth_error'] = 'Google token error: ' . htmlspecialchars($token['error_description'] ?? $token['error'], ENT_QUOTES, 'UTF-8');
-    header('Location: /medivita/frontend/auth/login.html');
+    header('Location: /Hospital-Mangement-T10-/frontend/auth/login.html');
     exit;
 }
 
@@ -77,7 +77,7 @@ try {
 }
 catch (Exception $e) {
     $_SESSION['auth_error'] = 'Could not retrieve your profile from Google.';
-    header('Location: /medivita/frontend/auth/login.html');
+    header('Location: /Hospital-Mangement-T10-/frontend/auth/login.html');
     exit;
 }
 
@@ -87,7 +87,7 @@ $googleName = trim($googleUser->name ?? '');
 
 if (empty($googleEmail)) {
     $_SESSION['auth_error'] = 'Google did not return an email address. Please check your Google account settings.';
-    header('Location: /medivita/frontend/auth/login.html');
+    header('Location: /Hospital-Mangement-T10-/frontend/auth/login.html');
     exit;
 }
 
@@ -121,7 +121,7 @@ if ($existingPatient) {
         );
     }
 
-    header('Location: /medivita/frontend/patient/dashboard.html');
+    header('Location: /Hospital-Mangement-T10-/frontend/patient/dashboard.html');
     exit;
 
 }
@@ -147,7 +147,7 @@ elseif ($existingDoctor) {
         );
     }
 
-    header('Location: /medivita/frontend/doctor/doctor-dashboard.php');
+    header('Location: /Hospital-Mangement-T10-/frontend/doctor/doctor-dashboard.php');
     exit;
 
 }
@@ -158,6 +158,6 @@ else {
     $_SESSION['google_email'] = $googleEmail;
     $_SESSION['oauth_new_user'] = true;
 
-    header('Location: /medivita/frontend/auth/complete-profile.html');
+    header('Location: /Hospital-Mangement-T10-/frontend/auth/complete-profile.html');
     exit;
 }

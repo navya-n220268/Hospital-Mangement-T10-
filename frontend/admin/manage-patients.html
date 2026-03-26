@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Patients — MediVita Admin</title>
-  <link rel="stylesheet" href="/medivita/assets/css/medivita.css">
+  <title>Manage Patients — Sanjeevani Admin</title>
+  <link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/Sanjeevani.css?v=1774423805">
   <style>
     .modal-overlay {
       display: none;
@@ -180,10 +180,10 @@
   <script>
     // Prevent flash of unauthenticated content
     (async function () {
-      const res = await fetch('/medivita/backend/patient/get_user.php');
+      const res = await fetch('/Hospital-Mangement-T10-/backend/patient/get_user.php');
       const data = await res.json();
       if (!data.success || data.user.role !== 'admin') {
-        window.location.href = '/medivita/frontend/auth/login.html';
+        window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
       }
     })();
   </script>
@@ -191,63 +191,11 @@
 
 <body>
 
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <a href="/medivita/frontend/admin/admin-dashboard.html" class="brand-logo">
-        <div class="brand-icon"><i class="fas fa-heartbeat"></i></div>
-        <div class="brand-text">
-          <div class="brand-name">MediVita</div>
-          <div class="brand-sub">Admin Panel</div>
-        </div>
-      </a>
-    </div>
-    <div class="sidebar-section-label">Main Menu</div>
-    <nav class="sidebar-nav">
-      <a href="/medivita/frontend/admin/admin-dashboard.html" class="nav-item">
-        <span class="nav-icon">📊</span> Dashboard
-      </a>
-      <a href="/medivita/frontend/admin/manage-doctors.html" class="nav-item">
-        <span class="nav-icon">👨‍⚕️</span> Manage Doctors
-      </a>
-      <a href="/medivita/frontend/admin/manage-patients.html" class="nav-item active">
-        <span class="nav-icon">🧑‍🤝‍🧑</span> Manage Patients
-      </a>
-      <a href="/medivita/frontend/admin/appointment-analytics.html" class="nav-item">
-        <span class="nav-icon">📈</span> Appointment Analytics
-      </a>
-      <div class="sidebar-section-label" style="padding-top:12px;">System</div>
-      <a href="/medivita/frontend/admin/settings.html" class="nav-item">
-        <span class="nav-icon">⚙️</span> Settings
-      </a>
-      <a href="/medivita/backend/auth/logout.php" class="nav-item">
-        <span class="nav-icon">🚪</span> Logout
-      </a>
-    </nav>
-    <div class="sidebar-footer">
-      <div class="admin-profile">
-        <div class="admin-avatar">SA</div>
-        <div>
-          <div class="admin-name">Super Admin</div>
-          <div class="admin-role">Hospital Director</div>
-        </div>
-      </div>
-    </div>
-  </aside>
+  <aside class="sidebar"></aside>
+  <div class="sb-overlay"></div>
 
   <div class="main">
-    <header class="topbar">
-      <div class="topbar-left">
-        <div class="page-title">Manage Patients</div>
-        <div class="page-breadcrumb">Home / Patients</div>
-      </div>
-      <div class="topbar-right">
-        <div class="topbar-date" id="topbar-date-display">...</div>
-        <script>
-          document.getElementById('topbar-date-display').textContent = '📅 ' + new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-        </script>
-        <!-- <button class="topbar-btn">🔔 <span class="notif-dot"></span></button> -->
-      </div>
-    </header>
+    <header class="topbar"></header>
 
     <div class="content">
 
@@ -288,7 +236,7 @@
         <div class="card-header">
           <div>
             <div class="card-title">Patient Registry</div>
-            <div class="card-subtitle">All registered patients — MediVita Hospital</div>
+            <div class="card-subtitle">All registered patients — Sanjeevani Hospital</div>
           </div>
           <div style="display:flex;gap:10px;">
           </div>
@@ -484,18 +432,20 @@
     </div>
   </div>
 
+  <script src="/Hospital-Mangement-T10-/assets/js/admin.js?v=1774423805"></script>
   <script>
     let patientsData = [];
     let deleteTargetId = null;
 
-
-
-    // ========== INIT ==========
-    document.addEventListener('DOMContentLoaded', fetchPatients);
+    document.addEventListener('DOMContentLoaded', async () => {
+      await buildAdminPortal('manage-patients', 'Patient Registry', 'Comprehensive hospital patient records');
+      loadAdminNotifBadge();
+      fetchPatients();
+    });
 
     async function fetchPatients() {
       try {
-        const res = await fetch('/medivita/backend/admin/get_patients.php');
+        const res = await fetch('/Hospital-Mangement-T10-/backend/admin/get_patients.php');
         const data = await res.json();
         console.log('Patients API:', data);
         patientsData = Array.isArray(data) ? data : [];
@@ -589,7 +539,7 @@
       if (!deleteTargetId) { closeConfirm(); return; }
 
       try {
-        const res = await fetch('/medivita/backend/admin/delete_patient.php', {
+        const res = await fetch('/Hospital-Mangement-T10-/backend/admin/delete_patient.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id: deleteTargetId })

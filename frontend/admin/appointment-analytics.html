@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Appointment Analytics — MediVita Admin</title>
-  <link rel="stylesheet" href="/medivita/assets/css/medivita.css">
+  <title>Appointment Analytics — Sanjeevani Admin</title>
+  <link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/Sanjeevani.css?v=1774423805">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     .chart-card {
@@ -177,10 +177,10 @@
   <script>
     // Prevent flash of unauthenticated content
     (async function () {
-      const res = await fetch('/medivita/backend/patient/get_user.php');
+      const res = await fetch('/Hospital-Mangement-T10-/backend/patient/get_user.php');
       const data = await res.json();
       if (!data.success || data.user.role !== 'admin') {
-        window.location.href = '/medivita/frontend/auth/login.html';
+        window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
       }
     })();
   </script>
@@ -188,68 +188,11 @@
 
 <body>
 
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <a href="/medivita/frontend/admin/admin-dashboard.html" class="brand-logo">
-        <div class="brand-icon"><i class="fas fa-heartbeat"></i></div>
-        <div class="brand-text">
-          <div class="brand-name">MediVita</div>
-          <div class="brand-sub">Admin Panel</div>
-        </div>
-      </a>
-    </div>
-    <div class="sidebar-section-label">Main Menu</div>
-    <nav class="sidebar-nav">
-      <a href="/medivita/frontend/admin/admin-dashboard.html" class="nav-item">
-        <span class="nav-icon">📊</span> Dashboard
-      </a>
-      <a href="/medivita/frontend/admin/manage-doctors.html" class="nav-item">
-        <span class="nav-icon">👨‍⚕️</span> Manage Doctors
-      </a>
-      <a href="/medivita/frontend/admin/manage-patients.html" class="nav-item">
-        <span class="nav-icon">🧑‍🤝‍🧑</span> Manage Patients
-      </a>
-      <a href="/medivita/frontend/admin/appointment-analytics.html" class="nav-item active">
-        <span class="nav-icon">📈</span> Appointment Analytics
-      </a>
-      <div class="sidebar-section-label" style="padding-top:12px;">System</div>
-      <a href="/medivita/frontend/admin/settings.html" class="nav-item">
-        <span class="nav-icon">⚙️</span> Settings
-      </a>
-      <a href="/medivita/backend/auth/logout.php" class="nav-item">
-        <span class="nav-icon">🚪</span> Logout
-      </a>
-    </nav>
-    <div class="sidebar-footer">
-      <div class="admin-profile">
-        <div class="admin-avatar">SA</div>
-        <div>
-          <div class="admin-name">Super Admin</div>
-          <div class="admin-role">Hospital Director</div>
-        </div>
-      </div>
-    </div>
-  </aside>
+  <aside class="sidebar"></aside>
+  <div class="sb-overlay"></div>
 
   <div class="main">
-    <header class="topbar">
-      <div class="topbar-left">
-        <div class="page-title">Appointment Analytics</div>
-        <div class="page-breadcrumb">Home / Analytics</div>
-      </div>
-      <div class="topbar-right">
-        <div class="topbar-date" id="topbar-date-display">...</div>
-        <script>
-          document.getElementById('topbar-date-display').textContent = '📅 ' + new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-        </script>
-        <!-- <div style="display:flex;gap:6px;">
-        <button class="period-btn active" onclick="setPeriod(this,'week')">Week</button>
-        <button class="period-btn" onclick="setPeriod(this,'month')">Month</button>
-        <button class="period-btn" onclick="setPeriod(this,'year')">Year</button>
-      </div>
-      <button class="topbar-btn">🔔 <span class="notif-dot"></span></button> -->
-      </div>
-    </header>
+    <header class="topbar"></header>
 
     <div class="content">
 
@@ -389,6 +332,7 @@
     </div>
   </div>
 
+  <script src="/Hospital-Mangement-T10-/assets/js/admin.js?v=1774423805"></script>
   <script>
     const chartDefaults = {
       responsive: true,
@@ -403,14 +347,18 @@
       'linear-gradient(90deg,var(--warning),#fdcb6e)',
       'linear-gradient(90deg,var(--danger),#fd79a8)',
     ];
-
+ 
     let weeklyChart, deptChart, monthlyChart, hourlyChart, statusChart;
-
-    document.addEventListener('DOMContentLoaded', loadAnalytics);
+ 
+    document.addEventListener('DOMContentLoaded', async () => {
+      await buildAdminPortal('manage-appointments', 'Appointment Analytics', 'Hospital oversight and metrics');
+      loadAdminNotifBadge();
+      loadAnalytics();
+    });
 
     async function loadAnalytics() {
       try {
-        const res = await fetch('/medivita/backend/admin/get_appointment_analytics.php');
+        const res = await fetch('/Hospital-Mangement-T10-/backend/admin/get_appointment_analytics.php');
         const data = await res.json();
         console.log('Analytics API:', data);
 

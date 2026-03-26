@@ -4,14 +4,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login — MediVita Hospital Portal</title>
+  <title>Login — Sanjeevani Hospital Portal</title>
   <meta name="description"
-    content="Sign in to your MediVita Hospital patient, doctor or admin portal account securely." />
+    content="Sign in to your Sanjeevani Hospital patient, doctor or admin portal account securely." />
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="/medivita/assets/css/styles.css" />
+  <link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/styles.css" />
   <style>
     /* ── Google OAuth Button ─────────────────────────────────────── */
     .btn-google {
@@ -80,7 +80,7 @@
   <!-- Mobile brand header (shown when panel is hidden on small screens) -->
   <div class="mobile-brand">
     <div class="mb-mark"><i class="fas fa-heartbeat"></i></div>
-    <div class="mb-name">MediVita<small>Hospital Portal</small></div>
+    <div class="mb-name">Sanjeevani<small>Hospital Portal</small></div>
   </div>
 
   <!-- Two-column auth layout -->
@@ -91,9 +91,9 @@
       <div class="ap-deco"></div>
 
       <!-- Brand -->
-      <a href="/medivita/index.html" class="ap-logo" style="text-decoration:none;">
+      <a href="/Hospital-Mangement-T10-/index.html" class="ap-logo" style="text-decoration:none;">
         <div class="ap-logo-mark"><i class="fas fa-heartbeat"></i></div>
-        <div class="ap-logo-txt">MediVita<small>Hospital &amp; Medical Centre</small></div>
+        <div class="ap-logo-txt">Sanjeevani<small>Hospital &amp; Medical Centre</small></div>
       </a>
 
       <!-- Tagline + quote -->
@@ -103,7 +103,7 @@
         <div class="ap-quote">
           <p>"The greatest wealth is health. Log in to your personalised health portal and take charge of your wellbeing
             journey today."</p>
-          <cite>— MediVita Care Team</cite>
+          <cite>— Sanjeevani Care Team</cite>
         </div>
 
         <div class="ap-badges">
@@ -116,9 +116,9 @@
 
       <!-- Panel footer -->
       <div class="ap-foot">
-        &copy; 2026 MediVita Hospital. All rights reserved.
+        &copy; 2026 Sanjeevani Hospital. All rights reserved.
         &nbsp;&middot;&nbsp;
-        <a href="/medivita/index.html">Back to Website</a>
+        <a href="/Hospital-Mangement-T10-/index.html">Back to Website</a>
       </div>
     </div><!-- /auth-panel -->
 
@@ -131,7 +131,7 @@
         <div class="ac-header">
           <div class="ac-icon"><i class="fas fa-user-shield"></i></div>
           <h1 class="ac-title">Welcome Back</h1>
-          <p class="ac-sub">Sign in to your MediVita portal account</p>
+          <p class="ac-sub">Sign in to your Sanjeevani portal account</p>
         </div>
 
         <!-- Alert (hidden by default — shown for PHP errors or JS feedback) -->
@@ -169,6 +169,10 @@
                 aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
             </div>
             <span class="field-err" aria-live="polite"></span>
+            <div style="text-align:right;margin-top:6px;">
+              <a href="/Hospital-Mangement-T10-/frontend/auth/forgot-password.html"
+                style="font-size:13px;color:#0d9488;font-weight:600;text-decoration:none;">Forgot Password?</a>
+            </div>
           </div>
 
           <!-- Role -->
@@ -206,7 +210,7 @@
         <div class="or-divider"><span>or continue with</span></div>
 
         <!-- ── Google OAuth Button ── -->
-        <a href="/medivita/backend/auth/google-login.php" id="googleLoginBtn" class="btn-google" role="button">
+        <a href="/Hospital-Mangement-T10-/backend/auth/google_login.php" id="googleLoginBtn" class="btn-google" role="button">
           <!-- Official Google G SVG icon -->
           <svg class="g-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
             <path fill="#EA4335"
@@ -222,13 +226,13 @@
           Continue with Google
         </a>
 
-        <div class="auth-divider"><span>New to MediVita?</span></div>
+        <div class="auth-divider"><span>New to Sanjeevani?</span></div>
 
         <div class="auth-foot">
-          Don't have an account? &nbsp;<a href="/medivita/frontend/auth/register.html">Register here &rarr;</a>
+          Don't have an account? &nbsp;<a href="/Hospital-Mangement-T10-/frontend/auth/register.html">Register here &rarr;</a>
         </div>
 
-        <a href="/medivita/index.html" class="back-link">
+        <a href="/Hospital-Mangement-T10-/index.html" class="back-link">
           <i class="fas fa-arrow-left"></i> Back to main website
         </a>
 
@@ -237,7 +241,7 @@
 
   </div><!-- /auth-page -->
 
-  <script src="/medivita/assets/js/script.js"></script>
+  <script src="/Hospital-Mangement-T10-/assets/js/script.js"></script>
 </body>
 
 </html>

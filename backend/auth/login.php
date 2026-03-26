@@ -1,6 +1,6 @@
 <?php
 /**
- * MediVita Hospital Management System
+ * Sanjeevani Hospital Management System
  * ─────────────────────────────────────
  * backend/login.php
  *
@@ -51,9 +51,9 @@ if (!in_array($role, $validRoles, true)) {
 
 // ── Role → redirect target (absolute paths) ─────────────────────────────────
 $dashboards = [
-    'patient' => '/medivita/frontend/patient/dashboard.html',
-    'doctor'  => '/medivita/frontend/doctor/doctor-dashboard.php',
-    'admin'   => '/medivita/frontend/admin/admin-dashboard.html',
+    'patient' => '/Hospital-Mangement-T10-/frontend/patient/dashboard.html',
+    'doctor'  => '/Hospital-Mangement-T10-/frontend/doctor/doctor-dashboard.php',
+    'admin'   => '/Hospital-Mangement-T10-/frontend/admin/admin-dashboard.html',
 ];
 
 // ── Database lookup ──────────────────────────────────────────────────────────
@@ -70,11 +70,34 @@ try {
     // Find user by email
     $user = $collection->findOne(['email' => $email]);
 
-    // DEV MODE: plain-text password comparison
-    // TODO: Switch to password_verify() before production!
-    if (!$user || ($user['password'] ?? '') !== $password) {
+    if (!$user) {
         echo json_encode(['success' => false, 'message' => 'Invalid email or password. Please check your credentials and selected role.']);
         exit;
+    }
+
+    $storedPassword = $user['password'] ?? '';
+    // Support securely hashed passwords with backwards-compatibility for plain-text dev accounts
+    if (!password_verify($password, $storedPassword) && $storedPassword !== $password) {
+        echo json_encode(['success' => false, 'message' => 'Invalid email or password. Please check your credentials and selected role.']);
+        exit;
+    }
+
+    // ── Doctor approval gate ─────────────────────────────────────────────────
+    if ($role === 'doctor') {
+        $approvalStatus = $user['approval_status'] ?? 'approved'; // existing docs treated as approved
+        if ($approvalStatus === 'pending') {
+            echo json_encode([
+                'success' => false, 
+                'pending' => true,
+                'redirect'=> '/Hospital-Mangement-T10-/frontend/auth/pending-approval.html',
+                'message' => 'Your account is awaiting admin approval.'
+            ]);
+            exit;
+        }
+        if ($approvalStatus === 'rejected') {
+            echo json_encode(['success' => false, 'message' => 'Your registration was rejected by admin. Please contact the hospital.']);
+            exit;
+        }
     }
 
     // ── Success — set session ────────────────────────────────────────────────

@@ -1,13 +1,13 @@
 <?php
 /**
- * MediVita Hospital Management System
+ * Sanjeevani Hospital Management System
  * ─────────────────────────────────────
  * backend/logout.php
  *
  * Destroys the current PHP session and redirects the user to the login page.
  *
  * Can be called via:
- *   • A direct link: <a href="/medivita/backend/logout.php">Sign Out</a>
+ *   • A direct link: <a href="/Hospital-Mangement-T10-/backend/logout.php">Sign Out</a>
  *   • Or via a GET / POST request from JS fetch / axios.
  *
  * Accepts an optional query parameter ?redirect=<url> to send the user

@@ -1,6 +1,6 @@
 <?php
 /**
- * MediVita Hospital Management System
+ * Sanjeevani Hospital Management System
  * ─────────────────────────────────────
  * backend/register.php
  *
@@ -42,6 +42,14 @@ $department     = sanitise($_POST['department']     ?? '');
 $age            = (int) ($_POST['age']              ?? 0);
 $gender         = sanitise($_POST['gender']         ?? '');
 
+// Security question answers — same 5 questions for all users
+$securityAnswers = [];
+for ($i = 1; $i <= 5; $i++) {
+    $ans = strtolower(trim($_POST["sq_{$i}"] ?? ''));
+    $securityAnswers[] = $ans;
+}
+$securityAnswersValid = count(array_filter($securityAnswers, fn($a) => $a !== '')) === 5;
+
 // ── Validation ────────────────────────────────────────────────────────────────
 $errors = [];
 
@@ -66,6 +74,10 @@ if ($role === 'patient') {
 if ($role === 'doctor') {
     if (empty($specialization)) $errors[] = 'Specialization is required for doctor accounts.';
     if (empty($department)) $errors[] = 'Department is required for doctor accounts.';
+}
+
+if (!$securityAnswersValid) {
+    $errors[] = 'Please answer all 5 security questions.';
 }
 
 if (!empty($errors)) {
@@ -96,9 +108,12 @@ try {
             'gender'     => $gender,
             'age'        => $age,
             'address'    => '',
-            'password'   => $password, // Plain text for dev
+            'password'   => password_hash($password, PASSWORD_DEFAULT),
             'created_at' => $now,
-            'role'       => 'patient'
+            'role'       => 'patient',
+            'auth_type'  => 'manual',
+            'is_verified'=> true,
+            'security_answers' => $securityAnswers
         ];
     } else {
         $doctor_id = 'DOC-' . strtoupper(substr(uniqid(), -6));
@@ -108,48 +123,48 @@ try {
             'email'          => $email,
             'phone'          => $phone,
             'department'     => $department,
-            'specialization' => $specialization, // kept for compatibility if needed
+            'specialization' => $specialization,
             'experience'     => $experience,
             'qualification'  => '',
-            'password'       => $password, // Plain text for dev
-            'availability'   => 'Available',
+            'password'       => password_hash($password, PASSWORD_DEFAULT),
+            'availability'   => 'Unavailable',   // set Available only on approval
+            'approval_status'=> 'pending',        // ← NEW: requires admin approval
             'created_at'     => $now,
-            'role'           => 'doctor'
+            'role'           => 'doctor',
+            'auth_type'      => 'manual',
+            'is_verified'    => true,
+            'security_answers' => $securityAnswers
         ];
     }
 
-    $result = $collection->insertOne($doc);
+    $result  = $collection->insertOne($doc);
+    $insertedId = (string) $result->getInsertedId();
 
-    // ── Start session ─────────────────────────────────────────────────────────
-    session_regenerate_id(true);
-    $_SESSION['user_id']    = (string) $result->getInsertedId();
-    $_SESSION['user_name']  = $name;
-    $_SESSION['user_email'] = $email;
-    $_SESSION['user_role']  = $role;
-
+    // IMMEDIATELY notify admin about new pending doctor
     if ($role === 'doctor') {
-        $_SESSION['doctor_id']    = (string) $result->getInsertedId();
-        $_SESSION['doctor_name']  = $name;
-        $_SESSION['doctor_email'] = $email;
-    } elseif ($role === 'patient') {
-        $_SESSION['patient_id']    = (string) $result->getInsertedId();
-        $_SESSION['patient_name']  = $name;
-        $_SESSION['patient_email'] = $email;
+        $db->notifications->insertOne([
+            'type'         => 'doctor_registration',
+            'message'      => "New doctor registration: {$name} ({$email}) — {$department}. Awaiting approval.",
+            'receiverType' => 'admin',
+            'relatedId'    => (string)$insertedId,
+            'status'       => 'unread',
+            'createdAt'    => $now,
+        ]);
     }
 
-    unset($_SESSION['auth_error'], $_SESSION['auth_form']);
-
-    $redirect = ($role === 'patient') ? '/medivita/frontend/patient/dashboard.html' : '/medivita/frontend/doctor/doctor-dashboard.php';
-
     echo json_encode([
-        'success'  => true,
-        'message'  => 'Account created successfully! Redirecting...',
-        'redirect' => $redirect,
-        'role'     => $role,
-        'name'     => $name,
+        'success'     => true,
+        'require_otp' => false,
+        'role'        => $role,
+        'email'       => $email,
+        'id'          => $insertedId,
+        'message'     => 'Registration successful.',
+        'pending'     => ($role === 'doctor'),
+        'redirect'    => ($role === 'patient') ? '/Hospital-Mangement-T10-/frontend/patient/dashboard.html' : ''
     ]);
 
+
 } catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => 'Database error during registration: ' . $e->getMessage()]);
+    echo json_encode(['success' => false, 'message' => 'Error during registration: ' . $e->getMessage()]);
 }
 exit;

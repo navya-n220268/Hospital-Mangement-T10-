@@ -1,6 +1,6 @@
 <?php
 /**
- * MediVita Hospital Management System
+ * Sanjeevani Hospital Management System
  * save-profile.php — Saves Google OAuth new-user profile to MongoDB.
  *
  * Expects POST: phone, role
@@ -105,12 +105,12 @@ if ($role === 'patient') {
     $_SESSION['patient_id']    = $insertedId;
     $_SESSION['patient_name']  = $googleName;
     $_SESSION['patient_email'] = $googleEmail;
-    $redirect = '/medivita/frontend/patient/dashboard.html';
+    $redirect = '/Hospital-Mangement-T10-/frontend/patient/dashboard.html';
 } else {
     $_SESSION['doctor_id']    = $insertedId;
     $_SESSION['doctor_name']  = $googleName;
     $_SESSION['doctor_email'] = $googleEmail;
-    $redirect = '/medivita/frontend/doctor/doctor-dashboard.php';
+    $redirect = '/Hospital-Mangement-T10-/frontend/doctor/doctor-dashboard.php';
 }
 
 header('Content-Type: application/json; charset=utf-8');

@@ -1,6 +1,6 @@
 <?php
 /**
- * MediVita — backend/get_patient_medical_records.php
+ * Sanjeevani — backend/get_patient_medical_records.php
  *
  * Returns all medical records (prescriptions) issued to the currently logged-in patient.
  * Used by the patient portal's Medical Records page.

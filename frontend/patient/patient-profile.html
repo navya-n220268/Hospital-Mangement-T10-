@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>My Profile — MediVita</title>
-<meta name="description" content="View and update your patient profile on MediVita Patient Portal."/>
-<link rel="stylesheet" href="/medivita/assets/css/portal.css"/>
+<title>My Profile — Sanjeevani</title>
+<meta name="description" content="View and update your patient profile on Sanjeevani Patient Portal."/>
+<link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/portal.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 <style>
 /* ── Profile Hero ── */
@@ -112,8 +112,6 @@
       <!-- Tabs -->
       <div class="profile-tabs anim-fade-up d1">
         <button class="ptab active" onclick="showTab(this,'personal')"><i class="fas fa-user" style="margin-right:5px"></i>Personal Info</button>
-        <button class="ptab" onclick="showTab(this,'security')"><i class="fas fa-shield-alt" style="margin-right:5px"></i>Security</button>
-        <button class="ptab" onclick="showTab(this,'prefs')"><i class="fas fa-bell" style="margin-right:5px"></i>Preferences</button>
       </div>
 
       <!-- ─── Personal Info Tab ─── -->
@@ -228,111 +226,7 @@
         </div>
       </div>
 
-      <!-- ─── Security Tab ─── -->
-      <div id="tab-security" style="display:none" class="anim-fade-up d2">
-        <div class="card" style="max-width:520px">
-          <div class="card-header">
-            <h3><i class="fas fa-lock"></i> Change Password</h3>
-          </div>
-          <div class="card-body">
-            <div class="form-group">
-              <label class="form-label">Current Password</label>
-              <input type="password" class="form-control" id="curPass" placeholder="Enter current password"/>
-            </div>
-            <div class="form-group">
-              <label class="form-label">New Password</label>
-              <input type="password" class="form-control" id="newPass" placeholder="Minimum 8 characters"/>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Confirm New Password</label>
-              <input type="password" class="form-control" id="conPass" placeholder="Repeat new password"/>
-            </div>
-            <div style="background:var(--blue-50,#eff6ff);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:.77rem;color:var(--blue-700,#1d4ed8)">
-              <i class="fas fa-info-circle" style="margin-right:6px"></i>Password must include uppercase letters, numbers, and symbols.
-            </div>
-            <button class="btn btn-primary" onclick="changePassword()"><i class="fas fa-key"></i> Update Password</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ─── Preferences Tab ─── -->
-      <div id="tab-prefs" style="display:none" class="anim-fade-up d2">
-        <div class="grid-2" style="gap:22px">
-          <div class="card">
-            <div class="card-header"><h3><i class="fas fa-bell"></i> Notification Preferences</h3></div>
-            <div class="card-body">
-              <div style="display:flex;flex-direction:column;gap:16px">
-                <div style="display:flex;align-items:center;justify-content:space-between">
-                  <div>
-                    <p style="font-size:.83rem;font-weight:600;color:var(--gray-900)">Appointment Reminders</p>
-                    <p style="font-size:.73rem;color:var(--gray-500)">1 hour before your appointment</p>
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" checked/>
-                    <span class="slider"></span>
-                  </label>
-                </div>
-                <div style="display:flex;align-items:center;justify-content:space-between">
-                  <div>
-                    <p style="font-size:.83rem;font-weight:600;color:var(--gray-900)">Prescription Updates</p>
-                    <p style="font-size:.73rem;color:var(--gray-500)">When a doctor adds a new prescription</p>
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" checked/>
-                    <span class="slider"></span>
-                  </label>
-                </div>
-                <div style="display:flex;align-items:center;justify-content:space-between">
-                  <div>
-                    <p style="font-size:.83rem;font-weight:600;color:var(--gray-900)">Health Tips</p>
-                    <p style="font-size:.73rem;color:var(--gray-500)">Weekly wellness and health tips</p>
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox"/>
-                    <span class="slider"></span>
-                  </label>
-                </div>
-              </div>
-              <div style="margin-top:18px">
-                <button class="btn btn-primary btn-sm" onclick="showProfileToast('Preferences saved!', 'success')">
-                  <i class="fas fa-save"></i> Save Preferences
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-header"><h3><i class="fas fa-palette"></i> Display Settings</h3></div>
-            <div class="card-body">
-              <div class="form-group">
-                <label class="form-label">Language</label>
-                <select class="form-control">
-                  <option selected>English</option>
-                  <option>हिन्दी</option>
-                  <option>தமிழ்</option>
-                  <option>తెలుగు</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Date Format</label>
-                <select class="form-control">
-                  <option selected>DD/MM/YYYY</option>
-                  <option>MM/DD/YYYY</option>
-                  <option>YYYY-MM-DD</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Time Zone</label>
-                <select class="form-control">
-                  <option selected>IST (UTC +5:30)</option>
-                </select>
-              </div>
-              <button class="btn btn-ghost btn-sm" onclick="showProfileToast('Display settings saved!', 'success')">
-                <i class="fas fa-save"></i> Save Settings
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- Security and Preferences tabs removed from UI (backend APIs retained) -->
 
     </div>
   </div>
@@ -362,7 +256,7 @@
 .toggle-switch input:checked + .slider::before { transform: translateX(18px); }
 </style>
 
-<script src="/medivita/assets/js/portal.js"></script>
+<script src="/Hospital-Mangement-T10-/assets/js/portal.js"></script>
 <script>
 /* ─── PROFILE PAGE LOGIC ─── */
 
@@ -414,7 +308,7 @@ async function loadProfileData(user) {
 
   // Load stats
   try {
-    const r = await fetch('/medivita/backend/patient/get_patient_dashboard_data.php');
+    const r = await fetch('/Hospital-Mangement-T10-/backend/patient/get_patient_dashboard_data.php');
     const d = await r.json();
     if (d.success) {
       document.getElementById('statAppt').textContent = d.totalAppointments  ?? '0';
@@ -434,7 +328,7 @@ async function savePersonalInfo() {
   fd.append('address',     document.getElementById('address').value);
 
   try {
-    const res  = await fetch('/medivita/backend/patient/update_patient_profile.php', { method: 'POST', body: fd });
+    const res  = await fetch('/Hospital-Mangement-T10-/backend/patient/update_patient_profile.php', { method: 'POST', body: fd });
     const data = await res.json();
     if (data.success) {
       showProfileToast('Profile updated successfully!', 'success');
@@ -465,7 +359,7 @@ async function changePassword() {
   fd.append('new_password',     nw);
 
   try {
-    const res  = await fetch('/medivita/backend/patient/change_password.php', { method: 'POST', body: fd });
+    const res  = await fetch('/Hospital-Mangement-T10-/backend/patient/change_password.php', { method: 'POST', body: fd });
     const data = await res.json();
     if (data.success) {
       showProfileToast('Password changed successfully!', 'success');

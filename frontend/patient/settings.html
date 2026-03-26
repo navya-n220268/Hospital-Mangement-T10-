@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Settings — MediVita Admin</title>
-<link rel="stylesheet" href="/medivita/assets/css/medivita.css">
+<title>Settings — Sanjeevani Admin</title>
+<link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/Sanjeevani.css">
 <style>
 .settings-layout { display: grid; grid-template-columns: 240px 1fr; gap: 24px; }
 .settings-nav {
@@ -92,10 +92,10 @@
 <script>
 // Prevent flash of unauthenticated content
 (async function() {
-  const res = await fetch('/medivita/backend/patient/get_user.php');
+  const res = await fetch('/Hospital-Mangement-T10-/backend/patient/get_user.php');
   const data = await res.json();
   if (!data.success || data.user.role !== 'admin') {
-    window.location.href = '/medivita/frontend/auth/login.html';
+    window.location.href = '/Hospital-Mangement-T10-/frontend/auth/login.html';
   }
 })();
 </script>
@@ -104,33 +104,33 @@
 
 <aside class="sidebar">
   <div class="sidebar-brand">
-    <a href="/medivita/frontend/admin/admin-dashboard.html" class="brand-logo">
+    <a href="/Hospital-Mangement-T10-/frontend/admin/admin-dashboard.html" class="brand-logo">
       <div class="brand-icon"><i class="fas fa-heartbeat"></i></div>
       <div class="brand-text">
-        <div class="brand-name">MediVita</div>
+        <div class="brand-name">Sanjeevani</div>
         <div class="brand-sub">Admin Panel</div>
       </div>
     </a>
   </div>
   <div class="sidebar-section-label">Main Menu</div>
   <nav class="sidebar-nav">
-    <a href="/medivita/frontend/admin/admin-dashboard.html" class="nav-item">
+    <a href="/Hospital-Mangement-T10-/frontend/admin/admin-dashboard.html" class="nav-item">
       <span class="nav-icon">📊</span> Dashboard
     </a>
-    <a href="/medivita/frontend/admin/manage-doctors.html" class="nav-item">
+    <a href="/Hospital-Mangement-T10-/frontend/admin/manage-doctors.html" class="nav-item">
       <span class="nav-icon">👨‍⚕️</span> Manage Doctors
     </a>
-    <a href="/medivita/frontend/admin/manage-patients.html" class="nav-item">
+    <a href="/Hospital-Mangement-T10-/frontend/admin/manage-patients.html" class="nav-item">
       <span class="nav-icon">🧑‍🤝‍🧑</span> Manage Patients
     </a>
-    <a href="/medivita/frontend/admin/appointment-analytics.html" class="nav-item">
+    <a href="/Hospital-Mangement-T10-/frontend/admin/appointment-analytics.html" class="nav-item">
       <span class="nav-icon">📈</span> Appointment Analytics
     </a>
     <div class="sidebar-section-label" style="padding-top:12px;">System</div>
-    <a href="/medivita/frontend/patient/settings.html" class="nav-item active">
+    <a href="/Hospital-Mangement-T10-/frontend/patient/settings.html" class="nav-item active">
       <span class="nav-icon">⚙️</span> Settings
     </a>
-    <a href="/medivita/backend/auth/logout.php" class="nav-item">
+    <a href="/Hospital-Mangement-T10-/backend/auth/logout.php" class="nav-item">
       <span class="nav-icon">🚪</span> Logout
     </a>
   </nav>
@@ -186,7 +186,7 @@
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">Admin Email</label>
-                <input class="form-input" type="email" id="adminEmail" value="admin@medivita.com">
+                <input class="form-input" type="email" id="adminEmail" value="admin@Sanjeevani.com">
               </div>
               <div class="form-group">
                 <label class="form-label">Contact Number</label>

@@ -42,9 +42,15 @@ try {
 
         // Normalize status
         $status = $doctor['status'] ?? null;
-        if (!$status) {
-            $avail = $doctor['availability'] ?? '';
-            $status = ($avail === 'On Leave') ? 'Inactive' : 'Active';
+        $approvalStatus = $doctor['approval_status'] ?? 'approved';
+        
+        // Strict mapping for Doctor Approval Status per Requirements
+        if ($approvalStatus === 'pending') {
+            $status = 'Pending';
+        } elseif ($approvalStatus === 'rejected') {
+            $status = 'Rejected';
+        } else {
+            $status = 'Approved';
         }
 
         // Fetch patient count dynamically from appointments
@@ -61,6 +67,7 @@ try {
             'phone'          => $doctor['phone'] ?? '',
             'experience'     => $experience,
             'status'         => $status,
+            'approval_status'=> $approvalStatus,
             'qualification'  => $doctor['qualification'] ?? '',
             'joined_date'    => $doctor['joined_date'] ?? '',
             'patients'       => $patientsCount,

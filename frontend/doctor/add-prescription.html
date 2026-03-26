@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Add Prescription — MediVita</title>
+<title>Add Prescription — Sanjeevani</title>
 <meta name="description" content="Doctor Prescription module — prescribe medicines for your patients."/>
-<link rel="stylesheet" href="/medivita/assets/css/doctor.css"/>
+<link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/doctor.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 <style>
 /* ── Prescription paper ── */
@@ -173,7 +173,7 @@
               <div class="rx-logo" style="position:relative;z-index:1">
                 <div class="rx-logo-mark"><i class="fas fa-heartbeat"></i></div>
                 <div>
-                  <div class="rx-hosp-name">MediVita Hospital</div>
+                  <div class="rx-hosp-name">Sanjeevani Hospital</div>
                   <div class="rx-hosp-sub" id="headerDept">Loading department…</div>
                 </div>
               </div>
@@ -264,7 +264,7 @@
             <!-- Footer / Signature -->
             <div class="rx-footer">
               <div class="rx-footer-left">
-                <p>MediVita Hospital</p>
+                <p>Sanjeevani Hospital</p>
                 <span>Prescription valid for 30 days from date of issue</span>
               </div>
               <div style="text-align:center">
@@ -335,7 +335,7 @@
   </div>
 </div>
 
-<script src="/medivita/assets/js/doctor.js?v=3"></script>
+<script src="/Hospital-Mangement-T10-/assets/js/doctor.js?v=3"></script>
 <script>
 /* =============================================
    ADD PRESCRIPTION — DYNAMIC BACKEND LOGIC
@@ -354,7 +354,7 @@ document.getElementById('rxNextVisit').value = nm.toISOString().split('T')[0];
 // ── Load doctor info & populate header ────────────────────────────────────
 async function loadDoctor() {
   try {
-    const res  = await fetch('/medivita/backend/doctor/get_logged_doctor.php');
+    const res  = await fetch('/Hospital-Mangement-T10-/backend/doctor/get_logged_doctor.php');
     const data = await res.json();
     if (!data.success) return;
 
@@ -387,7 +387,7 @@ async function loadPatients() {
   resetPatientStrip();
 
   try {
-    const res  = await fetch('/medivita/backend/doctor/get_doctor_patients.php');
+    const res  = await fetch('/Hospital-Mangement-T10-/backend/doctor/get_doctor_patients.php');
     const data = await res.json();
     if (!data.success) throw new Error(data.message);
 
@@ -560,7 +560,7 @@ async function submitPrescription() {
   };
 
   try {
-    const res  = await fetch('/medivita/backend/shared/add_prescription.php', {
+    const res  = await fetch('/Hospital-Mangement-T10-/backend/shared/add_prescription.php', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify(payload),
@@ -602,7 +602,7 @@ async function loadRecentPrescriptions() {
   const container = document.getElementById('recentRxContainer');
   try {
     // Fetch schedules to find prescriptions
-    const res  = await fetch('/medivita/backend/doctor/get_doctor_schedules.php?status=completed');
+    const res  = await fetch('/Hospital-Mangement-T10-/backend/doctor/get_doctor_schedules.php?status=completed');
     const data = await res.json();
     const completed = (data.schedules || []).slice(0, 5);
 

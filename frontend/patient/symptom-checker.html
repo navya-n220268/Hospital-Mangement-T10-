@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>AI Symptom Checker — MediVita</title>
-<link rel="stylesheet" href="/medivita/assets/css/portal.css"/>
+<title>AI Symptom Checker — Sanjeevani</title>
+<link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/portal.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 <style>
 /* ── Hero ── */
@@ -220,6 +220,8 @@
   .result-grid     { grid-template-columns: 1fr; }
   .symptom-grid    { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
 }
+/* ── Hide topbar Emergency button on this page only ── */
+.emg-btn { display: none !important; }
 </style>
 </head>
 <body>
@@ -349,7 +351,7 @@
   </div>
 </div>
 
-<script src="/medivita/assets/js/portal.js"></script>
+<script src="/Hospital-Mangement-T10-/assets/js/portal.js"></script>
 <script>
 initPortal('symptom-checker', 'AI Symptom Checker', 'Describe your symptoms for AI-assisted guidance');
 
@@ -721,9 +723,8 @@ function showResult() {
         </p>
       </div>
 
-      <div class="result-actions">
+        <div class="result-actions">
         <button class="btn btn-secondary" onclick="resetChecker()"><i class="fas fa-redo"></i> Check Again</button>
-        <button class="btn btn-outline" onclick="triggerEmergency()"><i class="fas fa-ambulance"></i> Emergency</button>
       </div>
     </div>
 

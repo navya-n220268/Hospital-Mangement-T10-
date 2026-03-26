@@ -1,11 +1,17 @@
 <?php
 session_start();
 if (empty($_SESSION['doctor_id'])) {
-  header('Location: /medivita/frontend/auth/login.html');
+  header('Location: /Hospital-Mangement-T10-/frontend/auth/login.html');
   exit;
 }
 $doctor_name = $_SESSION['doctor_name'] ?? 'Doctor';
 $doctor_id = $_SESSION['doctor_id'] ?? '';
+
+require_once __DIR__ . '/../../backend/config.php';
+$db = getDB();
+$docData = $db->doctors->findOne(['_id' => new MongoDB\BSON\ObjectId($doctor_id)]);
+$isAvailable = $docData['is_available'] ?? true;
+$unavailReason = $docData['unavailability_reason'] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -13,10 +19,10 @@ $doctor_id = $_SESSION['doctor_id'] ?? '';
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Dashboard — MediVita Doctor Portal</title>
+  <title>Dashboard — Sanjeevani Doctor Portal</title>
   <meta name="description"
-    content="MediVita Doctor Portal Dashboard — view your live schedule and patient appointments." />
-  <link rel="stylesheet" href="/medivita/assets/css/doctor.css" />
+    content="Sanjeevani Doctor Portal Dashboard — view your live schedule and patient appointments." />
+  <link rel="stylesheet" href="/Hospital-Mangement-T10-/assets/css/doctor.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
     /* ── Welcome hero ── */
@@ -236,6 +242,20 @@ $doctor_id = $_SESSION['doctor_id'] ?? '';
       <div class="topbar"></div>
       <div class="page-content">
 
+        <!-- Availability Banner -->
+        <?php if (!$isAvailable): ?>
+        <div style="background:#fee2e2; border:1px solid #fecaca; padding:16px 20px; border-radius:16px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; animation:pulse 2s infinite;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <i class="fas fa-toggle-off" style="color:#dc2626; font-size:1.4rem;"></i>
+            <div style="font-size:14px; color:#991b1b;">
+              <strong style="display:block">Global Status: OFFLINE</strong>
+              Appointments are currently blocked due to: <strong><?php echo htmlspecialchars($unavailReason ?: 'Emergency'); ?></strong>
+            </div>
+          </div>
+          <button onclick="goOnline()" class="btn btn-sm" style="background:#dc2626; color:white; border:none; cursor:pointer;">Go Online</button>
+        </div>
+        <?php endif; ?>
+
         <!-- Welcome Hero -->
         <div class="welcome-hero afu">
           <div class="wh-text">
@@ -295,7 +315,7 @@ $doctor_id = $_SESSION['doctor_id'] ?? '';
           <div class="card afu d2">
             <div class="card-hd">
               <h3><i class="fas fa-calendar-alt"></i> Schedules</h3>
-              <a href="/medivita/frontend/doctor/schedules.html" class="btn btn-ghost btn-xs">View All</a>
+              <a href="/Hospital-Mangement-T10-/frontend/doctor/schedules.html" class="btn btn-ghost btn-xs">View All</a>
             </div>
             <div class="card-body">
               <div id="schedPreview">
@@ -305,7 +325,7 @@ $doctor_id = $_SESSION['doctor_id'] ?? '';
                 <div class="skel" style="height:52px;"></div>
               </div>
               <div style="margin-top:16px">
-                <a href="/medivita/frontend/doctor/schedules.html" class="btn btn-primary"
+                <a href="/Hospital-Mangement-T10-/frontend/doctor/schedules.html" class="btn btn-primary"
                   style="width:100%;justify-content:center">
                   <i class="fas fa-calendar-alt"></i> Full Schedules
                 </a>
@@ -322,28 +342,34 @@ $doctor_id = $_SESSION['doctor_id'] ?? '';
               <div class="card-body">
                 <div class="g3" style="gap:12px">
                   <div class="qa-card"
-                    onclick="window.location.href = '/medivita/frontend/doctor/add-prescription.html'">
+                    onclick="window.location.href = '/Hospital-Mangement-T10-/frontend/doctor/add-prescription.html'">
                     <div class="qa-icon" style="background:var(--blue-dim);color:var(--blue)"><i
                         class="fas fa-file-prescription"></i></div>
                     <p>Add Prescription</p>
                   </div>
-                  <div class="qa-card" onclick="window.location.href = '/medivita/frontend/doctor/schedules.html'">
+                  <div class="qa-card" onclick="window.location.href = '/Hospital-Mangement-T10-/frontend/doctor/schedules.html'">
                     <div class="qa-icon" style="background:var(--teal-dim);color:var(--teal)"><i
                         class="fas fa-calendar-alt"></i></div>
                     <p>View Schedules</p>
                   </div>
                   <div class="qa-card"
-                    onclick="window.location.href = '/medivita/frontend/doctor/doctor-messages.html'">
+                    onclick="window.location.href = '/Hospital-Mangement-T10-/frontend/doctor/doctor-messages.html'">
                     <div class="qa-icon" style="background:var(--violet-dim);color:var(--violet)"><i
                         class="fas fa-comment-dots"></i></div>
                     <p>Messages</p>
                   </div>
                   <div class="qa-card"
-                    onclick="window.location.href = '/medivita/frontend/doctor/patient-history.html'">
+                    onclick="window.location.href = '/Hospital-Mangement-T10-/frontend/doctor/patient-history.html'">
                     <div class="qa-icon" style="background:var(--green-dim);color:var(--green)"><i
                         class="fas fa-users"></i></div>
                     <p>Patient History</p>
                   </div>
+                  <?php if ($isAvailable): ?>
+                  <div class="qa-card" onclick="openUnavailModal()">
+                    <div class="qa-icon" style="background:var(--red-dim);color:var(--red)"><i class="fas fa-toggle-off"></i></div>
+                    <p>Mark Unavailable</p>
+                  </div>
+                  <?php endif; ?>
 
                 </div>
               </div>
@@ -369,7 +395,25 @@ $doctor_id = $_SESSION['doctor_id'] ?? '';
     </div>
   </div>
 
-  <script src="/medivita/assets/js/doctor.js?v=3"></script>
+  <!-- Unavailability Modal -->
+  <div id="unavailModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+      <div style="background:white; padding:24px; border-radius:16px; width:100%; max-width:400px; box-shadow:var(--sh-lg);">
+          <h3 style="margin-bottom:8px; display:flex; justify-content:space-between; color:var(--text-1);">
+              Mark Unavailable <i class="fas fa-times" style="cursor:pointer; color:var(--text-3);" onclick="closeUnavailModal()"></i>
+          </h3>
+          <p style="font-size:0.85rem; color:var(--text-3); margin-bottom:16px;">This will block all future appointments until you go online.</p>
+          <label style="display:block; font-size:.85rem; font-weight:600; margin-bottom:8px; color:var(--text-2);">Reason for unavailability</label>
+          <select id="unavailReason" class="form-select" style="margin-bottom:20px; width:100%;">
+              <option value="Emergency">🚨 Emergency</option>
+              <option value="Personal">🏥 Personal/Medical</option>
+              <option value="Conference">📚 Conference/Training</option>
+              <option value="Other">✏️ Other</option>
+          </select>
+          <button onclick="submitUnavailability()" id="btnSubmitUnavail" class="btn btn-primary" style="width:100%; justify-content:center; background:#ef4444; border:none;">Go Offline Now</button>
+      </div>
+  </div>
+
+  <script src="/Hospital-Mangement-T10-/assets/js/doctor.js?v=3"></script>
   <script>
     // ── Avatar gradients ────────────────────────────────────────────────────────
     const GRADIENTS = [
@@ -397,7 +441,7 @@ $doctor_id = $_SESSION['doctor_id'] ?? '';
     // ── Load dashboard data ─────────────────────────────────────────────────────
     async function loadDashboard() {
       try {
-        const res = await fetch('/medivita/backend/doctor/get_doctor_schedules.php');
+        const res = await fetch('/Hospital-Mangement-T10-/backend/doctor/get_doctor_schedules.php');
         const data = await res.json();
 
         if (!data.success) throw new Error(data.message);
@@ -513,6 +557,48 @@ $doctor_id = $_SESSION['doctor_id'] ?? '';
       <span style="color:var(--amber)"><i class="fas fa-hourglass"></i> ${pending} Pending</span>
     </div>
   `;
+    }
+
+    // ── Unavailability Functions ──
+    function openUnavailModal() { document.getElementById('unavailModal').style.display = 'flex'; }
+    function closeUnavailModal() { document.getElementById('unavailModal').style.display = 'none'; }
+
+    async function submitUnavailability() {
+        const btn = document.getElementById('btnSubmitUnavail');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        btn.disabled = true;
+        try {
+            const reason = document.getElementById('unavailReason').value;
+            const fd = new FormData();
+            fd.append('reason', reason);
+            fd.append('fromDate', new Date().toISOString().split('T')[0]);
+            fd.append('toDate', '9999-12-31');
+            const res = await fetch('/Hospital-Mangement-T10-/backend/doctor/mark_unavailable.php', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (data.success) {
+                window.location.reload();
+            } else alert(data.message);
+        } catch(e) {
+            alert('Error marking unavailable.');
+        } finally {
+            btn.innerHTML = 'Go Offline Now';
+            btn.disabled = false;
+        }
+    }
+
+    async function goOnline() {
+        if(!confirm("Are you sure you want to go back online and resume appointments?")) return;
+        try {
+            const res = await fetch('/Hospital-Mangement-T10-/backend/doctor/cancel_unavailability.php', { 
+                method: 'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({}) 
+            });
+            const data = await res.json();
+            if (data.success) window.location.reload();
+            else alert(data.message);
+        } catch(e) {
+            alert('Error going online.');
+        }
     }
 
     // ── Bootstrap ───────────────────────────────────────────────────────────────
